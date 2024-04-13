@@ -11,8 +11,5 @@ enable_testing()
 add_executable(test_test tests/test_test.c)
 
 add_test(NAME test1 COMMAND test_test 1)
+add_test(NAME test2 COMMAND test_test 0)
 
-#add_test(
-#        NAME test2
-#        COMMAND test_test 0
-#)
