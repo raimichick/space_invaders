@@ -8,6 +8,6 @@
 
 int main(int argc, char *argv[])
 {
-    assert(test_func() == atoi(argv[1]));
-    return 0;
+    if (test_func() == atoi(argv[1])) return 0;
+    return 1;
 }
