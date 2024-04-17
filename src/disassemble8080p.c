@@ -306,7 +306,10 @@ void output_disassemble(unsigned char *game, int game_size)
     // Print opcode counts to opcode_count file
     for (int i = 0; i < 0xff; i++)
     {
-        printf("0x%02x occurrences: %d\n", i, opcode_count[i]);
+        if (opcode_count[i] > 0)
+        {
+            printf("0x%02x occurrences: %d\n", i, opcode_count[i]);
+        }
     }
 
     // Close opcode_count file
