@@ -275,3 +275,43 @@ int disassemble8080p(unsigned char *codebuffer, int pc)
     printf("\n");
     return opbytes;
 }
+
+/*
+ * Prints human-readable opcode to /include/output_file and the number of
+ * occurrences of each opcode to /include/opcode_count.
+ * *game:      pointer to game bytes
+ * game_size:  number of bytes in game
+ */
+void output_disassemble(unsigned char *game, int game_size)
+{
+    // Create or open a file to save the opcode output
+    FILE *output_file = freopen("../include/output_file", "w", stdout);
+
+    // Print disassembly to output_file
+    int dis_i = 0;
+    int opcode_count[256] = {0};
+    while (dis_i < game_size)
+    {
+        int opbytes = disassemble8080p(game, dis_i);
+        dis_i += opbytes;
+        opcode_count[game[dis_i]] += 1;
+    }
+
+    // Close output_file
+    fclose(output_file);
+
+    // Create or open a file to save the opcode count
+    FILE *output_count = freopen("../include/opcode_count", "w", stdout);
+
+    // Print opcode counts to opcode_count file
+    for (int i = 0; i < 0xff; i++)
+    {
+        if (opcode_count[i] > 0)
+        {
+            printf("0x%02x occurrences: %d\n", i, opcode_count[i]);
+        }
+    }
+
+    // Close opcode_count file
+    fclose(output_count);
+}
