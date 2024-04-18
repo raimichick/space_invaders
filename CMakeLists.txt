@@ -5,7 +5,8 @@ set(CMAKE_C_STANDARD 11)
 
 add_executable(space_invaders_8080 src/main.c
         include/foo.h
-        src/disassemble8080p.c)
+        src/disassemble8080p.c
+        src/shell.c)
 
 enable_testing()
 
