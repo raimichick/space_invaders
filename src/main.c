@@ -58,6 +58,7 @@ int main()
     while (state->program_counter < game_size)
     {
         int opbytes = disassemble8080p(state->memory, state->program_counter);
+
         state->program_counter += opbytes;
     }
 
