@@ -40,9 +40,20 @@ State *Init8080(void)
 {
     // Reserve memory for the state struct
     State *state = calloc(1, sizeof(State));
+    if (state == NULL)
+    {
+        printf("Error: State allocation failed.\n");
+        exit(1);
+    }
 
     // Reserve memory for the 16KB of RAM
     state->memory = malloc(0x10000);
+    if (state->memory == NULL)
+    {
+        printf("Error: State memory allocation failed.\n");
+        free(state);
+        exit(1);
+    }
 
     // Clear all of the registers and set the initial program counter
     state->a = 0;
