@@ -30,11 +30,11 @@ int main()
     fclose(game_file);
 
     // Print disassembly
-    while (state->program_counter < game_size)
+    while (state->pc < game_size)
     {
-        int opbytes = disassemble8080p(state->memory, state->program_counter);
+        int opbytes = disassemble8080p(state->memory, state->pc);
 
-        state->program_counter += opbytes;
+        state->pc += opbytes;
     }
 
     free(state->memory);

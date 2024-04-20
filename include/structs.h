@@ -19,8 +19,8 @@ typedef struct State
     uint8_t e;
     uint8_t h;
     uint8_t l;
-    uint16_t stack_pointer;
-    uint16_t program_counter;
+    uint16_t sp;
+    uint16_t pc;
     uint8_t *memory;
     Conditions conditions;
     uint8_t int_enable;
