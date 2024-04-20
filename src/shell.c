@@ -4,11 +4,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void unimplementedInstr(uint8_t opcode)
+void unimplementedInstr(uint8_t oprogram_counterode)
 {
-    printf("Error: Instruction 0x%02x not implemented.\n", opcode);
+    printf("Error: Instruction 0x%02x not implemented.\n", oprogram_counterode);
     exit(1);
 }
+
+void mov_reg_to_reg(State *state, uint8_t *to, uint8_t *from);
 
 State *Init8080(void)
 {
@@ -56,10 +58,11 @@ State *Init8080(void)
 void emulate8080(State *state)
 {
 
-    // Retrieve the opcode from memory at the current program counter location
-    uint8_t *opcode = &state->memory[state->program_counter];
+    // Retrieve the oprogram_counterode from memory at the current program
+    // counter location
+    uint8_t *oprogram_counterode = &state->memory[state->program_counter];
 
-    switch (*opcode)
+    switch (*oprogram_counterode)
     {
     // case 0x00: printf("NOP");  break;
     // case 0x01: printf("LXI B,D16, $%02x%02x", code[2], code[1]); opbytes = 3;
@@ -168,7 +171,9 @@ void emulate8080(State *state)
     // case 0x77: printf("MOV M,A");  break;
     // case 0x78: printf("MOV A,B");  break;
     // case 0x79: printf("MOV A,C");  break;
-    // case 0x7a: printf("MOV A,D");  break;
+    case 0x7a: // MOV A,D
+        mov_reg_to_reg(state, &state->a, &state->c);
+        break;
     // case 0x7b: printf("MOV A,E");  break;
     // case 0x7c: printf("MOV A,H");  break;
     // case 0x7d: printf("MOV A,L");  break;
@@ -274,12 +279,12 @@ void emulate8080(State *state)
     // $%02x%02x", code[2], code[1]); opbytes = 3; break; case 0xe5:
     // printf("PUSH H"); break; case 0xe6: printf("ANI D8, $%02x", code[1]);
     // opbytes = 2; break; case 0xe7: printf("RST 4"); break; case 0xe8:
-    // printf("RPE"); break; case 0xe9: printf("PCHL"); break; case 0xea:
-    // printf("JPE, $%02x%02x", code[2], code[1]); opbytes = 3; break; case
-    // 0xeb: printf("XCHG"); break; case 0xec: printf("CPE, $%02x%02x", code[2],
-    // code[1]); opbytes = 3; break; case 0xed: printf("-"); break; case 0xee:
-    // printf("XRI D8, $%02x", code[1]); opbytes = 2; break; case 0xef:
-    // printf("RST 5"); break; case 0xf0: printf("RP"); break; case 0xf1:
+    // printf("RPE"); break; case 0xe9: printf("program_counterHL"); break; case
+    // 0xea: printf("JPE, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    // case 0xeb: printf("XCHG"); break; case 0xec: printf("CPE, $%02x%02x",
+    // code[2], code[1]); opbytes = 3; break; case 0xed: printf("-"); break;
+    // case 0xee: printf("XRI D8, $%02x", code[1]); opbytes = 2; break; case
+    // 0xef: printf("RST 5"); break; case 0xf0: printf("RP"); break; case 0xf1:
     // printf("POP PSW"); break; case 0xf2: printf("JP, $%02x%02x", code[2],
     // code[1]); opbytes = 3; break; case 0xf3: printf("DI"); break; case 0xf4:
     // printf("CP, $%02x%02x", code[2], code[1]); opbytes = 3; break; case 0xf5:
@@ -292,7 +297,13 @@ void emulate8080(State *state)
     // printf("CPI D8, $%02x", code[1]); opbytes = 2; break; case 0xff:
     // printf("RST 7"); break;
     default:
-        unimplementedInstr(*opcode);
+        unimplementedInstr(*oprogram_counterode);
         break;
     }
+}
+
+void mov_reg_to_reg(State *state, uint8_t *to, uint8_t *from)
+{
+    state->program_counter += 1;
+    *to = *from;
 }
