@@ -15,8 +15,6 @@ void unimplementedInstr(uint8_t opcode)
     exit(1);
 }
 
-
-
 State *Init8080(void)
 {
     // Reserve memory for the state struct
@@ -193,8 +191,11 @@ void emulate8080(State *state)
 //    case 0x78: printf("MOV A,B");  break;
 //    case 0x79: printf("MOV A,C");  break;
     case 0x7a: // MOV A,D
+    {
         mov_reg_to_reg(state, &state->a, &state->c);
-        break;//    case 0x7b: printf("MOV A,E");  break;
+        break;
+    }
+//    case 0x7b: printf("MOV A,E");  break;
 //    case 0x7c: printf("MOV A,H");  break;
 //    case 0x7d: printf("MOV A,L");  break;
 //    case 0x7e: printf("MOV A,M");  break;
