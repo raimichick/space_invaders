@@ -4,9 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void push_to_stack(State*, u_int16_t);
-void pop_to_program_counter(State*);
-void pop_to_register_pair(State*, u_int8_t*, u_int8_t*);
+void push_to_stack(State *state, u_int16_t from);
+void pop_to_program_counter(State *state);
+void pop_to_register_pair(State *state, u_int8_t *hi_order_byte_reg,
+                          u_int8_t *lo_order_byte_reg);
 
 void unimplementedInstr(uint8_t opcode)
 {
