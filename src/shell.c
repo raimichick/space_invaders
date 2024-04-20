@@ -99,7 +99,7 @@ void emulate8080(State *state)
     // clang-format off
     switch (*code)
     {
-case 0x00: // NOP
+    case 0x00: // NOP
         state->pc += 1;
         waitCycles(4);
         break;
@@ -111,9 +111,9 @@ case 0x00: // NOP
         state->pc += 1;
         waitCycles(10);
         break;
-    // case 0x02: printf("STAX B"); break;
-    // case 0x03: printf("INX B"); break;
-    // case 0x04: printf("INR B"); break;
+//    case 0x02: printf("STAX B"); break;
+//    case 0x03: printf("INX B"); break;
+//    case 0x04: printf("INR B"); break;
     case 0x05: // DCR B     B <- B-1
         state->b -= 1;
         state->conditions.zero = setZero(state->b);
@@ -128,14 +128,14 @@ case 0x00: // NOP
         state->pc += 1;
         waitCycles(7);
         break;
-    // case 0x07: printf("RLC"); break;
-    // case 0x08: printf("-"); break;
+//    case 0x07: printf("RLC"); break;
+//    case 0x08: printf("-"); break;
     case 0x09: // DAD B
         printf("DAD B");
         break;
-    // case 0x0a: printf("LDAX B"); break;
-    // case 0x0b: printf("DCX B"); break;
-    // case 0x0c: printf("INR C"); break;
+//    case 0x0a: printf("LDAX B"); break;
+//    case 0x0b: printf("DCX B"); break;
+//    case 0x0c: printf("INR C"); break;
     case 0x0d: // DCR C
         printf("DCR C");
         break;
@@ -145,19 +145,19 @@ case 0x00: // NOP
     case 0x0f: // RRC
         printf("RRC");
         break;
-    // case 0x10: printf("-"); break;
+//    case 0x10: printf("-"); break;
     case 0x11: // LXI D,D16
         printf("LXI D,D16");
         break;
-    // case 0x12: printf("STAX D"); break;
+//    case 0x12: printf("STAX D"); break;
     case 0x13: // INX D
         printf("INX D");
         break;
-    // case 0x14: printf("INR D"); break;
-    // case 0x15: printf("DCR D"); break;
-    // case 0x16: printf("MVI D, D8, $%02x", code[1]); opbytes = 2; break;
-    // case 0x17: printf("RAL"); break;
-    // case 0x18: printf("-"); break;
+//    case 0x14: printf("INR D"); break;
+//    case 0x15: printf("DCR D"); break;
+//    case 0x16: printf("MVI D, D8, $%02x", code[1]); opbytes = 2; break;
+//    case 0x17: printf("RAL"); break;
+//    case 0x18: printf("-"); break;
     case 0x19: // DAD D
         printf("DAD D");
         break;
