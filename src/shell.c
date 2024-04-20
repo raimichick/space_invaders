@@ -9,6 +9,10 @@ void pop_to_program_counter(State *state);
 void pop_to_register_pair(State *state, uint8_t *hi_order_byte_reg,
                           uint8_t *lo_order_byte_reg);
 void mov_reg_to_reg(State *state, uint8_t *to, uint8_t *from);
+void waitCycles(int clockCycles);
+uint8_t setSign(uint8_t register_value);
+uint8_t setZero(uint8_t register_value);
+uint8_t setParity(uint8_t register_value);
 void unimplementedInstr(uint8_t opcode)
 {
     printf("Error: Instruction 0x%02x not implemented.\n", opcode);
@@ -68,33 +72,95 @@ void emulate8080(State *state)
     // clang-format off
     switch (*code)
     {
-//    case 0x00: printf("NOP");  break;
-//    case 0x01: printf("LXI B,D16, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0x00: // NOP
+    {
+        state->pc += 1;
+        waitCycles(4);
+        break;
+    }
+    case 0x01: // LXI B Code[2] Code[1]     B <- byte 3, C <- byte 2
+    {
+        state->pc += 1;
+        state->c = state->memory[state->pc];
+        state->pc += 1;
+        state->b = state->memory[state->pc];
+        state->pc += 1;
+        waitCycles(10);
+        break;
+    }
 //    case 0x02: printf("STAX B"); break;
 //    case 0x03: printf("INX B"); break;
 //    case 0x04: printf("INR B"); break;
-//    case 0x05: printf("DCR B"); break;
-//    case 0x06: printf("MVI B, D8, $%02x", code[1]); opbytes = 2; break;
+    case 0x05: // DCR B     B <- B-1
+    {
+        state->b -= 1;
+        state->conditions.zero = setZero(state->b);
+        state->conditions.sign = setSign(state->b);
+        state->conditions.parity = setParity(state->b);
+        state->pc += 1;
+        waitCycles(5);
+        break;
+    }
+    case 0x06: // MVI B,D8     B <- byte 2
+    {
+        state->pc += 1;
+        state->b = state->memory[state->pc];
+        state->pc += 1;
+        waitCycles(7);
+        break;
+    }
 //    case 0x07: printf("RLC"); break;
 //    case 0x08: printf("-"); break;
-//    case 0x09: printf("DAD B"); break;
+    case 0x09: // DAD B
+    {
+        printf("DAD B");
+        break;
+    }
 //    case 0x0a: printf("LDAX B"); break;
 //    case 0x0b: printf("DCX B"); break;
 //    case 0x0c: printf("INR C"); break;
-//    case 0x0d: printf("DCR C"); break;
-//    case 0x0e: printf("MVI C,D8, $%02x", code[1]); opbytes = 2; break;
-//    case 0x0f: printf("RRC"); break;
+    case 0x0d: // DCR C
+    {
+        printf("DCR C");
+        break;
+    }
+    case 0x0e: // MVI C, Code[1]
+    {
+        printf("MVI C,D8");
+        break;
+    }
+    case 0x0f: // RRC
+    {
+        printf("RRC");
+        break;
+    }
 //    case 0x10: printf("-"); break;
-//    case 0x11: printf("LXI D,D16, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0x11: // LXI D Code[2] Code[1]
+    {
+        printf("LXI D,D16");
+        break;
+    }
 //    case 0x12: printf("STAX D"); break;
-//    case 0x13: printf("INX D"); break;
+    case 0x13: // INX D
+    {
+        printf("INX D");
+        break;
+    }
 //    case 0x14: printf("INR D"); break;
 //    case 0x15: printf("DCR D"); break;
 //    case 0x16: printf("MVI D, D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0x17: printf("RAL"); break;
 //    case 0x18: printf("-"); break;
-//    case 0x19: printf("DAD D"); break;
-//    case 0x1a: printf("LDAX D"); break;
+    case 0x19: // DAD D
+    {
+        printf("DAD D");
+        break;
+    }
+    case 0x1a: // LDAX D
+    {
+        printf("LDAX D");
+        break;
+    }
 //    case 0x1b: printf("DCX D"); break;
 //    case 0x1c: printf("INR E"); break;
 //    case 0x1d: printf("DCR E"); break;
@@ -400,4 +466,35 @@ void mov_reg_to_reg(State *state, uint8_t *to, uint8_t *from)
 {
     state->pc += 1;
     *to = *from;
+}
+
+void waitCycles(int clockCycles)
+{
+    // TODO: Implememnt the CPU clock delay
+}
+
+uint8_t setSign(uint8_t register_value)
+{
+    // Sign bit is set to the value of the most significant bit of the affected
+    // register
+    return register_value >> 7;
+}
+
+uint8_t setZero(uint8_t register_value) { return register_value == 0; }
+
+uint8_t setParity(uint8_t register_value)
+{
+    int parity = 0;
+    for (int i = 0; i < 8; i++)
+    {
+        uint8_t bit = register_value >> i;
+        bit = bit & 0b00000001;
+        parity += bit;
+    }
+
+    if (parity % 2 == 0)
+    {
+        return 1;
+    }
+    return 0;
 }
