@@ -10,6 +10,7 @@ void unimplementedInstr(uint8_t opcode)
     exit(1);
 }
 
+
 State *Init8080(void)
 {
     // Reserve memory for the state struct
