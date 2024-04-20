@@ -8,7 +8,7 @@ void push_to_stack(State *state, uint16_t from);
 void pop_to_program_counter(State *state);
 void pop_to_register_pair(State *state, uint8_t *hi_order_byte_reg,
                           uint8_t *lo_order_byte_reg);
-
+void mov_reg_to_reg(State *state, uint8_t *to, uint8_t *from);
 void unimplementedInstr(uint8_t opcode)
 {
     printf("Error: Instruction 0x%02x not implemented.\n", opcode);
@@ -190,7 +190,11 @@ void emulate8080(State *state)
 //    case 0x77: printf("MOV M,A");  break;
 //    case 0x78: printf("MOV A,B");  break;
 //    case 0x79: printf("MOV A,C");  break;
-//    case 0x7a: printf("MOV A,D");  break;
+    case 0x7a: // MOV A,D
+    {
+        mov_reg_to_reg(state, &state->a, &state->c);
+        break;
+    }
 //    case 0x7b: printf("MOV A,E");  break;
 //    case 0x7c: printf("MOV A,H");  break;
 //    case 0x7d: printf("MOV A,L");  break;
@@ -390,4 +394,10 @@ void pop_to_register_pair(State* state, uint8_t* hi_order_byte_reg, uint8_t* lo_
     state->sp += 2;
     *hi_order_byte_reg = high_order_bits;
     *lo_order_byte_reg = low_order_bits;
+}
+
+void mov_reg_to_reg(State *state, uint8_t *to, uint8_t *from)
+{
+    state->pc += 1;
+    *to = *from;
 }
