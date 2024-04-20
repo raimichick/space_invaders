@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void push_to_stack(State *state, u_int16_t from);
+void push_to_stack(State *state, uint16_t from);
 void pop_to_program_counter(State *state);
-void pop_to_register_pair(State *state, u_int8_t *hi_order_byte_reg,
-                          u_int8_t *lo_order_byte_reg);
+void pop_to_register_pair(State *state, uint8_t *hi_order_byte_reg,
+                          uint8_t *lo_order_byte_reg);
 
 void unimplementedInstr(uint8_t opcode)
 {
@@ -341,7 +341,7 @@ void emulate8080(State *state)
     // clang-format off
 }
 
-void push_to_stack(State* state, u_int16_t from){
+void push_to_stack(State* state, uint16_t from){
     /*
     * (1) The most significant 8 bits of data are stored at the memory address
     *       one less than the contents of the stack pointer.
@@ -349,8 +349,8 @@ void push_to_stack(State* state, u_int16_t from){
     *       two less than the contents of the stack pointer.
     * (3) The stack pointer is automatically decremented by two.
     */
-    u_int8_t high_order_bits = (from >> 8) & 0xFF;
-    u_int8_t low_order_bits = from & 0xFF;
+    uint8_t high_order_bits = (from >> 8) & 0xFF;
+    uint8_t low_order_bits = from & 0xFF;
     state->memory[state->sp-1] = high_order_bits;
     state->memory[state->sp-2] = low_order_bits;
     state->sp -= 2;
@@ -368,13 +368,13 @@ void pop_to_program_counter(State* state)
      *      than the address held in the stack pointer.
      * 3) The stack pointer is automatically incremented by two.
     */
-    u_int8_t low_order_bits = state->memory[state->sp];
-    u_int8_t high_order_bits = state->memory[state->sp+1];
+    uint8_t low_order_bits = state->memory[state->sp];
+    uint8_t high_order_bits = state->memory[state->sp+1];
     state->sp += 2;
     state->pc = high_order_bits << 8 | low_order_bits;
 }
 
-void pop_to_register_pair(State* state, u_int8_t* hi_order_byte_reg, u_int8_t* lo_order_byte_reg)
+void pop_to_register_pair(State* state, uint8_t* hi_order_byte_reg, uint8_t* lo_order_byte_reg)
 {
     /* Pop the stack to a pair of registers
      * 1) The second register of the pair, or the least significant 8 bits
@@ -385,8 +385,8 @@ void pop_to_register_pair(State* state, u_int8_t* hi_order_byte_reg, u_int8_t* l
      *      than the address held in the stack pointer.
      * 3) The stack pointer is automatically incremented by two.
     */
-    u_int8_t low_order_bits = state->memory[state->sp];
-    u_int8_t high_order_bits = state->memory[state->sp+1];
+    uint8_t low_order_bits = state->memory[state->sp];
+    uint8_t high_order_bits = state->memory[state->sp+1];
     state->sp += 2;
     *hi_order_byte_reg = high_order_bits;
     *lo_order_byte_reg = low_order_bits;
