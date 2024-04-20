@@ -4,12 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void push_to_stack(State*, u_int16_t);
+void pop_stack_to_stack_pointer(State*);
+void pop_stack_to_register_pair(State*, u_int8_t*, u_int8_t*);
+
 void unimplementedInstr(uint8_t opcode)
 {
     printf("Error: Instruction 0x%02x not implemented.\n", opcode);
     exit(1);
 }
-
 
 State *Init8080(void)
 {
@@ -46,10 +49,10 @@ State *Init8080(void)
     state->conditions.pad = 0;
 
     // The program ROM starts at 0x0000 in memory
-    state->program_counter = 0x0000;
+    state->pc = 0x0000;
 
     // Stack pointer is initialized by the ROM after start
-    state->stack_pointer = 0x0000;
+    state->sp = 0x0000;
 
     return state;
 }
@@ -58,7 +61,7 @@ void emulate8080(State *state)
 {
 
     // Retrieve the opcode from memory at the current program counter location
-    uint8_t *code = &state->memory[state->program_counter];
+    uint8_t *code = &state->memory[state->pc];
     int opbytes = 1;
 
     // clang-format off
@@ -269,16 +272,12 @@ void emulate8080(State *state)
 //    case 0xca: printf("JZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xcb: printf("-"); break;
 //    case 0xcc: printf("CZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xcd: // CALL code[2], code[1]
+    case 0xcd: // CALL code[2], code[1],
     {
         opbytes = 3;
-        state->program_counter += opbytes;
-        u_int8_t ho_bits = (state->stack_pointer & 0xFF00) >> 8;
-        u_int8_t lo_bits = state->stack_pointer & 0x00FF;
-        state->memory[state->stack_pointer-1] = ho_bits;
-        state->memory[state->stack_pointer-2] = lo_bits;
-        state->stack_pointer -= 2;
-        state->program_counter = code[2] << 8 | code[1];
+        state->pc += opbytes;
+        push_to_stack(state, state->pc);
+        state->pc = code[2] << 8 | code[1];
         break;
     }
 //    case 0xce: printf("ACI D8, $%02x", code[1]); opbytes = 2; break;
@@ -286,12 +285,8 @@ void emulate8080(State *state)
 //    case 0xd0: printf("RNC"); break;
     case 0xd1: printf("POP D");
     {
-        state->program_counter += opbytes;
-        u_int8_t lo_bits = state->memory[state->stack_pointer];
-        u_int8_t hi_bits = state->memory[state->stack_pointer+1];
-        state->stack_pointer += 2;
-        state->d = hi_bits;
-        state->e = lo_bits;
+        state->pc += opbytes;
+        pop_stack_to_register_pair(state, &state->d, &state->e);
         break;
     }
 //    case 0xd2: printf("JNC, $%02x%02x", code[2], code[1]); opbytes = 3; break;
@@ -343,4 +338,55 @@ void emulate8080(State *state)
     default: unimplementedInstr(*code); break;
     }
     // clang-format off
+}
+
+void push_to_stack(State* state, u_int16_t from){
+    /*
+    * (1) The most significant 8 bits of data are stored at the memory address
+    *       one less than the contents of the stack pointer.
+    * (2) The least significant 8 bits of data are stored at the memory address
+    *       two less than the contents of the stack pointer.
+    * (3) The stack pointer is automatically decremented by two.
+    */
+    u_int8_t high_order_bits = (from >> 8) & 0xFF;
+    u_int8_t low_order_bits = from & 0xFF;
+    state->memory[state->sp-1] = high_order_bits;
+    state->memory[state->sp-2] = low_order_bits;
+    state->sp -= 2;
+}
+
+void pop_to_program_counter(State* state)
+{
+    /*
+     * __Pop the stack to the program_counter__
+     * 1) The second register of the pair, or the least significant 8 bits
+     *      of the program counter, are loaded from the memory address held in
+     *      the stack pointer.
+     * 2) The first register of the pair, or the most significant 8 bits of
+     *      the program counter, are loaded from the memory address one greater
+     *      than the address held in the stack pointer.
+     * 3) The stack pointer is automatically incremented by two.
+    */
+    u_int8_t low_order_bits = state->memory[state->sp];
+    u_int8_t high_order_bits = state->memory[state->sp+1];
+    state->sp += 2;
+    state->pc = high_order_bits << 8 | low_order_bits;
+}
+
+void pop_to_register_pair(State* state, u_int8_t* hi_order_byte_reg, u_int8_t* lo_order_byte_reg)
+{
+    /* Pop the stack to a pair of registers
+     * 1) The second register of the pair, or the least significant 8 bits
+     *      of the program counter, are loaded from the memory address held in
+     *      the stack pointer.
+     * 2) The first register of the pair, or the most significant 8 bits of
+     *      the program counter, are loaded from the memory address one greater
+     *      than the address held in the stack pointer.
+     * 3) The stack pointer is automatically incremented by two.
+    */
+    u_int8_t low_order_bits = state->memory[state->sp];
+    u_int8_t high_order_bits = state->memory[state->sp+1];
+    state->sp += 2;
+    *hi_order_byte_reg = high_order_bits;
+    *lo_order_byte_reg = low_order_bits;
 }
