@@ -2,11 +2,11 @@
 
 typedef struct Conditions
 {
-    uint8_t zero : 1;
-    uint8_t sign : 1;
-    uint8_t parity : 1;
-    uint8_t carry : 1;
-    uint8_t aux_carry : 1;
+    uint8_t zero : 1;      // aka Z
+    uint8_t sign : 1;      // aka S
+    uint8_t parity : 1;    // aka P
+    uint8_t carry : 1;     // aka CY
+    uint8_t aux_carry : 1; // aka AC
     uint8_t pad : 3;
 } Conditions;
 

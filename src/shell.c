@@ -1,18 +1,10 @@
-#include "../include/disassemble8080p.h"
+// #include "../include/disassemble8080p.h"
+#include "../include/shell.h"
 #include "../include/structs.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-void push_to_stack(State *state, uint16_t from);
-void pop_to_program_counter(State *state);
-void pop_to_register_pair(State *state, uint8_t *hi_order_byte_reg,
-                          uint8_t *lo_order_byte_reg);
-void mov_reg_to_reg(State *state, uint8_t *to, uint8_t *from);
-void waitCycles(int clockCycles);
-uint8_t setSign(uint8_t register_value);
-uint8_t setZero(uint8_t register_value);
-uint8_t setParity(uint8_t register_value);
 void unimplementedInstr(uint8_t opcode)
 {
     printf("Error: Instruction 0x%02x not implemented.\n", opcode);
@@ -75,7 +67,7 @@ void emulate8080(State *state)
     case 0x00: // NOP
     {
         state->pc += 1;
-        waitCycles(4);
+        wait_cycles(4);
         break;
     }
     case 0x01: // LXI B Code[2] Code[1]     B <- byte 3, C <- byte 2
@@ -85,7 +77,7 @@ void emulate8080(State *state)
         state->pc += 1;
         state->b = state->memory[state->pc];
         state->pc += 1;
-        waitCycles(10);
+        wait_cycles(10);
         break;
     }
 //    case 0x02: printf("STAX B"); break;
@@ -94,11 +86,11 @@ void emulate8080(State *state)
     case 0x05: // DCR B     B <- B-1
     {
         state->b -= 1;
-        state->conditions.zero = setZero(state->b);
-        state->conditions.sign = setSign(state->b);
-        state->conditions.parity = setParity(state->b);
+        state->conditions.zero = get_zero_flag(state->b);
+        state->conditions.sign = get_sign_flag(state->b);
+        state->conditions.parity = get_parity_flag(state->b);
         state->pc += 1;
-        waitCycles(5);
+        wait_cycles(5);
         break;
     }
     case 0x06: // MVI B,D8     B <- byte 2
@@ -106,7 +98,7 @@ void emulate8080(State *state)
         state->pc += 1;
         state->b = state->memory[state->pc];
         state->pc += 1;
-        waitCycles(7);
+        wait_cycles(7);
         break;
     }
 //    case 0x07: printf("RLC"); break;
@@ -343,27 +335,43 @@ void emulate8080(State *state)
 //    case 0xca: printf("JZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xcb: printf("-"); break;
 //    case 0xcc: printf("CZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xcd: // CALL code[2], code[1],
+    case 0xcd: // CALL code[2], code[1]; Push next seq. instr. to stack. Set sp to given args.
     {
         opbytes = 3;
         state->pc += opbytes;
-        push_to_stack(state, state->pc);
+        push_program_counter_to_stack(state);
         state->pc = code[2] << 8 | code[1];
+        wait_cycles(17); // per Intel 8080 Programmers Manual
         break;
     }
 //    case 0xce: printf("ACI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xcf: printf("RST 1"); break;
 //    case 0xd0: printf("RNC"); break;
-    case 0xd1: printf("POP D");
+    case 0xd1: // POP D; Pops stack into DE register pair.
     {
         state->pc += opbytes;
-        pop_to_register_pair(state, &state->d, &state->e);
+        pop_stack_to_register_pair(state, &state->d, &state->e);
+        wait_cycles(10); // per Intel 8080 Programmers Manual
         break;
     }
 //    case 0xd2: printf("JNC, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xd3: printf("OUT D8, $%02x", code[1]); opbytes = 2; break;
+    case 0xd3: // OUT D8, code[1]; Send the data from A onto the 8bit data bus for transmission to spec'd port
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        // TODO emulator 101 recommended skipping over this for now.
+        // TODO IO[code[1]] = state->a;
+        wait_cycles(10); // per Intel 8080 Programmers Manual
+        break;
+    }
 //    case 0xd4: printf("CNC, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xd5: printf("PUSH D"); break;
+    case 0xd5: // PUSH D; Pushes register pair DE to the stack.
+    {
+        state->pc += opbytes;
+        push_register_pair_to_stack(state, state->d, state->e);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
 //    case 0xd6: printf("SUI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xd7: printf("RST 2"); break;
 //    case 0xd8: printf("RC 1"); break;
@@ -375,43 +383,123 @@ void emulate8080(State *state)
 //    case 0xde: printf("SBI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xdf: printf("RST 3"); break;
 //    case 0xe0: printf("RPO"); break;
-    case 0xe1: printf("POP H"); break;
+    case 0xe1: // POP H; Pops stack into HL register pair.
+    {
+        state->pc += opbytes;
+        pop_stack_to_register_pair(state, &state->h, &state->l);
+        wait_cycles(10); // per Intel 8080 Programmers Manual
+        break;
+    }
 //    case 0xe2: printf("JPO, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xe3: printf("XTHL"); break;
 //    case 0xe4: printf("CPO, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xe5: printf("PUSH H"); break;
-    case 0xe6: printf("ANI D8, $%02x", code[1]); opbytes = 2; break;
+    case 0xe5: // PUSH H; Pushes register pair HL to the stack.
+    {
+        state->pc += opbytes;
+        push_register_pair_to_stack(state, state->h, state->l);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
+    case 0xe6: //ANI D8, code[1]; A = A & D8, clear carry, clear aux_carry (update Z, S, P)
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        state->a = state->a & code[1];
+        state->conditions.carry = 0;
+        state->conditions.aux_carry = 0;
+        state->conditions.zero = get_zero_flag(state->a);
+        state->conditions.sign = get_sign_flag(state->a);
+        state->conditions.parity = get_parity_flag(state->a);
+        wait_cycles(7);
+        break;
+    }
 //    case 0xe7: printf("RST 4"); break;
 //    case 0xe8: printf("RPE"); break;
 //    case 0xe9: printf("PCHL"); break;
 //    case 0xea: printf("JPE, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xeb: printf("XCHG"); break;
+    case 0xeb: // XCHG; H <-> D, L <-> E; The contents of H and D, L and E are swapped.
+    {
+        state->pc += opbytes;
+        uint8_t temp_h = state->h;
+        uint8_t temp_l = state->l;
+        uint8_t temp_d = state->d;
+        uint8_t temp_e = state->e;
+        state->h = temp_d;
+        state->l = temp_e;
+        state->d = temp_h;
+        state->e = temp_l;
+        wait_cycles(5); // TODO this is from the chart but both manual disagree (and disagree with one another).
+        break;
+    }
 //    case 0xec: printf("CPE, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xed: printf("-"); break;
 //    case 0xee: printf("XRI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xef: printf("RST 5"); break;
 //    case 0xf0: printf("RP"); break;
-    case 0xf1: printf("POP PSW"); break;
+    case 0xf1: // POP PSW; Pop Processor Status Word.
+    {
+        // TODO definitely need to test this one.
+        state->pc += opbytes;
+        uint8_t sp_val8 = state->memory[state->sp];
+        state->conditions.carry     = (sp_val8 >> 0) & 0x01;
+        state->conditions.parity    = (sp_val8 >> 2) & 0x01;
+        state->conditions.aux_carry = (sp_val8 >> 4) & 0x01;
+        state->conditions.zero      = (sp_val8 >> 6) & 0x01;
+        state->conditions.sign      = (sp_val8 >> 7) & 0x01;
+        state->a = state->memory[state->sp + 1];
+        state->sp += 2;
+        wait_cycles(10); // per Intel 8080 Programmers Manual.
+        break;
+    }
 //    case 0xf2: printf("JP, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xf3: printf("DI"); break;
 //    case 0xf4: printf("CP, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xf5: printf("PUSH PSW"); break;
+    case 0xf5: // PUSH PSW; Push Processor Status Word.
+    {
+        // TODO definitely need to test this one. Not super happy with it.. refactor likely.
+        state->pc += opbytes;
+        state->memory[state->sp - 1] = state->a;
+        uint8_t c    = (state->conditions.carry << 0)     & 0b00000001;
+        uint8_t bit1 =                                      0b00000010;
+        uint8_t p    = (state->conditions.parity << 2)    & 0b00000100;
+        uint8_t bit3 =                                      0b00001000;
+        uint8_t ac   = (state->conditions.aux_carry << 4) & 0b00010000;
+        uint8_t bit5 =                                      0b00100000;
+        uint8_t z    = (state->conditions.zero << 6)      & 0b01000000;
+        uint8_t s    = (state->conditions.sign << 7)      & 0b10000000;
+        state->memory[state->sp - 2] = c | bit1 | p | bit3 | ac | bit5 | z | s;
+        state->sp -= 2;
+        wait_cycles(11); // per Intel 8080 Programmers Manual.
+        break;
+    }
 //    case 0xf6: printf("ORI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xf7: printf("RST 6"); break;
 //    case 0xf8: printf("RM"); break;
 //    case 0xf9: printf("SPHL"); break;
 //    case 0xfa: printf("JM, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xfb: printf("EI"); break;
+    case 0xfb: // EI; "The interrupt system is enabled following the execution of the next instruction"...
+    {
+        state->pc += opbytes;
+        // TODO emulator 101 recommended skipping over this for now.
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+    }
 //    case 0xfc: printf("CM, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xfd: printf("-"); break;
-    case 0xfe: printf("CPI D8, $%02x", code[1]); opbytes = 2; break;
+    case 0xfe: // CPI D8, code[1]; Compare immediate with accumulator. AKA reg.a - immediate.
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        subtract_instruction(state, state->a, code[1]);
+        wait_cycles(7); // per Intel 8080 Programmers Manual.
+        break;
+    }
 //    case 0xff: printf("RST 7"); break;
     default: unimplementedInstr(*code); break;
     }
     // clang-format off
 }
 
-void push_to_stack(State* state, uint16_t from){
+void push_register_pair_to_stack(State* state, uint8_t rh, uint8_t rl){
     /*
     * (1) The most significant 8 bits of data are stored at the memory address
     *       one less than the contents of the stack pointer.
@@ -419,14 +507,27 @@ void push_to_stack(State* state, uint16_t from){
     *       two less than the contents of the stack pointer.
     * (3) The stack pointer is automatically decremented by two.
     */
-    uint8_t high_order_bits = (from >> 8) & 0xFF;
-    uint8_t low_order_bits = from & 0xFF;
+    state->memory[state->sp-1] = rh;
+    state->memory[state->sp-2] = rl;
+    state->sp -= 2;
+}
+
+void push_program_counter_to_stack(State* state){
+    /*
+    * (1) The most significant 8 bits of data are stored at the memory address
+    *       one less than the contents of the stack pointer.
+    * (2) The least significant 8 bits of data are stored at the memory address
+    *       two less than the contents of the stack pointer.
+    * (3) The stack pointer is automatically decremented by two.
+    */
+    uint8_t high_order_bits = (state->pc >> 8) & 0xFF;
+    uint8_t low_order_bits = state->pc & 0xFF;
     state->memory[state->sp-1] = high_order_bits;
     state->memory[state->sp-2] = low_order_bits;
     state->sp -= 2;
 }
 
-void pop_to_program_counter(State* state)
+void pop_stack_to_program_counter(State* state)
 {
     /*
      * __Pop the stack to the program_counter__
@@ -444,7 +545,7 @@ void pop_to_program_counter(State* state)
     state->pc = high_order_bits << 8 | low_order_bits;
 }
 
-void pop_to_register_pair(State* state, uint8_t* hi_order_byte_reg, uint8_t* lo_order_byte_reg)
+void pop_stack_to_register_pair(State* state, uint8_t* rh, uint8_t* rl)
 {
     /* Pop the stack to a pair of registers
      * 1) The second register of the pair, or the least significant 8 bits
@@ -458,8 +559,8 @@ void pop_to_register_pair(State* state, uint8_t* hi_order_byte_reg, uint8_t* lo_
     uint8_t low_order_bits = state->memory[state->sp];
     uint8_t high_order_bits = state->memory[state->sp+1];
     state->sp += 2;
-    *hi_order_byte_reg = high_order_bits;
-    *lo_order_byte_reg = low_order_bits;
+    *rh = high_order_bits;
+    *rl = low_order_bits;
 }
 
 void mov_reg_to_reg(State *state, uint8_t *to, uint8_t *from)
@@ -468,33 +569,66 @@ void mov_reg_to_reg(State *state, uint8_t *to, uint8_t *from)
     *to = *from;
 }
 
-void waitCycles(int clockCycles)
+void wait_cycles(int clockCycles)
 {
     // TODO: Implememnt the CPU clock delay
 }
 
-uint8_t setSign(uint8_t register_value)
+uint8_t get_sign_flag(uint8_t register_value)
 {
     // Sign bit is set to the value of the most significant bit of the affected
     // register
     return register_value >> 7;
 }
 
-uint8_t setZero(uint8_t register_value) { return register_value == 0; }
+uint8_t get_zero_flag(uint8_t register_value) { return register_value == 0; }
 
-uint8_t setParity(uint8_t register_value)
+uint8_t get_parity_flag(uint8_t register_value)
 {
-    int parity = 0;
+//    The parity bit is set to 1 if the # of set bits is EVEN.
+//    The parity bit is cleared to 0 if the # of set bits is ODD.
+//    // probably not worth the loss of readability but just did a lc on this :]
+//    // https://leetcode.com/problems/number-of-1-bits/description/
+//    uint8_t val = register_value;
+//    while (val > 0)
+//    {
+//        val = val & (val-1)
+//    }
+//    return val % 2 == 0;
+
+    int num_one_bits = 0;
     for (int i = 0; i < 8; i++)
     {
         uint8_t bit = register_value >> i;
         bit = bit & 0b00000001;
-        parity += bit;
+        num_one_bits += bit;
     }
+    return num_one_bits % 2 == 0;
+}
 
-    if (parity % 2 == 0)
-    {
-        return 1;
-    }
-    return 0;
+uint8_t get_carry_flag_from_sum(uint8_t val0, uint8_t val1){
+    // if sum is greater than max byte. ChatGPT helped me with this one.
+    uint16_t v16_0 = val0;
+    uint16_t v16_1 = val1;
+    return ((v16_0 & 0x00FF) + (v16_1 & 0x00FF)) > 0x00FF;
+}
+
+uint8_t get_aux_carry_flag_from_sum(uint8_t val0, uint8_t val1){
+    // if sum is greater than max nibble. ChatGPT helped me with this one.
+    return ((val0 & 0x0F) + (val1 & 0x0F)) > 0x0F;
+}
+
+void subtract_instruction(State* state, uint8_t minuend, uint8_t subtrahend)
+{
+    // NOTE: The carry flag is cleared if there's a carry, and set if there's no carry.
+        // This is opposite of the addition instructions.
+    // val = minuend - subtrahend
+    uint16_t twos_complement = !(subtrahend) + 0x01;
+    uint16_t res = twos_complement + minuend;
+    state->conditions.zero = minuend == subtrahend;
+    state->conditions.carry = minuend < subtrahend;
+    state->conditions.aux_carry = !get_aux_carry_flag_from_sum(twos_complement, minuend);
+    // TODO consider changer param name from "register_value".
+    state->conditions.sign = get_sign_flag(res);
+    state->conditions.parity = get_parity_flag(res);
 }
