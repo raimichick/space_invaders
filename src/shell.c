@@ -403,7 +403,7 @@ void emulate8080(State *state)
     // clang-format off
 }
 
-void push_to_stack(State* state, uint16_t from){
+void push_register_pair_to_stack(State* state, uint8_t rh, uint8_t rl){
     /*
     * (1) The most significant 8 bits of data are stored at the memory address
     *       one less than the contents of the stack pointer.
@@ -411,14 +411,27 @@ void push_to_stack(State* state, uint16_t from){
     *       two less than the contents of the stack pointer.
     * (3) The stack pointer is automatically decremented by two.
     */
-    uint8_t high_order_bits = (from >> 8) & 0xFF;
-    uint8_t low_order_bits = from & 0xFF;
+    state->memory[state->sp-1] = rh;
+    state->memory[state->sp-2] = rl;
+    state->sp -= 2;
+}
+
+void push_program_counter_to_stack(State* state){
+    /*
+    * (1) The most significant 8 bits of data are stored at the memory address
+    *       one less than the contents of the stack pointer.
+    * (2) The least significant 8 bits of data are stored at the memory address
+    *       two less than the contents of the stack pointer.
+    * (3) The stack pointer is automatically decremented by two.
+    */
+    uint8_t high_order_bits = (state->pc >> 8) & 0xFF;
+    uint8_t low_order_bits = state->pc & 0xFF;
     state->memory[state->sp-1] = high_order_bits;
     state->memory[state->sp-2] = low_order_bits;
     state->sp -= 2;
 }
 
-void pop_to_program_counter(State* state)
+void pop_stack_to_program_counter(State* state)
 {
     /*
      * __Pop the stack to the program_counter__
@@ -436,7 +449,7 @@ void pop_to_program_counter(State* state)
     state->pc = high_order_bits << 8 | low_order_bits;
 }
 
-void pop_to_register_pair(State* state, uint8_t* hi_order_byte_reg, uint8_t* lo_order_byte_reg)
+void pop_stack_to_register_pair(State* state, uint8_t* rh, uint8_t* rl)
 {
     /* Pop the stack to a pair of registers
      * 1) The second register of the pair, or the least significant 8 bits
@@ -450,8 +463,8 @@ void pop_to_register_pair(State* state, uint8_t* hi_order_byte_reg, uint8_t* lo_
     uint8_t low_order_bits = state->memory[state->sp];
     uint8_t high_order_bits = state->memory[state->sp+1];
     state->sp += 2;
-    *hi_order_byte_reg = high_order_bits;
-    *lo_order_byte_reg = low_order_bits;
+    *rh = high_order_bits;
+    *rl = low_order_bits;
 }
 
 void mov_reg_to_reg(State *state, uint8_t *to, uint8_t *from)
