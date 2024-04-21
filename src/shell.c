@@ -476,19 +476,25 @@ uint8_t get_zero_flag(uint8_t register_value) { return register_value == 0; }
 
 uint8_t get_parity_flag(uint8_t register_value)
 {
-    int parity = 0;
+//    The parity bit is set to 1 if the # of set bits is EVEN.
+//    The parity bit is cleared to 0 if the # of set bits is ODD.
+//    // probably not worth the loss of readability but just did a lc on this :]
+//    // https://leetcode.com/problems/number-of-1-bits/description/
+//    uint8_t val = register_value;
+//    while (val > 0)
+//    {
+//        val = val & (val-1)
+//    }
+//    return val % 2 == 0;
+
+    int num_one_bits = 0;
     for (int i = 0; i < 8; i++)
     {
         uint8_t bit = register_value >> i;
         bit = bit & 0b00000001;
-        parity += bit;
+        num_one_bits += bit;
     }
-
-    if (parity % 2 == 0)
-    {
-        return 1;
-    }
-    return 0;
+    return num_one_bits % 2 == 0;
 }
 
 uint8_t get_carry_flag_from_sum(uint8_t val0, uint8_t val1){
