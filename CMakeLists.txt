@@ -11,6 +11,7 @@ add_executable(space_invaders_8080 src/main.c
 
 enable_testing()
 
-add_executable(test_test tests/test_test.c)
+add_executable(mov_reg_to_reg tests/test_mov_reg_to_reg.c)
 
-add_test(NAME test1 COMMAND test_test 1)
+# MOV REG to REG Tests - create a unique name, use the opcode as the first argument (COMMAND function_name arg1)
+add_test(NAME mov_a_d COMMAND mov_reg_to_reg 0x7a)
