@@ -335,27 +335,43 @@ void emulate8080(State *state)
 //    case 0xca: printf("JZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xcb: printf("-"); break;
 //    case 0xcc: printf("CZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xcd: // CALL code[2], code[1],
+    case 0xcd: // CALL code[2], code[1]; Push next seq. instr. to stack. Set sp to given args.
     {
         opbytes = 3;
         state->pc += opbytes;
-        push_to_stack(state, state->pc);
+        push_program_counter_to_stack(state);
         state->pc = code[2] << 8 | code[1];
+        wait_cycles(17); // per Intel 8080 Programmers Manual
         break;
     }
 //    case 0xce: printf("ACI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xcf: printf("RST 1"); break;
 //    case 0xd0: printf("RNC"); break;
-    case 0xd1: printf("POP D");
+    case 0xd1: // POP D; Pops stack into DE register pair.
     {
         state->pc += opbytes;
-        pop_to_register_pair(state, &state->d, &state->e);
+        pop_stack_to_register_pair(state, &state->d, &state->e);
+        wait_cycles(10); // per Intel 8080 Programmers Manual
         break;
     }
 //    case 0xd2: printf("JNC, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xd3: printf("OUT D8, $%02x", code[1]); opbytes = 2; break;
+    case 0xd3: // OUT D8, code[1]; Send the data from A onto the 8bit data bus for transmission to spec'd port
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        // TODO emulator 101 recommended skipping over this for now.
+        // TODO IO[code[1]] = state->a;
+        wait_cycles(10); // per Intel 8080 Programmers Manual
+        break;
+    }
 //    case 0xd4: printf("CNC, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xd5: printf("PUSH D"); break;
+    case 0xd5: // PUSH D; Pushes register pair DE to the stack.
+    {
+        state->pc += opbytes;
+        push_register_pair_to_stack(state, state->d, state->e);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
 //    case 0xd6: printf("SUI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xd7: printf("RST 2"); break;
 //    case 0xd8: printf("RC 1"); break;
@@ -367,36 +383,116 @@ void emulate8080(State *state)
 //    case 0xde: printf("SBI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xdf: printf("RST 3"); break;
 //    case 0xe0: printf("RPO"); break;
-    case 0xe1: printf("POP H"); break;
+    case 0xe1: // POP H; Pops stack into HL register pair.
+    {
+        state->pc += opbytes;
+        pop_stack_to_register_pair(state, &state->h, &state->l);
+        wait_cycles(10); // per Intel 8080 Programmers Manual
+        break;
+    }
 //    case 0xe2: printf("JPO, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xe3: printf("XTHL"); break;
 //    case 0xe4: printf("CPO, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xe5: printf("PUSH H"); break;
-    case 0xe6: printf("ANI D8, $%02x", code[1]); opbytes = 2; break;
+    case 0xe5: // PUSH H; Pushes register pair HL to the stack.
+    {
+        state->pc += opbytes;
+        push_register_pair_to_stack(state, state->h, state->l);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
+    case 0xe6: //ANI D8, code[1]; A = A & D8, clear carry, clear aux_carry (update Z, S, P)
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        state->a = state->a & code[1];
+        state->conditions.carry = 0;
+        state->conditions.aux_carry = 0;
+        state->conditions.zero = get_zero_flag(state->a);
+        state->conditions.sign = get_sign_flag(state->a);
+        state->conditions.parity = get_parity_flag(state->a);
+        wait_cycles(7);
+        break;
+    }
 //    case 0xe7: printf("RST 4"); break;
 //    case 0xe8: printf("RPE"); break;
 //    case 0xe9: printf("PCHL"); break;
 //    case 0xea: printf("JPE, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xeb: printf("XCHG"); break;
+    case 0xeb: // XCHG; H <-> D, L <-> E; The contents of H and D, L and E are swapped.
+    {
+        state->pc += opbytes;
+        uint8_t temp_h = state->h;
+        uint8_t temp_l = state->l;
+        uint8_t temp_d = state->d;
+        uint8_t temp_e = state->e;
+        state->h = temp_d;
+        state->l = temp_e;
+        state->d = temp_h;
+        state->e = temp_l;
+        wait_cycles(5); // TODO this is from the chart but both manual disagree (and disagree with one another).
+        break;
+    }
 //    case 0xec: printf("CPE, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xed: printf("-"); break;
 //    case 0xee: printf("XRI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xef: printf("RST 5"); break;
 //    case 0xf0: printf("RP"); break;
-    case 0xf1: printf("POP PSW"); break;
+    case 0xf1: // POP PSW; Pop Processor Status Word.
+    {
+        // TODO definitely need to test this one.
+        state->pc += opbytes;
+        uint8_t sp_val8 = state->memory[state->sp];
+        state->conditions.carry     = (sp_val8 >> 0) & 0x01;
+        state->conditions.parity    = (sp_val8 >> 2) & 0x01;
+        state->conditions.aux_carry = (sp_val8 >> 4) & 0x01;
+        state->conditions.zero      = (sp_val8 >> 6) & 0x01;
+        state->conditions.sign      = (sp_val8 >> 7) & 0x01;
+        state->a = state->memory[state->sp + 1];
+        state->sp += 2;
+        wait_cycles(10); // per Intel 8080 Programmers Manual.
+        break;
+    }
 //    case 0xf2: printf("JP, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xf3: printf("DI"); break;
 //    case 0xf4: printf("CP, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xf5: printf("PUSH PSW"); break;
+    case 0xf5: // PUSH PSW; Push Processor Status Word.
+    {
+        // TODO definitely need to test this one. Not super happy with it.. refactor likely.
+        state->pc += opbytes;
+        state->memory[state->sp - 1] = state->a;
+        uint8_t c    = (state->conditions.carry << 0)     & 0b00000001;
+        uint8_t bit1 =                                      0b00000010;
+        uint8_t p    = (state->conditions.parity << 2)    & 0b00000100;
+        uint8_t bit3 =                                      0b00001000;
+        uint8_t ac   = (state->conditions.aux_carry << 4) & 0b00010000;
+        uint8_t bit5 =                                      0b00100000;
+        uint8_t z    = (state->conditions.zero << 6)      & 0b01000000;
+        uint8_t s    = (state->conditions.sign << 7)      & 0b10000000;
+        state->memory[state->sp - 2] = c | bit1 | p | bit3 | ac | bit5 | z | s;
+        state->sp -= 2;
+        wait_cycles(11); // per Intel 8080 Programmers Manual.
+        break;
+    }
 //    case 0xf6: printf("ORI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xf7: printf("RST 6"); break;
 //    case 0xf8: printf("RM"); break;
 //    case 0xf9: printf("SPHL"); break;
 //    case 0xfa: printf("JM, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xfb: printf("EI"); break;
+    case 0xfb: // EI; "The interrupt system is enabled following the execution of the next instruction"...
+    {
+        state->pc += opbytes;
+        // TODO emulator 101 recommended skipping over this for now.
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+    }
 //    case 0xfc: printf("CM, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xfd: printf("-"); break;
-    case 0xfe: printf("CPI D8, $%02x", code[1]); opbytes = 2; break;
+    case 0xfe: // CPI D8, code[1]; Compare immediate with accumulator. AKA reg.a - immediate.
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        subtract_instruction(state, state->a, code[1]);
+        wait_cycles(7); // per Intel 8080 Programmers Manual.
+        break;
+    }
 //    case 0xff: printf("RST 7"); break;
     default: unimplementedInstr(*code); break;
     }
