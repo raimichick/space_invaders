@@ -1,6 +1,6 @@
-//#include "../include/disassemble8080p.h"
-#include "../include/structs.h"
+// #include "../include/disassemble8080p.h"
 #include "../include/shell.h"
+#include "../include/structs.h"
 
 #include <stdio.h>
 #include <stdlib.h>
