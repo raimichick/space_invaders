@@ -490,3 +490,30 @@ uint8_t get_parity_flag(uint8_t register_value)
     }
     return 0;
 }
+
+uint8_t get_carry_flag_from_sum(uint8_t val0, uint8_t val1){
+    // if sum is greater than max byte. ChatGPT helped me with this one.
+    uint16_t v16_0 = val0;
+    uint16_t v16_1 = val1;
+    return ((v16_0 & 0x00FF) + (v16_1 & 0x00FF)) > 0x00FF;
+}
+
+uint8_t get_aux_carry_flag_from_sum(uint8_t val0, uint8_t val1){
+    // if sum is greater than max nibble. ChatGPT helped me with this one.
+    return ((val0 & 0x0F) + (val1 & 0x0F)) > 0x0F;
+}
+
+void subtract_instruction(State* state, uint8_t minuend, uint8_t subtrahend)
+{
+    // NOTE: The carry flag is cleared if there's a carry, and set if there's no carry.
+        // This is opposite of the addition instructions.
+    // val = minuend - subtrahend
+    uint16_t twos_complement = !(subtrahend) + 0x01;
+    uint16_t res = twos_complement + minuend;
+    state->conditions.zero = minuend == subtrahend;
+    state->conditions.carry = minuend < subtrahend;
+    state->conditions.aux_carry = !get_aux_carry_flag_from_sum(twos_complement, minuend);
+    // TODO consider changer param name from "register_value".
+    state->conditions.sign = get_sign_flag(res);
+    state->conditions.parity = get_parity_flag(res);
+}
