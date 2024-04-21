@@ -67,7 +67,7 @@ void emulate8080(State *state)
     case 0x00: // NOP
     {
         state->pc += 1;
-        waitCycles(4);
+        wait_cycles(4);
         break;
     }
     case 0x01: // LXI B Code[2] Code[1]     B <- byte 3, C <- byte 2
@@ -77,7 +77,7 @@ void emulate8080(State *state)
         state->pc += 1;
         state->b = state->memory[state->pc];
         state->pc += 1;
-        waitCycles(10);
+        wait_cycles(10);
         break;
     }
 //    case 0x02: printf("STAX B"); break;
@@ -86,11 +86,11 @@ void emulate8080(State *state)
     case 0x05: // DCR B     B <- B-1
     {
         state->b -= 1;
-        state->conditions.zero = setZero(state->b);
-        state->conditions.sign = setSign(state->b);
-        state->conditions.parity = setParity(state->b);
+        state->conditions.zero = get_zero_flag(state->b);
+        state->conditions.sign = get_sign_flag(state->b);
+        state->conditions.parity = get_parity_flag(state->b);
         state->pc += 1;
-        waitCycles(5);
+        wait_cycles(5);
         break;
     }
     case 0x06: // MVI B,D8     B <- byte 2
@@ -98,7 +98,7 @@ void emulate8080(State *state)
         state->pc += 1;
         state->b = state->memory[state->pc];
         state->pc += 1;
-        waitCycles(7);
+        wait_cycles(7);
         break;
     }
 //    case 0x07: printf("RLC"); break;
@@ -460,21 +460,21 @@ void mov_reg_to_reg(State *state, uint8_t *to, uint8_t *from)
     *to = *from;
 }
 
-void waitCycles(int clockCycles)
+void wait_cycles(int clockCycles)
 {
     // TODO: Implememnt the CPU clock delay
 }
 
-uint8_t setSign(uint8_t register_value)
+uint8_t get_sign_flag(uint8_t register_value)
 {
     // Sign bit is set to the value of the most significant bit of the affected
     // register
     return register_value >> 7;
 }
 
-uint8_t setZero(uint8_t register_value) { return register_value == 0; }
+uint8_t get_zero_flag(uint8_t register_value) { return register_value == 0; }
 
-uint8_t setParity(uint8_t register_value)
+uint8_t get_parity_flag(uint8_t register_value)
 {
     int parity = 0;
     for (int i = 0; i < 8; i++)
