@@ -250,11 +250,19 @@ void emulate8080(State *state)
 //    case 0x79: printf("MOV A,C");  break;
     case 0x7a: // MOV A,D
     {
-        mov_reg_to_reg(state, &state->a, &state->c);
+        mov_reg_to_reg(state, &state->a, &state->d);
         break;
     }
-//    case 0x7b: printf("MOV A,E");  break;
-//    case 0x7c: printf("MOV A,H");  break;
+    case 0x7b:  // MOV A,E
+    {
+        mov_reg_to_reg(state, &state->a, &state->e);
+        break;
+    }
+    case 0x7c:  //MOV A,H
+    {
+        mov_reg_to_reg(state, &state->a, &state->h);
+        break;
+    }
 //    case 0x7d: printf("MOV A,L");  break;
 //    case 0x7e: printf("MOV A,M");  break;
 //    case 0x7f: printf("MOV A,A");  break;
