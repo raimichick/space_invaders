@@ -245,7 +245,11 @@ void emulate8080(State *state)
 //    case 0x74: printf("MOV M,H");  break;
 //    case 0x75: printf("MOV M,L");  break;
 //    case 0x76: printf("HLT");  break;
-//    case 0x77: printf("MOV M,A");  break;
+    case 0x77:  // MOV M,A
+    {
+        mov_reg_to_mem(state, &state->a);
+        break;
+    }
 //    case 0x78: printf("MOV A,B");  break;
 //    case 0x79: printf("MOV A,C");  break;
     case 0x7a: // MOV A,D
@@ -264,7 +268,11 @@ void emulate8080(State *state)
         break;
     }
 //    case 0x7d: printf("MOV A,L");  break;
-//    case 0x7e: printf("MOV A,M");  break;
+    case 0x7e:  // MOV A,M
+    {
+        mov_mem_to_reg(state, &state->a);
+        break;
+    }
 //    case 0x7f: printf("MOV A,A");  break;
 //    case 0x80: printf("ADD B");  break;
 //    case 0x81: printf("ADD C"); break;
@@ -575,6 +583,20 @@ void mov_reg_to_reg(State *state, uint8_t *to, uint8_t *from)
 {
     state->pc += 1;
     *to = *from;
+}
+
+void mov_reg_to_mem(State *state, uint8_t *from)
+{
+    state->pc += 1;
+    uint16_t mem_offset = (state->h << 8) | state->l;
+    state->memory[mem_offset] = *from;
+}
+
+void mov_mem_to_reg(State *state, uint8_t *to)
+{
+    state->pc += 1;
+    uint16_t mem_offset = (state->h << 8) | state->l;
+    *to = state->memory[mem_offset];
 }
 
 void wait_cycles(int clockCycles)
