@@ -1,18 +1,10 @@
 #include "../include/disassemble8080p.h"
 #include "../include/structs.h"
+#include "../include/shell.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-void push_to_stack(State *state, uint16_t from);
-void pop_to_program_counter(State *state);
-void pop_to_register_pair(State *state, uint8_t *hi_order_byte_reg,
-                          uint8_t *lo_order_byte_reg);
-void mov_reg_to_reg(State *state, uint8_t *to, uint8_t *from);
-void waitCycles(int clockCycles);
-uint8_t setSign(uint8_t register_value);
-uint8_t setZero(uint8_t register_value);
-uint8_t setParity(uint8_t register_value);
 void unimplementedInstr(uint8_t opcode)
 {
     printf("Error: Instruction 0x%02x not implemented.\n", opcode);
