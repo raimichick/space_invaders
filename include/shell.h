@@ -13,6 +13,9 @@ void pop_stack_to_register_pair(struct State *state, uint8_t *rh, uint8_t *rl);
 void mov_reg_to_reg(struct State *state, uint8_t *to, uint8_t *from);
 void mov_reg_to_mem(struct State *state, uint8_t *from);
 void mov_mem_to_reg(struct State *state, uint8_t *to);
+void ana_helper(struct State *state, uint8_t andwith_val);
+void xra_helper(struct State *state, uint8_t xorwith_val);
+void jump_to_addr(struct State *state, uint8_t *code);
 void subtract_instruction(struct State *state, uint8_t minuend,
                           uint8_t subtrahend);
 void wait_cycles(int clockCycles);
