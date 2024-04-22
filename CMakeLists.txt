@@ -12,5 +12,11 @@ add_executable(space_invaders_8080 src/main.c
 enable_testing()
 
 add_executable(test_test tests/test_test.c)
+add_executable(test_load tests/test_load.c)
 
 add_test(NAME test1 COMMAND test_test 1)
+add_test(NAME test_LXI_B COMMAND test_load 0x01)
+add_test(NAME test_LXI_D COMMAND test_load 0x11)
+add_test(NAME test_LDAX_D COMMAND test_load 0x1a)
+
+

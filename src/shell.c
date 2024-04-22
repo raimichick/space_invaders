@@ -108,7 +108,7 @@ void emulate8080(State *state)
         state->pc += opbytes;
         uint16_t temp_HL = combine_registers(state->h, state->l);
         uint16_t temp_BC = combine_registers(state->b, state->c);
-        state->conditions.carry = get_carry_flag_from_sum(temp_HL, temp_BC);
+        state->conditions.carry = get_carry_flag_from_sum_16b(temp_HL, temp_BC);
         temp_HL += temp_BC;
         state->h = temp_HL >> 8;
         state->l = temp_HL;
@@ -176,7 +176,7 @@ void emulate8080(State *state)
         state->pc += opbytes;
         uint16_t temp_HL = combine_registers(state->h, state->l);
         uint16_t temp_DE = combine_registers(state->d, state->e);
-        state->conditions.carry = get_carry_flag_from_sum(temp_HL, temp_DE);
+        state->conditions.carry = get_carry_flag_from_sum_16b(temp_HL, temp_DE);
         temp_HL += temp_DE;
         state->h = temp_HL >> 8;
         state->l = temp_HL;
@@ -651,7 +651,7 @@ uint8_t get_carry_flag_from_sum(uint8_t val0, uint8_t val1){
     return ((v16_0 & 0x00FF) + (v16_1 & 0x00FF)) > 0x00FF;
 }
 
-uint8_t get_carry_flag_from_sum(uint16_t val0, uint16_t val1){
+uint8_t get_carry_flag_from_sum_16b(uint16_t val0, uint16_t val1){
     // Overload for register pair addition
     // if sum is greater than 2 bytes
     uint32_t v32_0 = val0;
