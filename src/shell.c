@@ -495,18 +495,20 @@ void emulate8080(State *state)
 //    case 0xf4: printf("CP, $%02x%02x", code[2], code[1]); opbytes = 3; break;
     case 0xf5: // PUSH PSW; Push Processor Status Word.
     {
-        // TODO definitely need to test this one. Not super happy with it.. refactor likely.
+        // TODO update state->conditions struct to be in same order as manual?
         state->pc += opbytes;
         state->memory[state->sp - 1] = state->a;
         uint8_t c    = (state->conditions.carry << 0)     & 0b00000001;
-        uint8_t bit1 =                                      0b00000010;
+        uint8_t bit1 =                                      0b00000000;
         uint8_t p    = (state->conditions.parity << 2)    & 0b00000100;
-        uint8_t bit3 =                                      0b00001000;
+        uint8_t bit3 =                                      0b00000000;
         uint8_t ac   = (state->conditions.aux_carry << 4) & 0b00010000;
-        uint8_t bit5 =                                      0b00100000;
+        uint8_t bit5 =                                      0b00000000;
         uint8_t z    = (state->conditions.zero << 6)      & 0b01000000;
         uint8_t s    = (state->conditions.sign << 7)      & 0b10000000;
-        state->memory[state->sp - 2] = c | bit1 | p | bit3 | ac | bit5 | z | s;
+        uint8_t flags = s | z | bit5 | ac | bit3 | p | bit1 | c;
+        // state->memory[state->sp - 2] = c | bit1 | p | bit3 | ac | bit5 | z | s;
+        state->memory[state->sp - 2] = flags;
         state->sp -= 2;
         wait_cycles(11); // per Intel 8080 Programmers Manual.
         break;

@@ -28,4 +28,5 @@ typedef struct State
 } State;
 
 int state_compare(State *state, State *expected_state);
+int state_mem_compare(State *state, State *expected_state);
 State *Init8080(void);

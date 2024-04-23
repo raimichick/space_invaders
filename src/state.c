@@ -3,6 +3,8 @@
 
 #include "../include/state.h"
 
+#define MEM_SIZE 0x10000
+
 State *Init8080(void)
 {
     // Reserve memory for the state struct
@@ -14,7 +16,7 @@ State *Init8080(void)
     }
 
     // Reserve memory for the 16KB of RAM
-    state->memory = malloc(0x10000);
+    state->memory = malloc(MEM_SIZE);
     if (state->memory == NULL)
     {
         printf("Error: State memory allocation failed.\n");
@@ -72,4 +74,15 @@ int state_compare(State *state, State *expected_state)
     if (state->conditions.pad != expected_state->conditions.pad) return 1;
 
     return 0;
+}
+
+int state_mem_compare(State *state, State *expected_state){
+    /** return 1 if NOT equal */
+    for (size_t i = 0; i < MEM_SIZE; i++)
+    {
+        if (state->memory[i] != expected_state->memory[i])
+        {
+            return 1;
+        }
+    }
 }
