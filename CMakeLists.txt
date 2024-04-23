@@ -37,6 +37,9 @@ add_test(NAME mov_m_a COMMAND test_mov_reg_to_mem 0x77)
 # ANA REG Tests
 add_test(NAME ana_a COMMAND test_ana_reg 0xa7)
 
+# XRA REG Tests
+add_test(NAME xra_a COMMAND test_xra_reg 0xaf)
+
 # NICK's TESTS
 add_executable(test_load tests/test_load.c src/state.c src/shell.c)
 

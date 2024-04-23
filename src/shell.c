@@ -647,9 +647,9 @@ void ana_helper(State *state, uint8_t andwith_val)
     state->pc += 1; // increment program counter by 1
     state->a = state->a & andwith_val;
     state->conditions.carry = 0;
-    state->conditions.zero = get_zero_flag(andwith_val);
-    state->conditions.sign = get_sign_flag(andwith_val);
-    state->conditions.parity = get_parity_flag(andwith_val);
+    state->conditions.zero = get_zero_flag(state->a);
+    state->conditions.sign = get_sign_flag(state->a);
+    state->conditions.parity = get_parity_flag(state->a);
 }
 
 void xra_helper(State *state, uint8_t xorwith_val)
@@ -665,9 +665,9 @@ void xra_helper(State *state, uint8_t xorwith_val)
     state->a = state->a ^ xorwith_val;
     state->conditions.carry = 0;
     state->conditions.aux_carry = 0;
-    state->conditions.zero = get_zero_flag(xorwith_val);
-    state->conditions.sign = get_sign_flag(xorwith_val);
-    state->conditions.parity = get_parity_flag(xorwith_val);
+    state->conditions.zero = get_zero_flag(state->a);
+    state->conditions.sign = get_sign_flag(state->a);
+    state->conditions.parity = get_parity_flag(state->a);
 }
 
 void jump_to_addr(State *state, uint8_t *code)
