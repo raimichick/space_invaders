@@ -75,13 +75,3 @@ int state_compare(State *state, State *expected_state)
 
     return 0;
 }
-
-int state_mem_compare(State *state, State *expected_state)
-{
-    /** return 1 if NOT equal */
-    for (size_t i = 0; i < MEM_SIZE; i++)
-    {
-        if (state->memory[i] != expected_state->memory[i]) return 1;
-    }
-    return 0;
-}

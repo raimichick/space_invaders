@@ -18,7 +18,6 @@ int test_POP_D(State *state, State *expected_state)
     state->memory[0x150A] = 0xff;
 
     // Set up the expected register states
-    expected_state->memory[0] = 0xd1; // POP D opcode
     expected_state->pc = 1;
     expected_state->d = 0x0b;
     expected_state->e = 0x33;
@@ -31,7 +30,10 @@ int test_POP_D(State *state, State *expected_state)
     emulate8080(state);
 
     if (state_compare(state, expected_state) == 1) return 1;
-    if (state_mem_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0x1507] != expected_state->memory[0x1507]) return 1;
+    if (state->memory[0x1508] != expected_state->memory[0x1508]) return 1;
+    if (state->memory[0x1509] != expected_state->memory[0x1509]) return 1;
+    if (state->memory[0x150a] != expected_state->memory[0x150a]) return 1;
     return 0;
 }
 
@@ -49,7 +51,6 @@ int test_PUSH_D(State *state, State *expected_state)
     state->memory[0x13a6] = 0xff;
 
     // Set up the expected register states
-    expected_state->memory[0] = 0xd5; // PUSH D opcode
     expected_state->pc = 1;
     expected_state->d = 0x6a;
     expected_state->e = 0x30;
@@ -62,7 +63,10 @@ int test_PUSH_D(State *state, State *expected_state)
     emulate8080(state);
 
     if (state_compare(state, expected_state) == 1) return 1;
-    if (state_mem_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0x13a3] != expected_state->memory[0x13a3]) return 1;
+    if (state->memory[0x13a4] != expected_state->memory[0x13a4]) return 1;
+    if (state->memory[0x13a5] != expected_state->memory[0x13a5]) return 1;
+    if (state->memory[0x13a6] != expected_state->memory[0x13a6]) return 1;
     return 0;
 }
 
@@ -80,7 +84,6 @@ int test_POP_H(State *state, State *expected_state)
     state->memory[0x150A] = 0xff;
 
     // Set up the expected register states
-    expected_state->memory[0] = 0xe1; // POP H opcode
     expected_state->pc = 1;
     expected_state->h = 0x0b;
     expected_state->l = 0x33;
@@ -93,7 +96,10 @@ int test_POP_H(State *state, State *expected_state)
     emulate8080(state);
 
     if (state_compare(state, expected_state) == 1) return 1;
-    if (state_mem_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0x1507] != expected_state->memory[0x1507]) return 1;
+    if (state->memory[0x1508] != expected_state->memory[0x1508]) return 1;
+    if (state->memory[0x1509] != expected_state->memory[0x1509]) return 1;
+    if (state->memory[0x150a] != expected_state->memory[0x150a]) return 1;
     return 0;
 }
 
@@ -111,7 +117,6 @@ int test_PUSH_H(State *state, State *expected_state)
     state->memory[0x13a6] = 0xff;
 
     // Set up the expected register states
-    expected_state->memory[0] = 0xe5; // PUSH H opcode
     expected_state->pc = 1;
     expected_state->h = 0x6a;
     expected_state->l = 0x30;
@@ -124,7 +129,10 @@ int test_PUSH_H(State *state, State *expected_state)
     emulate8080(state);
 
     if (state_compare(state, expected_state) == 1) return 1;
-    if (state_mem_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0x13a3] != expected_state->memory[0x13a3]) return 1;
+    if (state->memory[0x13a4] != expected_state->memory[0x13a4]) return 1;
+    if (state->memory[0x13a5] != expected_state->memory[0x13a5]) return 1;
+    if (state->memory[0x13a6] != expected_state->memory[0x13a6]) return 1;
     return 0;
 }
 
@@ -139,7 +147,6 @@ int test_POP_PSW(State *state, State *expected_state)
     state->memory[0x2c01] = 0xff;
 
     // Set up the expected register states
-    expected_state->memory[0] = 0xf1; // POP PSW opcode
     expected_state->pc = 1;
     expected_state->a = 0xff;
     expected_state->sp = 0x2c02;
@@ -154,7 +161,8 @@ int test_POP_PSW(State *state, State *expected_state)
     emulate8080(state);
 
     if (state_compare(state, expected_state) == 1) return 1;
-    if (state_mem_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0x2c00] != expected_state->memory[0x2c00]) return 1;
+    if (state->memory[0x2c01] != expected_state->memory[0x2c01]) return 1;
     return 0;
 }
 
@@ -163,8 +171,8 @@ int test_PUSH_PSW(State *state, State *expected_state)
     // Load the instruction and set up the memory
     // Example from pg 23 of the 8080 Programmers Manual.
     state->memory[0] = 0xf5; // PUSH PSW opcode
-    state->memory[0x5029] = 0x00;
     state->memory[0x5028] = 0x00;
+    state->memory[0x5029] = 0x00;
     state->a = 0x1f;
     state->sp = 0x502a;
     state->conditions.carry = 1;
@@ -174,14 +182,13 @@ int test_PUSH_PSW(State *state, State *expected_state)
     state->conditions.aux_carry = 0;
 
     // Set up the expected register states
-    expected_state->memory[0] = 0xf5; // PUSH PSW opcode
     expected_state->pc = 1;
     expected_state->a = 0x1f;
     expected_state->sp = 0x5028;
-    expected_state->memory[0x5029] = 0x1f;
     expected_state->memory[0x5028] =
         0x45; // with cur struct layout and implementation, the pad bits are set
               // to zero so the correct hex is 45.
+    expected_state->memory[0x5029] = 0x1f;
     // expected_state->memory[0x5028] = 0x47; // equivalent to the flag
     // settings, tho makes assumptions about the pad bits
     expected_state->conditions.carry = 1;
@@ -192,7 +199,8 @@ int test_PUSH_PSW(State *state, State *expected_state)
 
     emulate8080(state);
     if (state_compare(state, expected_state) == 1) return 1;
-    if (state_mem_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0x5029] != expected_state->memory[0x5029]) return 1;
+    if (state->memory[0x5028] != expected_state->memory[0x5028]) return 1;
     return 0;
 }
 /* Tests for loading values into registers
