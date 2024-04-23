@@ -245,18 +245,34 @@ void emulate8080(State *state)
 //    case 0x74: printf("MOV M,H");  break;
 //    case 0x75: printf("MOV M,L");  break;
 //    case 0x76: printf("HLT");  break;
-//    case 0x77: printf("MOV M,A");  break;
+    case 0x77:  // MOV M,A
+    {
+        mov_reg_to_mem(state, &state->a);
+        break;
+    }
 //    case 0x78: printf("MOV A,B");  break;
 //    case 0x79: printf("MOV A,C");  break;
     case 0x7a: // MOV A,D
     {
-        mov_reg_to_reg(state, &state->a, &state->c);
+        mov_reg_to_reg(state, &state->a, &state->d);
         break;
     }
-//    case 0x7b: printf("MOV A,E");  break;
-//    case 0x7c: printf("MOV A,H");  break;
+    case 0x7b:  // MOV A,E
+    {
+        mov_reg_to_reg(state, &state->a, &state->e);
+        break;
+    }
+    case 0x7c:  //MOV A,H
+    {
+        mov_reg_to_reg(state, &state->a, &state->h);
+        break;
+    }
 //    case 0x7d: printf("MOV A,L");  break;
-//    case 0x7e: printf("MOV A,M");  break;
+    case 0x7e:  // MOV A,M
+    {
+        mov_mem_to_reg(state, &state->a);
+        break;
+    }
 //    case 0x7f: printf("MOV A,A");  break;
 //    case 0x80: printf("ADD B");  break;
 //    case 0x81: printf("ADD C"); break;
@@ -297,7 +313,11 @@ void emulate8080(State *state)
 //    case 0xa4: printf("ANA H"); break;
 //    case 0xa5: printf("ANA L"); break;
 //    case 0xa6: printf("ANA M"); break;
-//    case 0xa7: printf("ANA A"); break;
+    case 0xa7:  // ANA A
+    {
+        ana_helper(state, state->a);
+        break;
+    }
 //    case 0xa8: printf("XRA B"); break;
 //    case 0xa9: printf("XRA C"); break;
 //    case 0xaa: printf("XRA D"); break;
@@ -305,7 +325,11 @@ void emulate8080(State *state)
 //    case 0xac: printf("XRA H"); break;
 //    case 0xad: printf("XRA L"); break;
 //    case 0xae: printf("XRA M"); break;
-//    case 0xaf: printf("XRA A"); break;
+    case 0xaf:  // XRA A
+    {
+        xra_helper(state, state->a);
+        break;
+    }
 //    case 0xb0: printf("ORA B"); break;
 //    case 0xb1: printf("ORA C"); break;
 //    case 0xb2: printf("ORA D"); break;
@@ -323,11 +347,31 @@ void emulate8080(State *state)
 //    case 0xbe: printf("CMP M"); break;
 //    case 0xbf: printf("CMP A"); break;
 //    case 0xc0: printf("RNZ"); break;
-//    case 0xc1: printf("POP B"); break;
-//    case 0xc2: printf("JNZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-//    case 0xc3: printf("JMP, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xc1:  // POP B; Pops stack into BC register pair
+    {
+        state->pc += opbytes;
+        pop_stack_to_register_pair(state, &state->b, &state->c);
+        break;
+    }
+    case 0xc2:  //JNZ, $%02x%02x, code[2], code[1]
+    {
+        opbytes = 3;
+        if (state->conditions.zero == 0) jump_to_addr(state, code);
+        else state->pc += opbytes;
+        break;
+    }
+    case 0xc3:  // JMP, $%02x%02x", code[2], code[1])
+    {
+        jump_to_addr(state, code);
+        break;
+    }
 //    case 0xc4: printf("CNZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-//    case 0xc5: printf("PUSH B"); break;
+    case 0xc5:  // PUSH B
+    {
+        state->pc += opbytes;
+        push_register_pair_to_stack(state, state->b, state->c);
+        break;
+    }
 //    case 0xc6: printf("ADI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xc7: printf("RST 0"); break;
 //    case 0xc8: printf("RZ"); break;
@@ -565,8 +609,79 @@ void pop_stack_to_register_pair(State* state, uint8_t* rh, uint8_t* rl)
 
 void mov_reg_to_reg(State *state, uint8_t *to, uint8_t *from)
 {
-    state->pc += 1;
+    /* Copies the value stored in the from register address to the to register address
+     * Increments the program counter by 1
+    */
+    state->pc += 1; // increment program counter by 1
     *to = *from;
+}
+
+void mov_reg_to_mem(State *state, uint8_t *from)
+{
+    /* Copies the value stored in the from register address into memory
+     * The memory address is determined by registers H (most significant bits
+     * and L (least significant bits)
+     * Increments the program counter by 1
+    */
+    state->pc += 1; // increment program counter by 1
+    uint16_t mem_offset = (state->h << 8) | state->l;
+    state->memory[mem_offset] = *from;
+}
+
+void mov_mem_to_reg(State *state, uint8_t *to)
+{
+    /* Copies the value stored in memory into the to register address.
+     * The memory address is determined by registers H (most significant bits
+     * and L (least significant bits)
+     * Increments the program counter by 1
+    */
+    state->pc += 1; // increment program counter by 1
+    uint16_t mem_offset = (state->h << 8) | state->l;
+    *to = state->memory[mem_offset];
+}
+
+void ana_helper(State *state, uint8_t andwith_val)
+{
+    /* Helper function for ANA opcodes - performs logical AND on the
+     * accumulator and provided value andwith_val
+     * Sets carry to 0
+     * Updates zero, sign, and parity (aux_carry not mentioned in 8080
+     * manual)
+     * Increments the program counter by 1
+    */
+    state->pc += 1; // increment program counter by 1
+    state->a = state->a & andwith_val;
+    state->conditions.carry = 0;
+    state->conditions.zero = get_zero_flag(andwith_val);
+    state->conditions.sign = get_sign_flag(andwith_val);
+    state->conditions.parity = get_parity_flag(andwith_val);
+}
+
+void xra_helper(State *state, uint8_t xorwith_val)
+{
+    /* Helper function for XRA opcodes - performs logical XOR on the
+     * accumulator and provided value xorwith_val
+     * Sets carry and aux_carry to 0 - manual says carry should be 0, unclear
+     * about aux_carry
+     * Updates zero, sign, and parity
+     * Increments the program counter by 1
+    */
+    state->pc += 1;
+    state->a = state->a ^ xorwith_val;
+    state->conditions.carry = 0;
+    state->conditions.aux_carry = 0;
+    state->conditions.zero = get_zero_flag(xorwith_val);
+    state->conditions.sign = get_sign_flag(xorwith_val);
+    state->conditions.parity = get_parity_flag(xorwith_val);
+}
+
+void jump_to_addr(State *state, uint8_t *code)
+{
+    /* Helper function for JUMP opcodes
+     * Sets program counter to the address stored in the next two memory indexes
+     * - higher-order bits in code[2] and lower-order bits in code[1]
+    */
+    state->pc = (code[2] << 8) | code[1];
 }
 
 void wait_cycles(int clockCycles)
