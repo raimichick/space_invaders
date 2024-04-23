@@ -11,6 +11,24 @@ add_executable(space_invaders_8080 src/main.c
 
 enable_testing()
 
+# DAMIAN's TESTS
+# Add your test file as an executable, first argument is executable name and second is path to file to convert to executable
+add_executable(mov_reg_to_reg tests/test_mov_reg_to_reg.c)
+add_executable(test_mov_mem_to_reg tests/test_mov_mem_to_reg.c)
+add_executable(test_mov_reg_to_mem tests/test_mov_reg_to_mem.c)
+
+# MOV REG to REG Tests - create a unique name, use the opcode as the first argument for the executable (COMMAND function_name arg1)
+add_test(NAME mov_a_d COMMAND mov_reg_to_reg 0x7a)
+add_test(NAME mov_a_e COMMAND mov_reg_to_reg 0x7b)
+add_test(NAME mov_a_h COMMAND mov_reg_to_reg 0x7c)
+
+# MOV MEM to REG Tests - create a unique name, use the opcode as the first argument for the executable (COMMAND function_name arg1)
+add_test(NAME mov_a_m COMMAND test_mov_mem_to_reg 0x7e)
+
+# MOV REG to MEM Tests - create a unique name, use the opcode as the first argument for the executable (COMMAND function_name arg1)
+add_test(NAME mov_m_a COMMAND test_mov_reg_to_mem 0x77)
+
+# NICK's TESTS
 add_executable(test_test tests/test_test.c)
 add_executable(test_load tests/test_load.c src/state.c)
 
@@ -18,5 +36,3 @@ add_test(NAME test1 COMMAND test_test 1)
 add_test(NAME test_LXI_B COMMAND test_load 0x01)
 add_test(NAME test_LXI_D COMMAND test_load 0x11)
 add_test(NAME test_LDAX_D COMMAND test_load 0x1a)
-
-
