@@ -1,3 +1,4 @@
+#pragma once
 #include <stdint.h>
 
 typedef struct Conditions
@@ -27,3 +28,4 @@ typedef struct State
 } State;
 
 int state_compare(State *state, State *expected_state);
+State *Init8080(void);

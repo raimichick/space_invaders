@@ -1,4 +1,5 @@
-#include "../src/shell.c"
+#include "../include/shell.h"
+#include "../include/state.h"
 
 #include <string.h>
 

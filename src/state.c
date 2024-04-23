@@ -1,4 +1,50 @@
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "../include/state.h"
+
+State *Init8080(void)
+{
+    // Reserve memory for the state struct
+    State *state = calloc(1, sizeof(State));
+    if (state == NULL)
+    {
+        printf("Error: State allocation failed.\n");
+        exit(1);
+    }
+
+    // Reserve memory for the 16KB of RAM
+    state->memory = malloc(0x10000);
+    if (state->memory == NULL)
+    {
+        printf("Error: State memory allocation failed.\n");
+        free(state);
+        exit(1);
+    }
+
+    // Clear all of the registers and set the initial program counter
+    state->a = 0;
+    state->b = 0;
+    state->c = 0;
+    state->e = 0;
+    state->h = 0;
+    state->l = 0;
+
+    state->conditions.zero = 0;
+    state->conditions.sign = 0;
+    state->conditions.parity = 0;
+    state->conditions.carry = 0;
+    state->conditions.aux_carry = 0;
+    state->conditions.pad = 0;
+
+    // The program ROM starts at 0x0000 in memory
+    state->pc = 0x0000;
+
+    // Stack pointer is initialized by the ROM after start
+    state->sp = 0x0000;
+
+    return state;
+}
 
 int state_compare(State *state, State *expected_state)
 {
