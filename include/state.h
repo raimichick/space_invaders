@@ -25,3 +25,5 @@ typedef struct State
     Conditions conditions;
     uint8_t int_enable;
 } State;
+
+int state_compare(State *state, State *expected_state);

@@ -1,6 +1,6 @@
 // #include "../include/disassemble8080p.h"
 #include "../include/shell.h"
-#include "../include/structs.h"
+#include "../include/state.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -66,17 +66,16 @@ void emulate8080(State *state)
     {
     case 0x00: // NOP
     {
-        state->pc += 1;
+        state->pc += opbytes;
         wait_cycles(4);
         break;
     }
-    case 0x01: // LXI B Code[2] Code[1]     B <- byte 3, C <- byte 2
+    case 0x01: // LXI B,D16     B <- Code[2], C <- Code[1]
     {
-        state->pc += 1;
-        state->c = state->memory[state->pc];
-        state->pc += 1;
-        state->b = state->memory[state->pc];
-        state->pc += 1;
+        opbytes = 3;
+        state->pc += opbytes;
+        state->b = code[2];
+        state->c = code[1];
         wait_cycles(10);
         break;
     }
@@ -85,57 +84,86 @@ void emulate8080(State *state)
 //    case 0x04: printf("INR B"); break;
     case 0x05: // DCR B     B <- B-1
     {
+        state->pc += opbytes;
+        state->conditions.aux_carry = !get_aux_carry_flag_from_sum(state->b, 0xFF);
         state->b -= 1;
         state->conditions.zero = get_zero_flag(state->b);
         state->conditions.sign = get_sign_flag(state->b);
         state->conditions.parity = get_parity_flag(state->b);
-        state->pc += 1;
         wait_cycles(5);
         break;
     }
-    case 0x06: // MVI B,D8     B <- byte 2
+    case 0x06: // MVI B,D8     B <- code[1]
     {
-        state->pc += 1;
-        state->b = state->memory[state->pc];
-        state->pc += 1;
+        opbytes = 2;
+        state->pc += opbytes;
+        state->b = code[1];
         wait_cycles(7);
         break;
     }
 //    case 0x07: printf("RLC"); break;
 //    case 0x08: printf("-"); break;
-    case 0x09: // DAD B
+    case 0x09: // DAD B       HL = HL + BC
     {
-        printf("DAD B");
+        state->pc += opbytes;
+        uint16_t temp_HL = combine_registers(state->h, state->l);
+        uint16_t temp_BC = combine_registers(state->b, state->c);
+        state->conditions.carry = get_carry_flag_from_sum_16b(temp_HL, temp_BC);
+        temp_HL += temp_BC;
+        state->h = temp_HL >> 8;
+        state->l = temp_HL;
+        wait_cycles(10);
         break;
     }
 //    case 0x0a: printf("LDAX B"); break;
 //    case 0x0b: printf("DCX B"); break;
 //    case 0x0c: printf("INR C"); break;
-    case 0x0d: // DCR C
+    case 0x0d: // DCR C     C <- C-1
     {
-        printf("DCR C");
+        state->pc += opbytes;
+        state->conditions.aux_carry = !get_aux_carry_flag_from_sum(state->c, 0xFF);
+        state->c -= 1;
+        state->conditions.zero = get_zero_flag(state->c);
+        state->conditions.sign = get_sign_flag(state->c);
+        state->conditions.parity = get_parity_flag(state->c);
+        wait_cycles(5);
         break;
     }
-    case 0x0e: // MVI C, Code[1]
+    case 0x0e: // MVI C,D8      C <- code[1]
     {
-        printf("MVI C,D8");
+        opbytes = 2;
+        state->pc += opbytes;
+        state->c = code[1];
+        wait_cycles(7);
         break;
     }
-    case 0x0f: // RRC
+    case 0x0f: // RRC       Set Carry = A0, then rotate A right
     {
-        printf("RRC");
+        state->pc += opbytes;
+        state->conditions.carry = state->a & 0b00000001;
+        state->a = (state->a >> 1) + (state->conditions.carry << 7);
+        wait_cycles(4);
         break;
     }
 //    case 0x10: printf("-"); break;
-    case 0x11: // LXI D Code[2] Code[1]
+    case 0x11: // LXI D,D16     D <- code[2], E <- code[1]
     {
-        printf("LXI D,D16");
+        opbytes = 3;
+        state->pc += opbytes;
+        state->d = code[2];
+        state->e = code[1];
+        wait_cycles(10);
         break;
     }
 //    case 0x12: printf("STAX D"); break;
-    case 0x13: // INX D
+    case 0x13: // INX D      DE <- DE + 1
     {
-        printf("INX D");
+        state->pc += opbytes;
+        uint16_t temp_DE = combine_registers(state->d, state->e);
+        temp_DE += 1;
+        state->d = temp_DE >> 8;
+        state->e = temp_DE;
+        wait_cycles(5);
         break;
     }
 //    case 0x14: printf("INR D"); break;
@@ -143,14 +171,24 @@ void emulate8080(State *state)
 //    case 0x16: printf("MVI D, D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0x17: printf("RAL"); break;
 //    case 0x18: printf("-"); break;
-    case 0x19: // DAD D
+    case 0x19: // DAD D     HL = HL + DE
     {
-        printf("DAD D");
+        state->pc += opbytes;
+        uint16_t temp_HL = combine_registers(state->h, state->l);
+        uint16_t temp_DE = combine_registers(state->d, state->e);
+        state->conditions.carry = get_carry_flag_from_sum_16b(temp_HL, temp_DE);
+        temp_HL += temp_DE;
+        state->h = temp_HL >> 8;
+        state->l = temp_HL;
+        wait_cycles(10);
         break;
     }
-    case 0x1a: // LDAX D
+    case 0x1a: // LDAX D      A <- value at memory[DE]
     {
-        printf("LDAX D");
+        state->pc += opbytes;
+        uint16_t temp_DE = combine_registers(state->d, state->e);
+        state->a = state->memory[temp_DE];
+        wait_cycles(7);
         break;
     }
 //    case 0x1b: printf("DCX D"); break;
@@ -721,11 +759,19 @@ uint8_t get_parity_flag(uint8_t register_value)
     return num_one_bits % 2 == 0;
 }
 
-uint8_t get_carry_flag_from_sum(uint8_t val0, uint8_t val1){
+uint8_t get_carry_flag_from_sum_8b(uint8_t val0, uint8_t val1){
     // if sum is greater than max byte. ChatGPT helped me with this one.
     uint16_t v16_0 = val0;
     uint16_t v16_1 = val1;
     return ((v16_0 & 0x00FF) + (v16_1 & 0x00FF)) > 0x00FF;
+}
+
+uint8_t get_carry_flag_from_sum_16b(uint16_t val0, uint16_t val1){
+    // Overload for register pair addition
+    // if sum is greater than 2 bytes
+    uint32_t v32_0 = val0;
+    uint32_t v32_1 = val1;
+    return v32_0 + v32_1 > 0xFFFF;
 }
 
 uint8_t get_aux_carry_flag_from_sum(uint8_t val0, uint8_t val1){
@@ -746,4 +792,12 @@ void subtract_instruction(State* state, uint8_t minuend, uint8_t subtrahend)
     // TODO consider changer param name from "register_value".
     state->conditions.sign = get_sign_flag(res);
     state->conditions.parity = get_parity_flag(res);
+}
+
+uint16_t combine_registers(uint8_t reg1, uint8_t reg2)
+{
+    uint16_t reg1_16 = reg1;
+    uint16_t reg2_16 = reg2;
+
+    return (reg1_16 << 8) + reg2_16;
 }
