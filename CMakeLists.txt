@@ -17,6 +17,11 @@ enable_testing()
 add_executable(mov_reg_to_reg tests/test_mov_reg_to_reg.c src/state.c src/shell.c)
 add_executable(test_mov_mem_to_reg tests/test_mov_mem_to_reg.c src/state.c src/shell.c)
 add_executable(test_mov_reg_to_mem tests/test_mov_reg_to_mem.c src/state.c src/shell.c)
+add_executable(test_return tests/test_return.c src/state.c src/shell.c)
+add_executable(test_adi tests/test_adi.c src/state.c src/shell.c)
+add_executable(test_jump tests/test_jump.c src/state.c src/shell.c)
+add_executable(test_xra_reg tests/test_xra_reg.c src/state.c src/shell.c)
+add_executable(test_ana_reg tests/test_ana_reg.c src/state.c src/shell.c)
 
 # MOV REG to REG Tests - create a unique name, use the opcode as the first argument for the executable (COMMAND function_name arg1)
 add_test(NAME mov_a_d COMMAND mov_reg_to_reg 0x7a)
@@ -29,6 +34,9 @@ add_test(NAME mov_a_m COMMAND test_mov_mem_to_reg 0x7e)
 # MOV REG to MEM Tests - create a unique name, use the opcode as the first argument for the executable (COMMAND function_name arg1)
 add_test(NAME mov_m_a COMMAND test_mov_reg_to_mem 0x77)
 
+# ANA REG Tests
+add_test(NAME ana_a COMMAND test_ana_reg 0xa7)
+
 # NICK's TESTS
 add_executable(test_load tests/test_load.c src/state.c src/shell.c)
 
@@ -36,3 +44,4 @@ add_executable(test_load tests/test_load.c src/state.c src/shell.c)
 add_test(NAME test_LXI_B COMMAND test_load 0x01)
 add_test(NAME test_LXI_D COMMAND test_load 0x11)
 add_test(NAME test_LDAX_D COMMAND test_load 0x1a)
+
