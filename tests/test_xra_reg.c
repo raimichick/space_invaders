@@ -3,7 +3,6 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <string.h>
 
 int test_XRA_A(State *state, State *expected_state)
 {
