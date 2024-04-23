@@ -29,7 +29,6 @@ add_test(NAME mov_a_m COMMAND test_mov_mem_to_reg 0x7e)
 add_test(NAME mov_m_a COMMAND test_mov_reg_to_mem 0x77)
 
 # NICK's TESTS
-add_executable(test_test tests/test_test.c)
 add_executable(test_load tests/test_load.c src/state.c)
 
 add_test(NAME test1 COMMAND test_test 1)
