@@ -530,7 +530,7 @@ void emulate8080(State *state)
     {
         opbytes = 2;
         state->pc += opbytes;
-        subtract(state, state->a, code[1]);
+        subtract_8b(state, state->a, code[1]);
         wait_cycles(7); // per Intel 8080 Programmers Manual.
         break;
     }
@@ -738,7 +738,7 @@ uint8_t get_aux_carry_flag_from_sum(uint8_t val0, uint8_t val1){
     return ((val0 & 0x0F) + (val1 & 0x0F)) > 0x0F;
 }
 
-void subtract(struct State *state, uint8_t minuend, uint8_t subtrahend)
+void subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend)
 {
     // NOTE: The carry flag is cleared if there's a carry, and set if there's no carry.
         // This is opposite of the addition instructions.
