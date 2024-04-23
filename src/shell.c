@@ -762,6 +762,6 @@ uint16_t combine_bytes_to_word(uint8_t hi_byte, uint8_t lo_byte)
 
 void split_word_to_bytes(uint16_t word, uint8_t *hi_byte, uint8_t *lo_byte)
 {
-    *hi_byte = (word >> 8) | 0xFF;
-    *lo_byte = word | 0xFF;
+    *hi_byte = word >> 8;
+    *lo_byte = word;
 }
