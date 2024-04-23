@@ -7,7 +7,7 @@ add_executable(space_invaders_8080 src/main.c
         include/foo.h
         src/disassemble8080p.c
         src/shell.c
-        include/structs.h)
+        include/state.h)
 
 enable_testing()
 

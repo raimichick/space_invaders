@@ -18,6 +18,6 @@ uint16_t combine_registers(uint8_t reg1, uint8_t reg2);
 uint8_t get_sign_flag(uint8_t register_value);
 uint8_t get_zero_flag(uint8_t register_value);
 uint8_t get_parity_flag(uint8_t register_value);
-uint8_t get_carry_flag_from_sum(uint8_t val0, uint8_t val1);
+uint8_t get_carry_flag_from_sum_8b(uint8_t val0, uint8_t val1);
 uint8_t get_carry_flag_from_sum_16b(uint16_t val0, uint16_t val1);
 uint8_t get_aux_carry_flag_from_sum(uint8_t val0, uint8_t val1);

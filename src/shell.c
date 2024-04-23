@@ -1,6 +1,6 @@
 // #include "../include/disassemble8080p.h"
 #include "../include/shell.h"
-#include "../include/structs.h"
+#include "../include/state.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -85,7 +85,7 @@ void emulate8080(State *state)
     case 0x05: // DCR B     B <- B-1
     {
         state->pc += opbytes;
-        state->conditions.aux_carry = get_aux_carry_flag_from_sum(state->b, 0xFF);
+        state->conditions.aux_carry = !get_aux_carry_flag_from_sum(state->b, 0xFF);
         state->b -= 1;
         state->conditions.zero = get_zero_flag(state->b);
         state->conditions.sign = get_sign_flag(state->b);
@@ -121,7 +121,7 @@ void emulate8080(State *state)
     case 0x0d: // DCR C     C <- C-1
     {
         state->pc += opbytes;
-        state->conditions.aux_carry = get_aux_carry_flag_from_sum(state->c, 0xFF);
+        state->conditions.aux_carry = !get_aux_carry_flag_from_sum(state->c, 0xFF);
         state->c -= 1;
         state->conditions.zero = get_zero_flag(state->c);
         state->conditions.sign = get_sign_flag(state->c);
@@ -644,7 +644,7 @@ uint8_t get_parity_flag(uint8_t register_value)
     return num_one_bits % 2 == 0;
 }
 
-uint8_t get_carry_flag_from_sum(uint8_t val0, uint8_t val1){
+uint8_t get_carry_flag_from_sum_8b(uint8_t val0, uint8_t val1){
     // if sum is greater than max byte. ChatGPT helped me with this one.
     uint16_t v16_0 = val0;
     uint16_t v16_1 = val1;
