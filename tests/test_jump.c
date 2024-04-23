@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 int test_JMP(State *state, State *expected_state)
 {
@@ -12,7 +13,7 @@ int test_JMP(State *state, State *expected_state)
     state->memory[2] = 0x00;
 
     // Set expected state
-    state->pc = 5;
+    expected_state->pc = 5;
 
     emulate8080(state);
 

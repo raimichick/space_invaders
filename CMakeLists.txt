@@ -40,6 +40,9 @@ add_test(NAME ana_a COMMAND test_ana_reg 0xa7)
 # XRA REG Tests
 add_test(NAME xra_a COMMAND test_xra_reg 0xaf)
 
+# Jump Tests
+add_test(NAME jmp COMMAND test_jump 0xc3)
+
 # NICK's TESTS
 add_executable(test_load tests/test_load.c src/state.c src/shell.c)
 
