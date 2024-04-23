@@ -63,8 +63,8 @@ void emulate8080(State *state)
     case 0x09: // DAD B       HL = HL + BC
     {
         state->pc += opbytes;
-        uint16_t temp_HL = combine_registers(state->h, state->l);
-        uint16_t temp_BC = combine_registers(state->b, state->c);
+        uint16_t temp_HL = combine_bytes_to_word(state->h, state->l);
+        uint16_t temp_BC = combine_bytes_to_word(state->b, state->c);
         state->conditions.carry = get_carry_flag_from_sum_16b(temp_HL, temp_BC);
         temp_HL += temp_BC;
         state->h = temp_HL >> 8;
@@ -116,7 +116,7 @@ void emulate8080(State *state)
     case 0x13: // INX D      DE <- DE + 1
     {
         state->pc += opbytes;
-        uint16_t temp_DE = combine_registers(state->d, state->e);
+        uint16_t temp_DE = combine_bytes_to_word(state->d, state->e);
         temp_DE += 1;
         state->d = temp_DE >> 8;
         state->e = temp_DE;
@@ -131,8 +131,8 @@ void emulate8080(State *state)
     case 0x19: // DAD D     HL = HL + DE
     {
         state->pc += opbytes;
-        uint16_t temp_HL = combine_registers(state->h, state->l);
-        uint16_t temp_DE = combine_registers(state->d, state->e);
+        uint16_t temp_HL = combine_bytes_to_word(state->h, state->l);
+        uint16_t temp_DE = combine_bytes_to_word(state->d, state->e);
         state->conditions.carry = get_carry_flag_from_sum_16b(temp_HL, temp_DE);
         temp_HL += temp_DE;
         state->h = temp_HL >> 8;
@@ -143,7 +143,7 @@ void emulate8080(State *state)
     case 0x1a: // LDAX D      A <- value at memory[DE]
     {
         state->pc += opbytes;
-        uint16_t temp_DE = combine_registers(state->d, state->e);
+        uint16_t temp_DE = combine_bytes_to_word(state->d, state->e);
         state->a = state->memory[temp_DE];
         wait_cycles(7);
         break;
@@ -374,12 +374,12 @@ void emulate8080(State *state)
 //    case 0xca: printf("JZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xcb: printf("-"); break;
 //    case 0xcc: printf("CZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-    case 0xcd: // CALL code[2], code[1]; Push next seq. instr. to stack. Set sp to given args.
+    case 0xcd: // CALL code[2], code[1]; Push next seq. instr. to stack. Set pc to given args.
     {
         opbytes = 3;
         state->pc += opbytes;
         push_program_counter_to_stack(state);
-        state->pc = code[2] << 8 | code[1];
+        state->pc = combine_bytes_to_word(code[2], code[1]);
         wait_cycles(17); // per Intel 8080 Programmers Manual
         break;
     }
@@ -528,7 +528,7 @@ void emulate8080(State *state)
     {
         opbytes = 2;
         state->pc += opbytes;
-        subtract_instruction(state, state->a, code[1]);
+        subtract(state, state->a, code[1]);
         wait_cycles(7); // per Intel 8080 Programmers Manual.
         break;
     }
@@ -736,7 +736,7 @@ uint8_t get_aux_carry_flag_from_sum(uint8_t val0, uint8_t val1){
     return ((val0 & 0x0F) + (val1 & 0x0F)) > 0x0F;
 }
 
-void subtract_instruction(State* state, uint8_t minuend, uint8_t subtrahend)
+void subtract(struct State *state, uint8_t minuend, uint8_t subtrahend)
 {
     // NOTE: The carry flag is cleared if there's a carry, and set if there's no carry.
         // This is opposite of the addition instructions.
@@ -751,10 +751,15 @@ void subtract_instruction(State* state, uint8_t minuend, uint8_t subtrahend)
     state->conditions.parity = get_parity_flag(res);
 }
 
-uint16_t combine_registers(uint8_t reg1, uint8_t reg2)
+uint16_t combine_bytes_to_word(uint8_t hi_byte, uint8_t lo_byte)
 {
-    uint16_t reg1_16 = reg1;
-    uint16_t reg2_16 = reg2;
+    uint16_t hi_byte_16 = hi_byte;
+    uint16_t lo_byte_16 = lo_byte;
+    return (hi_byte_16 << 8) + lo_byte_16;
+}
 
-    return (reg1_16 << 8) + reg2_16;
+void split_word_to_bytes(uint16_t word, uint8_t *hi_byte, uint8_t *lo_byte)
+{
+    *hi_byte = (word >> 8) | 0xFF;
+    *lo_byte = word | 0xFF;
 }

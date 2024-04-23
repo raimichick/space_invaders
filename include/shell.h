@@ -16,10 +16,10 @@ void mov_mem_to_reg(struct State *state, uint8_t *to);
 void ana_helper(struct State *state, uint8_t andwith_val);
 void xra_helper(struct State *state, uint8_t xorwith_val);
 void jump_to_addr(struct State *state, uint8_t *code);
-void subtract_instruction(struct State *state, uint8_t minuend,
-                          uint8_t subtrahend);
+void subtract(struct State *state, uint8_t minuend, uint8_t subtrahend);
 void wait_cycles(int clockCycles);
-uint16_t combine_registers(uint8_t reg1, uint8_t reg2);
+uint16_t combine_bytes_to_word(uint8_t hi_byte, uint8_t lo_byte);
+void split_word_to_bytes(uint16_t word, uint8_t *hi_byte, uint8_t *lo_byte);
 uint8_t get_sign_flag(uint8_t register_value);
 uint8_t get_zero_flag(uint8_t register_value);
 uint8_t get_parity_flag(uint8_t register_value);
