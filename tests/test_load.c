@@ -1,6 +1,7 @@
 #include "../include/shell.h"
 #include "../include/state.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 int test_LXI_B(State *state, State *expected_state)

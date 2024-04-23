@@ -36,3 +36,12 @@ add_executable(test_load tests/test_load.c src/state.c src/shell.c)
 add_test(NAME test_LXI_B COMMAND test_load 0x01)
 add_test(NAME test_LXI_D COMMAND test_load 0x11)
 add_test(NAME test_LDAX_D COMMAND test_load 0x1a)
+
+# CRAIG's TESTS
+add_executable(test_push_pop tests/test_push_pop.c src/state.c src/shell.c)
+add_test(NAME test_POP_D, COMMAND test_push_pop 0xd1)
+add_test(NAME test_PUSH_D, COMMAND test_push_pop 0xd5)
+add_test(NAME test_POP_H, COMMAND test_push_pop 0xe1)
+add_test(NAME test_PUSH_H, COMMAND test_push_pop 0xe5)
+add_test(NAME test_POP_PSW, COMMAND test_push_pop 0xf1)
+add_test(NAME test_PUSH_PSW, COMMAND test_push_pop 0xf5)
