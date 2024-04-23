@@ -41,6 +41,7 @@ add_test(NAME ana_a COMMAND test_ana_reg 0xa7)
 add_test(NAME xra_a COMMAND test_xra_reg 0xaf)
 
 # Jump Tests
+add_test(NAME jnz COMMAND test_jump 0xc2)
 add_test(NAME jmp COMMAND test_jump 0xc3)
 
 # NICK's TESTS

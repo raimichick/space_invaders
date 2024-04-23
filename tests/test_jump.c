@@ -3,7 +3,6 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <string.h>
 
 int test_JMP(State *state, State *expected_state)
 {
@@ -23,9 +22,19 @@ int test_JMP(State *state, State *expected_state)
 int test_JNZ(State *state, State *expected_state)
 {
     // Set state
+    state->memory[0] = 0xc2;
+    state->memory[1] = 0x06;
+    state->memory[2] = 0x00;
+    state->memory[3] = 0xc2;
+    state->memory[4] = 0xff;
+    state->memory[5] = 0x11;
+    state->conditions.zero = 1; // don't jump
 
-    // Set expected state
+    // Set expected state - after two jumps
+    expected_state->pc = 0x11ff;
 
+    emulate8080(state);
+    state->conditions.zero = 0; // jump to location in memory
     emulate8080(state);
 
     return state_compare(state, expected_state);
