@@ -191,8 +191,9 @@ void emulate8080(State *state)
     case 0x29: // DAD H  HL+HL
     {
         state->pc += opbytes;
-        uint16_t temp_HL = combine_bytes_to_word(state->h, state->l);
-        state->conditions.carry = get_carry_flag_from_sum_16b(temp_HL);
+        uint16_t temp_HL1 = combine_bytes_to_word(state->h, state->l);
+        uint16_t temp_HL2 = combine_bytes_to_word(state->h, state->l);
+        state->conditions.carry = get_carry_flag_from_sum_16b(temp_HL1, temp_HL2);
         state->h = temp_HL >> 8;
         state->l = temp_HL;
         wait_cycles(10);
@@ -209,8 +210,7 @@ void emulate8080(State *state)
     {
         opbytes = 3;
         state->pc += opbytes;
-        state->s = code[2];
-        state->p = code[1];
+        state->sp = (opcode[2]<<8) | opcode[1];
         wait_cycles(10);
         break;
     }   
@@ -313,7 +313,7 @@ void emulate8080(State *state)
 //    case 0x6e: printf("MOV L,M");  break;
    case 0x6f: // MOV L, A 
    {
-       mov_reg_to_reg(state, &state->a);
+       state->l = state->a;
        break;
    } 
 //    case 0x70: printf("MOV M,B");  break;
