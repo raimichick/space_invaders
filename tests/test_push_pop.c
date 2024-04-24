@@ -4,6 +4,72 @@
 #include <stdlib.h>
 #include <string.h>
 
+int test_POP_B(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    // Example from pg 4 of the 8080 Programmers Manual.
+    state->memory[0] = 0xc1; // POP B opcode
+    state->b = 0xff;
+    state->c = 0xff;
+    state->sp = 0x1508;
+    state->memory[0x1507] = 0xff;
+    state->memory[0x1508] = 0x33;
+    state->memory[0x1509] = 0x0b;
+    state->memory[0x150A] = 0xff;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->b = 0x0b;
+    expected_state->c = 0x33;
+    expected_state->sp = 0x150a;
+    expected_state->memory[0x1507] = 0xff;
+    expected_state->memory[0x1508] = 0x33;
+    expected_state->memory[0x1509] = 0x0b;
+    expected_state->memory[0x150A] = 0xff;
+
+    emulate8080(state);
+
+    if (state_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0x1507] != expected_state->memory[0x1507]) return 1;
+    if (state->memory[0x1508] != expected_state->memory[0x1508]) return 1;
+    if (state->memory[0x1509] != expected_state->memory[0x1509]) return 1;
+    if (state->memory[0x150a] != expected_state->memory[0x150a]) return 1;
+    return 0;
+}
+
+int test_PUSH_B(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    // Example from pg 4 of the 8080 Programmers Manual.
+    state->memory[0] = 0xc5; // PUSH D opcode
+    state->b = 0x6a;
+    state->c = 0x30;
+    state->sp = 0x13a6;
+    state->memory[0x13a3] = 0xff;
+    state->memory[0x13a4] = 0xff;
+    state->memory[0x13a5] = 0xff;
+    state->memory[0x13a6] = 0xff;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->b = 0x6a;
+    expected_state->c = 0x30;
+    expected_state->sp = 0x13a4;
+    expected_state->memory[0x13a3] = 0xff;
+    expected_state->memory[0x13a4] = 0x30;
+    expected_state->memory[0x13a5] = 0x6a;
+    expected_state->memory[0x13a6] = 0xff;
+
+    emulate8080(state);
+
+    if (state_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0x13a3] != expected_state->memory[0x13a3]) return 1;
+    if (state->memory[0x13a4] != expected_state->memory[0x13a4]) return 1;
+    if (state->memory[0x13a5] != expected_state->memory[0x13a5]) return 1;
+    if (state->memory[0x13a6] != expected_state->memory[0x13a6]) return 1;
+    return 0;
+}
+
 int test_POP_D(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
@@ -216,6 +282,8 @@ int main(int argc, char *argv[])
     // clang-format off
     switch (strtol(argv[1], NULL, 16))
     {
+        case 0xc1: result = test_POP_B(state, expected_state); break;
+        case 0xc5: result = test_PUSH_B(state, expected_state); break;
         case 0xd1: result = test_POP_D(state, expected_state); break;
         case 0xd5: result = test_PUSH_D(state, expected_state); break;
         case 0xe1: result = test_POP_H(state, expected_state); break;

@@ -44,6 +44,12 @@ add_test(NAME xra_a COMMAND test_xra_reg 0xaf)
 add_test(NAME jnz COMMAND test_jump 0xc2)
 add_test(NAME jmp COMMAND test_jump 0xc3)
 
+# Pop Tests
+add_test(NAME pop_b COMMAND test_push_pop 0xc1)
+
+# Push Tests
+add_test(NAME push_b COMMAND test_push_pop 0xc5)
+
 # NICK's TESTS
 add_executable(test_load tests/test_load.c src/state.c src/shell.c)
 
