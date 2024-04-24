@@ -155,14 +155,49 @@ void emulate8080(State *state)
 //    case 0x1f: printf("RAR"); break;
 //    case 0x20: printf("RIM"); break;
 //    case 0x21: printf("LXI H,D16, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0x21: // LXI H, D16   H <- code[2], L <- code[1]
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        state->h = code[2];
+        state->l = code[1];
+        wait_cycles(10);
+        break;
+    }     
 //    case 0x22: printf("SHLD adr, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-//    case 0x23: printf("INX H"); break;
+    case 0x23: // INX H  LH <- LH + 1
+    {
+        state->pc += opbytes;
+        uint16_t temp_LH = combine_bytes_to_word(state->l, state->h);
+        temp_LH += 1;
+        state->l = temp_LH >> 8;
+        state->h = temp_LH;
+        wait_cycles(5);
+        break;
+    }
+      
 //    case 0x24: printf("INR H"); break;
 //    case 0x25: printf("DCR H"); break;
-//    case 0x26: printf("MVI H,D8, $%02x", code[1]); opbytes = 2; break;
+    case 0x26: // MVI H, D8
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        state->h = code[1];
+        wait_cycles(7);
+        break;
+    }    
 //    case 0x27: printf("DAA"); break;
 //    case 0x28: printf("-"); break;
-//    case 0x29: printf("DAD H"); break;
+    case 0x29: // DAD H  HL+HL
+    {
+        state->pc += opbytes;
+        uint16_t temp_HL = combine_bytes_to_word(state->h, state->l);
+        state->conditions.carry = get_carry_flag_from_sum_16b(temp_HL);
+        state->h = temp_HL >> 8;
+        state->l = temp_HL;
+        wait_cycles(10);
+        break;
+    }   
 //    case 0x2a: printf("LHLD adr, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0x2b: printf("DCX H"); break;
 //    case 0x2c: printf("INR L"); break;
@@ -170,20 +205,56 @@ void emulate8080(State *state)
 //    case 0x2e: printf("MVI L, D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0x2f: printf("CMA"); break;
 //    case 0x30: printf("SIM"); break;
-//    case 0x31: printf("LXI SP, D16, $%02x%02x", code[2], code[1]); opbytes = 3; break;
-//    case 0x32: printf("STA adr, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0x31: // LXI SP, D16
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        state->s = code[2];
+        state->p = code[1];
+        wait_cycles(10);
+        break;
+    }   
+    case 0x32: // STA adr
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        state->a = opcode[1];
+        wait_cycles(13);
+        break;            
+    }  
 //    case 0x33: printf("INX SP"); break;
 //    case 0x34: printf("INR M"); break;
 //    case 0x35: printf("DCR M"); break;
-//    case 0x36: printf("MVI M,D8, $%02x", code[1]); opbytes = 2; break;
+    case 0x36: // MVI M, D8  H <- code[1]
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        state->h = opcode[1];
+        wait_cycles(7);
+        break;
+    }  
 //    case 0x37: printf("STC"); break;
 //    case 0x38: printf("-"); break;
 //    case 0x39: printf("DAD SP"); break;
-//    case 0x3a: printf("LDA adr, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0x3a: // LDA adr A <- code[1]
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        state->a = code[1];
+        wait_cycles(17);
+        break;
+    } 
 //    case 0x3b: printf("DCX SP"); break;
 //    case 0x3c: printf("INR A"); break;
 //    case 0x3d: printf("DCR A"); break;
-//    case 0x3e: printf("MVI A,D8, $%02x", code[1]); opbytes = 2; break;
+    case 0x3e: // MVI A, D8  A <- code[1]
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        state->a = opcode[1];
+        wait_cycles(7);
+        break;
+    }    
 //    case 0x3f: printf("CMC"); break;
 //    case 0x40: printf("MOV B,B"); break;
 //    case 0x41: printf("MOV B,C");  break;
@@ -207,7 +278,11 @@ void emulate8080(State *state)
 //    case 0x53: printf("MOV D,E");  break;
 //    case 0x54: printf("MOV D,H");  break;
 //    case 0x55: printf("MOV D,L");  break;
-//    case 0x56: printf("MOV D,M");  break;
+   case 0x56: // MOV D, M
+    {
+        mov_reg_to_mem(state, &state->d);
+        break;
+    } 
 //    case 0x57: printf("MOV D,A");  break;
 //    case 0x58: printf("MOV E,B");  break;
 //    case 0x59: printf("MOV E,C");  break;
@@ -223,7 +298,11 @@ void emulate8080(State *state)
 //    case 0x63: printf("MOV H,E");  break;
 //    case 0x64: printf("MOV H,H");  break;
 //    case 0x65: printf("MOV H,L");  break;
-//    case 0x66: printf("MOV H,M");  break;
+   case 0x66: // MOV H, M
+   {
+        mov_reg_to_mem(state, &state->h);
+        break;
+   }     
 //    case 0x67: printf("MOV H,A");  break;
 //    case 0x68: printf("MOV L,B");  break;
 //    case 0x69: printf("MOV L,C");  break;
@@ -232,7 +311,11 @@ void emulate8080(State *state)
 //    case 0x6c: printf("MOV L,H");  break;
 //    case 0x6d: printf("MOV L,L");  break;
 //    case 0x6e: printf("MOV L,M");  break;
-//    case 0x6f: printf("MOV L,A");  break;
+   case 0x6f: // MOV L, A 
+   {
+       mov_reg_to_reg(state, &state->a);
+       break;
+   } 
 //    case 0x70: printf("MOV M,B");  break;
 //    case 0x71: printf("MOV M,C");  break;
 //    case 0x72: printf("MOV M,D");  break;
