@@ -191,11 +191,11 @@ void emulate8080(State *state)
     case 0x29: // DAD H  HL+HL
     {
         state->pc += opbytes;
-        uint16_t temp_HL1 = combine_bytes_to_word(state->h, state->l);
-        uint16_t temp_HL2 = combine_bytes_to_word(state->h, state->l);
-        state->conditions.carry = get_carry_flag_from_sum_16b(temp_HL1, temp_HL2);
-        state->h = temp_HL >> 8;
-        state->l = temp_HL;
+        uint32_t hl = (state->h << 8) | state->l;
+		uint32_t res = hl + hl;
+		state->h = (res & 0xff00) >> 8;
+		state->l = res & 0xff;
+		state->cc.cy = ((res & 0xffff0000) != 0);
         wait_cycles(10);
         break;
     }   
