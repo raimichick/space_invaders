@@ -382,7 +382,11 @@ void emulate8080(State *state)
     }
 //    case 0xc7: printf("RST 0"); break;
 //    case 0xc8: printf("RZ"); break;
-//    case 0xc9: printf("RET"); break;
+    case 0xc9:  // RET
+    {
+        return_helper(state);
+        break;
+    }
 //    case 0xca: printf("JZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xcb: printf("-"); break;
 //    case 0xcc: printf("CZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
@@ -687,6 +691,16 @@ void jump_to_addr(State *state, uint8_t *code)
      * - higher-order bits in code[2] and lower-order bits in code[1]
     */
     state->pc = (code[2] << 8) | code[1];
+}
+
+void return_helper(State *state)
+{
+    /* Helper function for RETURN opcodes
+     * Pops the top two bytes from the stack pointer and increments sp by 2
+     * Sets pc to the memory address retrieved
+    */
+    state->pc = combine_bytes_to_word(state->memory[state->sp+1], state->memory[state->sp]);
+    state->sp += 2;
 }
 
 void wait_cycles(int clockCycles)

@@ -4,7 +4,23 @@
 #include <stdlib.h>
 #include <string.h>
 
-int test_RET(State *state, State *expected_state) { return 0; }
+int test_RET(State *state, State *expected_state)
+{
+    // Set state
+    state->memory[0] = 0xc9;
+    state->sp = 0x1384;
+    state->memory[state->sp - 2] = 0x02;
+    state->memory[state->sp - 1] = 0x01;
+    state->sp -= 2;
+
+    // Set expected state
+    expected_state->pc = 0x0102;
+    expected_state->sp = 0x1384;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
 
 int main(int argc, char *argv[])
 {

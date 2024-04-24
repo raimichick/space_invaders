@@ -53,6 +53,9 @@ add_test(NAME push_b COMMAND test_push_pop 0xc5)
 # ADI D8 Test
 add_test(NAME adi_d8 COMMAND test_adi 0xc6)
 
+# Return Tests
+add_test(NAME ret COMMAND test_return 0xc9)
+
 # NICK's TESTS
 add_executable(test_load tests/test_load.c src/state.c src/shell.c)
 
