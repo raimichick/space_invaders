@@ -192,10 +192,10 @@ void emulate8080(State *state)
     {
         state->pc += opbytes;
         uint32_t hl = (state->h << 8) | state->l;
-		uint32_t res = hl + hl;
-		state->h = (res & 0xff00) >> 8;
-		state->l = res & 0xff;
-		state->cc.cy = ((res & 0xffff0000) != 0);
+	uint32_t res = hl + hl;
+	state->h = (res & 0xff00) >> 8;
+	state->l = res & 0xff;
+	state->c = ((res & 0xffff0000) != 0);
         wait_cycles(10);
         break;
     }   
@@ -210,7 +210,7 @@ void emulate8080(State *state)
     {
         opbytes = 3;
         state->pc += opbytes;
-        state->sp = (opcode[2]<<8) | opcode[1];
+        state->sp = (code[2]<<8) | code[1];
         wait_cycles(10);
         break;
     }   
