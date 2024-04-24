@@ -218,7 +218,7 @@ void emulate8080(State *state)
     {
         opbytes = 3;
         state->pc += opbytes;
-        state->a = opcode[1];
+        state->a = code[1];
         wait_cycles(13);
         break;            
     }  
@@ -229,7 +229,7 @@ void emulate8080(State *state)
     {
         opbytes = 2;
         state->pc += opbytes;
-        state->h = opcode[1];
+        state->h = code[1];
         wait_cycles(7);
         break;
     }  
@@ -251,7 +251,7 @@ void emulate8080(State *state)
     {
         opbytes = 2;
         state->pc += opbytes;
-        state->a = opcode[1];
+        state->a = code[1];
         wait_cycles(7);
         break;
     }    
