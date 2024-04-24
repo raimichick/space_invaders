@@ -31,11 +31,31 @@ add_test(NAME mov_m_a COMMAND test_mov_reg_to_mem 0x77)
 
 # NICK's TESTS
 add_executable(test_load tests/test_load.c src/state.c src/shell.c)
+add_executable(test_add tests/test_add.c src/state.c src/shell.c)
+add_executable(test_subtract tests/test_subtract.c src/state.c src/shell.c)
+add_executable(test_move_immediate tests/test_move_immediate.c src/state.c src/shell.c)
+add_executable(test_rotate tests/test_rotate.c src/state.c src/shell.c)
 
-# add_test(NAME test1 COMMAND test_test 1)
+# Test Load Instructions
 add_test(NAME test_LXI_B COMMAND test_load 0x01)
 add_test(NAME test_LXI_D COMMAND test_load 0x11)
 add_test(NAME test_LDAX_D COMMAND test_load 0x1a)
+
+# Test Add Instructions
+add_test(NAME test_DAD_B COMMAND test_add 0x09)
+add_test(NAME test_INX_D COMMAND test_add 0x13)
+add_test(NAME test_DAD_D COMMAND test_add 0x19)
+
+# Test Subtract Instructions
+add_test(NAME test_DCR_B COMMAND test_subtract 0x05)
+add_test(NAME test_DCR_C COMMAND test_subtract 0x0d)
+
+# Test Move Immediate Instructions
+add_test(NAME test_MVI_B COMMAND test_move_immediate 0x06)
+add_test(NAME test_MVI_C COMMAND test_move_immediate 0x0e)
+
+# Test Rotate Instructions
+add_test(NAME test_RRC COMMAND test_rotate 0x0f)
 
 # CRAIG's TESTS
 add_executable(test_push_pop tests/test_push_pop.c src/state.c src/shell.c)
