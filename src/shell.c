@@ -367,7 +367,19 @@ void emulate8080(State *state)
         push_register_pair_to_stack(state, state->b, state->c);
         break;
     }
-//    case 0xc6: printf("ADI D8, $%02x", code[1]); opbytes = 2; break;
+    case 0xc6:  // ADI D8 (code[1]) : opbytes = 2
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        uint8_t temp_accum = state->a + code[1];
+        state->conditions.zero = get_zero_flag(temp_accum);
+        state->conditions.parity = get_parity_flag(temp_accum);
+        state->conditions.sign = get_sign_flag(temp_accum);
+        state->conditions.carry = get_carry_flag_from_sum_8b(state->a, code[1]);
+        state->conditions.aux_carry = get_aux_carry_flag_from_sum(state->a, code[1]);
+        state->a = temp_accum;
+        break;
+    }
 //    case 0xc7: printf("RST 0"); break;
 //    case 0xc8: printf("RZ"); break;
 //    case 0xc9: printf("RET"); break;
