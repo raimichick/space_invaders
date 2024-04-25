@@ -48,6 +48,12 @@ State *Init8080(void)
     return state;
 }
 
+void Free8080(State *state)
+{
+    free(state->memory);
+    free(state);
+}
+
 int state_compare(State *state, State *expected_state)
 {
     // Compares each of the registers and conditions between the two states

@@ -45,10 +45,8 @@ int main(int argc, char *argv[])
     }
 
     // Clean up the state memory
-    free(state->memory);
-    free(expected_state->memory);
-    free(state);
-    free(expected_state);
+    Free8080(state);
+    Free8080(expected_state);
 
     return result;
 }
