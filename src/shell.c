@@ -493,7 +493,6 @@ void emulate8080(State *state)
 //    case 0xf0: printf("RP"); break;
     case 0xf1: // POP PSW; Pop Processor Status Word.
     {
-        // TODO definitely need to test this one.
         state->pc += opbytes;
         uint8_t sp_val8 = state->memory[state->sp];
         state->conditions.carry     = (sp_val8 >> 0) & 0x01;

@@ -102,3 +102,6 @@ add_test(NAME test_ANI_D8, COMMAND test_immediates 0xe6)
 
 add_executable(test_xchg tests/test_xchg.c src/state.c src/shell.c)
 add_test(NAME test_XCHG, COMMAND test_xchg 0xeb)
+
+add_executable(test_compare tests/test_compare.c src/state.c src/shell.c)
+add_test(NAME test_CPI_D8, COMMAND test_compare 0xfe)
