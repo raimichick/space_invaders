@@ -367,10 +367,26 @@ void emulate8080(State *state)
         push_register_pair_to_stack(state, state->b, state->c);
         break;
     }
-//    case 0xc6: printf("ADI D8, $%02x", code[1]); opbytes = 2; break;
+    case 0xc6:  // ADI D8 (code[1]) : opbytes = 2
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        uint8_t temp_accum = state->a + code[1];
+        state->conditions.zero = get_zero_flag(temp_accum);
+        state->conditions.parity = get_parity_flag(temp_accum);
+        state->conditions.sign = get_sign_flag(temp_accum);
+        state->conditions.carry = get_carry_flag_from_sum_8b(state->a, code[1]);
+        state->conditions.aux_carry = get_aux_carry_flag_from_sum(state->a, code[1]);
+        state->a = temp_accum;
+        break;
+    }
 //    case 0xc7: printf("RST 0"); break;
 //    case 0xc8: printf("RZ"); break;
-//    case 0xc9: printf("RET"); break;
+    case 0xc9:  // RET
+    {
+        return_helper(state);
+        break;
+    }
 //    case 0xca: printf("JZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xcb: printf("-"); break;
 //    case 0xcc: printf("CZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
@@ -645,9 +661,9 @@ void ana_helper(State *state, uint8_t andwith_val)
     state->pc += 1; // increment program counter by 1
     state->a = state->a & andwith_val;
     state->conditions.carry = 0;
-    state->conditions.zero = get_zero_flag(andwith_val);
-    state->conditions.sign = get_sign_flag(andwith_val);
-    state->conditions.parity = get_parity_flag(andwith_val);
+    state->conditions.zero = get_zero_flag(state->a);
+    state->conditions.sign = get_sign_flag(state->a);
+    state->conditions.parity = get_parity_flag(state->a);
 }
 
 void xra_helper(State *state, uint8_t xorwith_val)
@@ -663,9 +679,9 @@ void xra_helper(State *state, uint8_t xorwith_val)
     state->a = state->a ^ xorwith_val;
     state->conditions.carry = 0;
     state->conditions.aux_carry = 0;
-    state->conditions.zero = get_zero_flag(xorwith_val);
-    state->conditions.sign = get_sign_flag(xorwith_val);
-    state->conditions.parity = get_parity_flag(xorwith_val);
+    state->conditions.zero = get_zero_flag(state->a);
+    state->conditions.sign = get_sign_flag(state->a);
+    state->conditions.parity = get_parity_flag(state->a);
 }
 
 void jump_to_addr(State *state, uint8_t *code)
@@ -675,6 +691,16 @@ void jump_to_addr(State *state, uint8_t *code)
      * - higher-order bits in code[2] and lower-order bits in code[1]
     */
     state->pc = (code[2] << 8) | code[1];
+}
+
+void return_helper(State *state)
+{
+    /* Helper function for RETURN opcodes
+     * Pops the top two bytes from the stack pointer and increments sp by 2
+     * Sets pc to the memory address retrieved
+    */
+    state->pc = combine_bytes_to_word(state->memory[state->sp+1], state->memory[state->sp]);
+    state->sp += 2;
 }
 
 void wait_cycles(int clockCycles)
