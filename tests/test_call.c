@@ -92,11 +92,13 @@ int main(int argc, char *argv[])
     switch (strtol(argv[1], NULL, 16))
     {
         case 0xcd:
+        {
             int c1 = test_CALL(state, expected_state);
             state = Init8080();
             expected_state = Init8080();
             int c2 = test_CALL_RET(state, expected_state);
             result = c1 | c2;
+        }
         break;
         default: return 1; // Test failed due to incorrect test parameter
     }
