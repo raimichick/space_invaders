@@ -394,7 +394,7 @@ void emulate8080(State *state)
     {
         opbytes = 3;
         state->pc += opbytes;
-        push_program_counter_to_stack(state);
+        call_helper(state);
         state->pc = combine_bytes_to_word(code[2], code[1]);
         wait_cycles(17); // per Intel 8080 Programmers Manual
         break;
@@ -565,39 +565,6 @@ void push_register_pair_to_stack(State* state, uint8_t rh, uint8_t rl){
     state->sp -= 2;
 }
 
-void push_program_counter_to_stack(State* state){
-    /*
-    * (1) The most significant 8 bits of data are stored at the memory address
-    *       one less than the contents of the stack pointer.
-    * (2) The least significant 8 bits of data are stored at the memory address
-    *       two less than the contents of the stack pointer.
-    * (3) The stack pointer is automatically decremented by two.
-    */
-    uint8_t high_order_bits = (state->pc >> 8) & 0xFF;
-    uint8_t low_order_bits = state->pc & 0xFF;
-    state->memory[state->sp-1] = high_order_bits;
-    state->memory[state->sp-2] = low_order_bits;
-    state->sp -= 2;
-}
-
-void pop_stack_to_program_counter(State* state)
-{
-    /*
-     * __Pop the stack to the program_counter__
-     * 1) The second register of the pair, or the least significant 8 bits
-     *      of the program counter, are loaded from the memory address held in
-     *      the stack pointer.
-     * 2) The first register of the pair, or the most significant 8 bits of
-     *      the program counter, are loaded from the memory address one greater
-     *      than the address held in the stack pointer.
-     * 3) The stack pointer is automatically incremented by two.
-    */
-    uint8_t low_order_bits = state->memory[state->sp];
-    uint8_t high_order_bits = state->memory[state->sp+1];
-    state->sp += 2;
-    state->pc = high_order_bits << 8 | low_order_bits;
-}
-
 void pop_stack_to_register_pair(State* state, uint8_t* rh, uint8_t* rl)
 {
     /* Pop the stack to a pair of registers
@@ -693,13 +660,34 @@ void jump_to_addr(State *state, uint8_t *code)
     state->pc = (code[2] << 8) | code[1];
 }
 
+void call_helper(State* state){
+    /*
+    * (1) The most significant 8 bits of data are stored at the memory address
+    *       one less than the contents of the stack pointer.
+    * (2) The least significant 8 bits of data are stored at the memory address
+    *       two less than the contents of the stack pointer.
+    * (3) The stack pointer is automatically decremented by two.
+    */
+    // uint8_t high_order_bits = (state->pc >> 8) & 0xFF;
+    // uint8_t low_order_bits = state->pc & 0xFF;
+    // uint8_t *hb_p = &state->memory[state->sp-1];
+    // uint8_t *lb_p = &state->memory[state->sp-2];
+    split_word_to_bytes(state->pc,
+                        &state->memory[state->sp-1],
+                        &state->memory[state->sp-2]
+                        );
+    state->sp -= 2;
+}
+
 void return_helper(State *state)
 {
     /* Helper function for RETURN opcodes
      * Pops the top two bytes from the stack pointer and increments sp by 2
      * Sets pc to the memory address retrieved
     */
-    state->pc = combine_bytes_to_word(state->memory[state->sp+1], state->memory[state->sp]);
+    state->pc = combine_bytes_to_word(state->memory[state->sp+1],
+                                      state->memory[state->sp]
+                                      );
     state->sp += 2;
 }
 

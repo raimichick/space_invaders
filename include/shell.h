@@ -6,9 +6,7 @@ void emulate8080(struct State *state);
 
 void unimplementedInstr(uint8_t opcode);
 
-void push_program_counter_to_stack(struct State *state);
 void push_register_pair_to_stack(struct State *state, uint8_t rh, uint8_t rl);
-void pop_stack_to_program_counter(struct State *state);
 void pop_stack_to_register_pair(struct State *state, uint8_t *rh, uint8_t *rl);
 void mov_reg_to_reg(struct State *state, uint8_t *to, uint8_t *from);
 void mov_reg_to_mem(struct State *state, uint8_t *from);
@@ -16,6 +14,7 @@ void mov_mem_to_reg(struct State *state, uint8_t *to);
 void ana_helper(struct State *state, uint8_t andwith_val);
 void xra_helper(struct State *state, uint8_t xorwith_val);
 void jump_to_addr(struct State *state, uint8_t *code);
+void call_helper(struct State *state);
 void return_helper(struct State *state);
 void subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend);
 void wait_cycles(int clockCycles);
