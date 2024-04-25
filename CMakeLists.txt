@@ -99,3 +99,6 @@ add_test(NAME test_CALL, COMMAND test_call 0xcd)
 
 add_executable(test_immediates tests/test_immediates.c src/state.c src/shell.c)
 add_test(NAME test_ANI_D8, COMMAND test_immediates 0xe6)
+
+add_executable(test_xchg tests/test_xchg.c src/state.c src/shell.c)
+add_test(NAME test_XCHG, COMMAND test_xchg 0xeb)

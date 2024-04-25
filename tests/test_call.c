@@ -48,7 +48,7 @@ int test_CALL_RET(State *state, State *expected_state)
     expected_state->b = 0x33;
     expected_state->c = 0x9f;
     expected_state->conditions.carry = 0;
-    emulate8080(state);
+    emulate8080(state); // Runs Call
     if (state_compare(state, expected_state) == 1) return 1;
 
     // Set up the expected register states just after DAD B
@@ -61,7 +61,7 @@ int test_CALL_RET(State *state, State *expected_state)
     expected_state->b = 0x33;
     expected_state->c = 0x9f;
     expected_state->conditions.carry = 0;
-    emulate8080(state);
+    emulate8080(state); // Runs DAD B
     if (state_compare(state, expected_state) == 1) return 1;
 
     // Set up the expected register states just RET
@@ -78,12 +78,8 @@ int test_CALL_RET(State *state, State *expected_state)
     return 0;
 }
 
-/* Tests for loading values into registers
- * Select a test by passing the opcode value as the first argument
- */
 int main(int argc, char *argv[])
 {
-    // Set up a states to test with
     State *state = Init8080();
     State *expected_state = Init8080();
 
@@ -104,7 +100,6 @@ int main(int argc, char *argv[])
     }
     // clang-format on
 
-    // Clean up the state memory
     free(state->memory);
     free(expected_state->memory);
     free(state);

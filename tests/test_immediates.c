@@ -15,7 +15,6 @@ int test_ANI_D8(State *state, State *expected_state)
     state->conditions.sign = 1;
     state->conditions.parity = 0;
 
-    // Set up the expected register states
     expected_state->pc = 2;
     expected_state->a = 0x0a;
     expected_state->conditions.carry = 0;
