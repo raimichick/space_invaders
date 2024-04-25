@@ -5,12 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void unimplementedInstr(uint8_t opcode)
-{
-    printf("Error: Instruction 0x%02x not implemented.\n", opcode);
-    exit(1);
-}
-
 void emulate8080(State *state)
 {
 
@@ -774,3 +768,10 @@ void split_word_to_bytes(uint16_t word, uint8_t *hi_byte, uint8_t *lo_byte)
     *hi_byte = word >> 8;
     *lo_byte = word;
 }
+
+void unimplementedInstr(uint8_t opcode)
+{
+    printf("Error: Instruction 0x%02x not implemented.\n", opcode);
+    exit(1);
+}
+

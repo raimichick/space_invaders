@@ -4,8 +4,6 @@
 
 void emulate8080(struct State *state);
 
-void unimplementedInstr(uint8_t opcode);
-
 void push_register_pair_to_stack(struct State *state, uint8_t rh, uint8_t rl);
 void pop_stack_to_register_pair(struct State *state, uint8_t *rh, uint8_t *rl);
 void mov_reg_to_reg(struct State *state, uint8_t *to, uint8_t *from);
@@ -26,3 +24,5 @@ uint8_t get_parity_flag(uint8_t register_value);
 uint8_t get_carry_flag_from_sum_8b(uint8_t val0, uint8_t val1);
 uint8_t get_carry_flag_from_sum_16b(uint16_t val0, uint16_t val1);
 uint8_t get_aux_carry_flag_from_sum(uint8_t val0, uint8_t val1);
+
+void unimplementedInstr(uint8_t opcode);
