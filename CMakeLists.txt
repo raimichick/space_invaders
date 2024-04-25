@@ -51,6 +51,7 @@ add_test(NAME pop_b COMMAND test_push_pop 0xc1)
 add_test(NAME push_b COMMAND test_push_pop 0xc5)
 
 # ADI D8 Test
+# TODO move this to test_immediates?
 add_test(NAME adi_d8 COMMAND test_adi 0xc6)
 
 # Return Tests
@@ -95,3 +96,6 @@ add_test(NAME test_PUSH_PSW, COMMAND test_push_pop 0xf5)
 
 add_executable(test_call tests/test_call.c src/state.c src/shell.c)
 add_test(NAME test_CALL, COMMAND test_call 0xcd)
+
+add_executable(test_immediates tests/test_immediates.c src/state.c src/shell.c)
+add_test(NAME test_ANI_D8, COMMAND test_immediates 0xe6)
