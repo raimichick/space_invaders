@@ -51,6 +51,7 @@ add_test(NAME pop_b COMMAND test_push_pop 0xc1)
 add_test(NAME push_b COMMAND test_push_pop 0xc5)
 
 # ADI D8 Test
+# TODO move this to test_immediates?
 add_test(NAME adi_d8 COMMAND test_adi 0xc6)
 
 # Return Tests
@@ -92,3 +93,15 @@ add_test(NAME test_POP_H, COMMAND test_push_pop 0xe1)
 add_test(NAME test_PUSH_H, COMMAND test_push_pop 0xe5)
 add_test(NAME test_POP_PSW, COMMAND test_push_pop 0xf1)
 add_test(NAME test_PUSH_PSW, COMMAND test_push_pop 0xf5)
+
+add_executable(test_call tests/test_call.c src/state.c src/shell.c)
+add_test(NAME test_CALL, COMMAND test_call 0xcd)
+
+add_executable(test_immediates tests/test_immediates.c src/state.c src/shell.c)
+add_test(NAME test_ANI_D8, COMMAND test_immediates 0xe6)
+
+add_executable(test_xchg tests/test_xchg.c src/state.c src/shell.c)
+add_test(NAME test_XCHG, COMMAND test_xchg 0xeb)
+
+add_executable(test_compare tests/test_compare.c src/state.c src/shell.c)
+add_test(NAME test_CPI_D8, COMMAND test_compare 0xfe)
