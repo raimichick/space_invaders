@@ -40,7 +40,7 @@ int test_CALL_RET(State *state, State *expected_state)
     expected_state->pc = 0x5511;
     expected_state->memory[0xccce] = 0x55;
     expected_state->memory[0xcccd] = 0x11;
-    expected_state->memory[state->sp - 1] = 0x55;
+    expected_state->memory[0xccce] = 0x55;
     expected_state->memory[state->sp] = 0x11;
     expected_state->sp = 0xcccd;
     expected_state->h = 0xa1;
