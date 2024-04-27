@@ -9,10 +9,12 @@ int test_MOV_M_A(State *state, State *expected_state)
     state->a = 5;
     state->memory[0] = 0x77;
     state->memory[1] = 1;
+    state->h = 0;
     state->l = 2;
 
     // Set up the expected register states
     expected_state->a = 5;
+    expected_state->h = 0;
     expected_state->l = 2;
     expected_state->pc = 1;
 
