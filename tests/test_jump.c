@@ -28,14 +28,14 @@ int test_JNZ(State *state, State *expected_state)
     state->memory[3] = 0xc2;
     state->memory[4] = 0xff;
     state->memory[5] = 0x11;
-    state->conditions.zero = 1; // don't jump
 
-    // Set expected state - after two jumps
+    state->conditions.zero = 1; // block first jump operation
+    emulate8080(state);
+    state->conditions.zero = 0; // allow second jump operation
+    emulate8080(state);
+
+    // Set expected state - after one jump blocked, one jump executed
     expected_state->pc = 0x11ff;
-
-    emulate8080(state);
-    state->conditions.zero = 0; // jump to location in memory
-    emulate8080(state);
 
     return state_compare(state, expected_state);
 }
