@@ -34,7 +34,6 @@ int test_MVI_C(State *state, State *expected_state)
     return state_compare(state, expected_state);
 }
 
-
 /* Tests for various add instructions
  * Select a test by passing the opcode value as the first argument
  *
@@ -60,10 +59,8 @@ int main(int argc, char *argv[])
     }
 
     // Clean up the state memory
-    free(state->memory);
-    free(expected_state->memory);
-    free(state);
-    free(expected_state);
+    Free8080(state);
+    Free8080(expected_state);
 
     return result;
 }
