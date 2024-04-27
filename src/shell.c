@@ -188,17 +188,17 @@ void emulate8080(State *state)
     }    
 //    case 0x27: printf("DAA"); break;
 //    case 0x28: printf("-"); break;
-    case 0x29: // DAD H  HL+HL
+    case 0x29: // DAD H     HL = HL + HL
     {
         state->pc += opbytes;
-        uint32_t hl = (state->h << 8) | state->l;
-	uint32_t res = hl + hl;
-	state->h = (res & 0xff00) >> 8;
-	state->l = res & 0xff;
-	state->c = ((res & 0xffff0000) != 0);
+        uint16_t temp_HL = combine_bytes_to_word(state->h, state->l);
+        state->conditions.carry = get_carry_flag_from_sum_16b(temp_HL, temp_HL);
+        temp_HL += temp_HL;
+        state->h = temp_HL >> 8;
+        state->l = temp_HL;
         wait_cycles(10);
         break;
-    }   
+    }
 //    case 0x2a: printf("LHLD adr, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0x2b: printf("DCX H"); break;
 //    case 0x2c: printf("INR L"); break;
