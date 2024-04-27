@@ -37,10 +37,8 @@ int main(int argc, char *argv[])
     }
     // clang-format on
 
-    free(state->memory);
-    free(expected_state->memory);
-    free(state);
-    free(expected_state);
+    Free8080(state);
+    Free8080(expected_state);
 
     return result;
 }
