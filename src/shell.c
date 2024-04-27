@@ -168,7 +168,7 @@ void emulate8080(State *state)
     case 0x23: // INX H  LH <- LH + 1
     {
         state->pc += opbytes;
-        uint16_t temp_LH = combine_bytes_to_word(state->l, state->h);
+        uint16_t temp_LH = combine_bytes_to_word(state->h, state->l);
         temp_LH += 1;
         state->l = temp_LH >> 8;
         state->h = temp_LH;
@@ -218,7 +218,8 @@ void emulate8080(State *state)
     {
         opbytes = 3;
         state->pc += opbytes;
-        state->a = code[1];
+        uint16_t temp_adr = combine_bytes_to_word(code[2], code[1]);
+	state->a = state->memory[temp_adr];
         wait_cycles(13);
         break;            
     }  
@@ -229,18 +230,18 @@ void emulate8080(State *state)
     {
         opbytes = 2;
         state->pc += opbytes;
-        state->h = code[1];
+        memory[combine_bytes_to_word(state->h, state->l)] = code[1];
         wait_cycles(7);
         break;
     }  
 //    case 0x37: printf("STC"); break;
 //    case 0x38: printf("-"); break;
 //    case 0x39: printf("DAD SP"); break;
-    case 0x3a: // LDA adr A <- code[1]
+    case 0x3a: // LDA adr A <- code[1] adr <- code[2]
     {
         opbytes = 3;
         state->pc += opbytes;
-        state->a = code[1];
+        state->a = state->memory[combine_byte_to_word(code[2], code[1])
         wait_cycles(17);
         break;
     } 
@@ -280,7 +281,8 @@ void emulate8080(State *state)
 //    case 0x55: printf("MOV D,L");  break;
    case 0x56: // MOV D, M
     {
-        mov_reg_to_mem(state, &state->d);
+        mov_mem_to_reg(state, &state->d);
+	wait_cycles(5);
         break;
     } 
 //    case 0x57: printf("MOV D,A");  break;
@@ -300,7 +302,8 @@ void emulate8080(State *state)
 //    case 0x65: printf("MOV H,L");  break;
    case 0x66: // MOV H, M
    {
-        mov_reg_to_mem(state, &state->h);
+        mov_mem_to_reg(state, &state->h);
+	wait_cycles(5);
         break;
    }     
 //    case 0x67: printf("MOV H,A");  break;
@@ -313,7 +316,8 @@ void emulate8080(State *state)
 //    case 0x6e: printf("MOV L,M");  break;
    case 0x6f: // MOV L, A 
    {
-       state->l = state->a;
+       mov_reg_to_reg(state, &state->l, &state->a);
+       wait_cycles(5);
        break;
    } 
 //    case 0x70: printf("MOV M,B");  break;
