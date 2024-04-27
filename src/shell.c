@@ -230,7 +230,7 @@ void emulate8080(State *state)
     {
         opbytes = 2;
         state->pc += opbytes;
-        memory[combine_bytes_to_word(state->h, state->l)] = code[1];
+        state->memory[combine_bytes_to_word(state->h, state->l)] = code[1];
         wait_cycles(7);
         break;
     }  
@@ -241,7 +241,7 @@ void emulate8080(State *state)
     {
         opbytes = 3;
         state->pc += opbytes;
-        state->a = state->memory[combine_byte_to_word(code[2], code[1])
+        state->a = state->memory[combine_bytes_to_word(code[2], code[1]);
         wait_cycles(17);
         break;
     } 
