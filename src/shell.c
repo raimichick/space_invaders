@@ -206,15 +206,15 @@ void emulate8080(State *state)
 //    case 0x2e: printf("MVI L, D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0x2f: printf("CMA"); break;
 //    case 0x30: printf("SIM"); break;
-    case 0x31: // LXI SP, D16
+    case 0x31: // LXI SP, D16 code[2], code[1]
     {
         opbytes = 3;
         state->pc += opbytes;
-        state->sp = (code[2]<<8) | code[1];
+        state->sp = combine_bytes_to_word(code[2], code[1]); 
         wait_cycles(10);
         break;
     }   
-    case 0x32: // STA adr
+    case 0x32: // STA adr code[2], code[1]
     {
         opbytes = 3;
         state->pc += opbytes;
