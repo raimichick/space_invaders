@@ -947,7 +947,20 @@ void emulate8080(State *state)
         else state->pc += opbytes;
         break;
     }
-//    case 0xe3: printf("XTHL"); break;
+    case 0xe3: // XTHL; memory[sp] <-> L, memory[sp+1] <-> H
+    {
+        state->pc += opbytes;
+        uint8_t l_data          = state->l;
+        uint8_t sp_data         = state->memory[state->sp];
+        uint8_t h_data          = state->h;
+        uint8_t sp_plus_1_data  = state->memory[state->sp + 1];
+
+        state->l                        = sp_data;
+        state->memory[state->sp]        = l_data;
+        state->h                        = sp_plus_1_data;
+        state->memory[state->sp + 1]    = h_data;
+        break;
+    }
     case 0xe4: // CPO code[2], code[1]. CALL if parity flag not set.
     {
         opbytes = 3;

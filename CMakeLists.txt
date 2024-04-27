@@ -160,8 +160,9 @@ add_test(NAME test_CM, COMMAND test_call 0xfc)
 add_executable(test_immediates tests/test_immediates.c)
 add_test(NAME test_ANI_D8, COMMAND test_immediates 0xe6)
 
-add_executable(test_xchg tests/test_xchg.c)
-add_test(NAME test_XCHG, COMMAND test_xchg 0xeb)
+add_executable(test_exchange tests/test_exchange.c)
+add_test(NAME test_XCHG, COMMAND test_exchange 0xeb)
+add_test(NAME test_XTHL, COMMAND test_exchange 0xe3)
 
 add_executable(test_compare tests/test_compare.c)
 add_test(NAME test_CPI_D8, COMMAND test_compare 0xfe)
