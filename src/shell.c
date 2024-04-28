@@ -382,7 +382,10 @@ void emulate8080(State *state)
 //    case 0x9d: printf("SBB L"); break;
 //    case 0x9e: printf("SBB M"); break;
 //    case 0x9f: printf("SBB A"); break;
-//    case 0xa0: printf("ANA B"); break;
+    case 0xa0:  // ANA B    :   state->a = A & B
+    {
+        break;
+    }
 //    case 0xa1: printf("ANA C"); break;
 //    case 0xa2: printf("ANA D"); break;
 //    case 0xa3: printf("ANA E"); break;
@@ -680,8 +683,7 @@ void mov_reg_to_mem(State *state, uint8_t *from)
      * Increments the program counter by 1
     */
     state->pc += 1; // increment program counter by 1
-    uint16_t mem_offset = (state->h << 8) | state->l;
-    state->memory[mem_offset] = *from;
+    state->memory[combine_h_l_addr(state)] = *from;
 }
 
 void mov_mem_to_reg(State *state, uint8_t *to)
@@ -692,8 +694,7 @@ void mov_mem_to_reg(State *state, uint8_t *to)
      * Increments the program counter by 1
     */
     state->pc += 1; // increment program counter by 1
-    uint16_t mem_offset = (state->h << 8) | state->l;
-    *to = state->memory[mem_offset];
+    *to = state->memory[combine_h_l_addr(state)];
 }
 
 void ana_helper(State *state, uint8_t andwith_val)
@@ -729,6 +730,15 @@ void xra_helper(State *state, uint8_t xorwith_val)
     state->conditions.zero = get_zero_flag(state->a);
     state->conditions.sign = get_sign_flag(state->a);
     state->conditions.parity = get_parity_flag(state->a);
+}
+
+uint16_t combine_h_l_addr(State *state)
+{
+    /* Combines the values of registers state->h and state->l to return a
+     * 16-byte memory address
+    */
+    uint16_t mem_offset = (state->h << 8) | state->l;
+    return mem_offset;
 }
 
 void jump_to_addr(State *state, uint8_t *code)
