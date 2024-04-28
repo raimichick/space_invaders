@@ -35,6 +35,13 @@ add_test(NAME mov_a_m COMMAND test_mov_mem_to_reg 0x7e)
 add_test(NAME mov_m_a COMMAND test_mov_reg_to_mem 0x77)
 
 # ANA REG Tests
+add_test(NAME ana_b COMMAND test_ana_reg 0xa0)
+add_test(NAME ana_c COMMAND test_ana_reg 0xa1)
+add_test(NAME ana_d COMMAND test_ana_reg 0xa2)
+add_test(NAME ana_e COMMAND test_ana_reg 0xa3)
+add_test(NAME ana_h COMMAND test_ana_reg 0xa4)
+add_test(NAME ana_l COMMAND test_ana_reg 0xa5)
+add_test(NAME ana_m COMMAND test_ana_reg 0xa6)
 add_test(NAME ana_a COMMAND test_ana_reg 0xa7)
 
 # XRA REG Tests
