@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void increment_reg_pair(uint8_t *mem_reg, uint8_t *loc_reg); // function declaration bc it isn't in the header yet
+void increment_reg_pair(uint8_t *mem_reg, uint8_t *loc_reg); 
 
 void emulate8080(State *state)
 {
