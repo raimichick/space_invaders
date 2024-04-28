@@ -382,17 +382,42 @@ void emulate8080(State *state)
 //    case 0x9d: printf("SBB L"); break;
 //    case 0x9e: printf("SBB M"); break;
 //    case 0x9f: printf("SBB A"); break;
-    case 0xa0:  // ANA B    :   state->a = A & B
+    case 0xa0:  // ANA B    :   A = A & B
     {
+        ana_helper(state, state->b);
         break;
     }
-//    case 0xa1: printf("ANA C"); break;
-//    case 0xa2: printf("ANA D"); break;
-//    case 0xa3: printf("ANA E"); break;
-//    case 0xa4: printf("ANA H"); break;
-//    case 0xa5: printf("ANA L"); break;
-//    case 0xa6: printf("ANA M"); break;
-    case 0xa7:  // ANA A
+    case 0xa1:  // ANA C    :   A = A & C
+    {
+        ana_helper(state, state->c);
+        break;
+    }
+    case 0xa2:  // ANA D    :   A = A & D
+    {
+        ana_helper(state, state->d);
+        break;
+    }
+    case 0xa3:  // ANA E    :   A = A & E
+    {
+        ana_helper(state, state->e);
+        break;
+    }
+    case 0xa4:  // ANA H    :   A = A & H
+    {
+        ana_helper(state, state->h);
+        break;
+    }
+    case 0xa5:  // ANA L    :   A = A & L
+    {
+        ana_helper(state, state->l);
+        break;
+    }
+    case 0xa6:  // ANA M    :   A = A & mem[HL]
+    {
+        ana_helper(state, state->memory[combine_h_l_addr(state)]);
+        break;
+    }
+    case 0xa7:  // ANA A    :   A = A & A
     {
         ana_helper(state, state->a);
         break;
