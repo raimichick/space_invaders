@@ -54,7 +54,14 @@ void emulate8080(State *state)
         wait_cycles(7);
         break;
     }
-//    case 0x07: printf("RLC"); break;
+    case 0x07: // RLC       Set Carry = A7, then rotate A left
+    {
+        state->pc += opbytes;
+        state->conditions.carry = (state->a & 0b10000000) >> 7;
+        state->a = (state->a << 1) + state->conditions.carry;
+        wait_cycles(4);
+        break;
+    }
 //    case 0x08: printf("-"); break;
     case 0x09: // DAD B       HL = HL + BC
     {
@@ -149,7 +156,16 @@ void emulate8080(State *state)
         break;
     }
 //    case 0x16: printf("MVI D, D8, $%02x", code[1]); opbytes = 2; break;
-//    case 0x17: printf("RAL"); break;
+    case 0x17: // RAL   Rotate A left using carry as an extra bit on top of A
+        // EX: CY = 0, A = 10110101 -> CY = 1, A = 01101010
+    {
+        state->pc += opbytes;
+        uint8_t carry = state->conditions.carry;
+        state->conditions.carry = (state->a & 0b10000000) >> 7;
+        state->a = (state->a << 1) + carry;
+        wait_cycles(4);
+        break;
+    }
 //    case 0x18: printf("-"); break;
     case 0x19: // DAD D     HL = HL + DE
     {
@@ -194,7 +210,16 @@ void emulate8080(State *state)
         break;
     }
 //    case 0x1e: printf("MVI E,D8, $%02x", code[1]); opbytes = 2; break;
-//    case 0x1f: printf("RAR"); break;
+    case 0x1f: // RAR   Rotate A right using carry as an extra bit on bottom of A
+        // EX: A = 01101010, CY = 1 -> A = 10110101, CY = 0
+    {
+        state->pc += opbytes;
+        uint8_t carry = state->conditions.carry;
+        state->conditions.carry = state->a & 0b00000001;
+        state->a = (state->a >> 1) + (carry << 7);
+        wait_cycles(4);
+        break;
+    }
 //    case 0x20: printf("RIM"); break;
 //    case 0x21: printf("LXI H,D16, $%02x%02x", code[2], code[1]); opbytes = 3; break;
     case 0x21: // LXI H, D16   H <- code[2], L <- code[1]
@@ -699,7 +724,14 @@ void emulate8080(State *state)
         wait_cycles(17); // per Intel 8080 Programmers Manual
         break;
     }
-//    case 0xce: printf("ACI D8, $%02x", code[1]); opbytes = 2; break;
+    case 0xce: // ACI D8    A <- A + code[1] + carry
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        state->a = add_8b(state, state->a, code[1], 1);
+        wait_cycles(7);
+        break;
+    }
 //    case 0xcf: printf("RST 1"); break;
 //    case 0xd0: printf("RNC"); break;
     case 0xd1: // POP D; Pops stack into DE register pair.
