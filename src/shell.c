@@ -556,42 +556,42 @@ void emulate8080(State *state)
     case 0x88: // ADC B     A <- A + B + carry
     {
         state->pc += opbytes;
-        state->a = add_8b(state, state->a, state->b, 1);
+        state->a = add_with_carry_8b(state, state->a, state->b);
         wait_cycles(4);
         break;
     }
     case 0x89: // ADC C     A <- A + C + carry
     {
         state->pc += opbytes;
-        state->a = add_8b(state, state->a, state->c, 1);
+        state->a = add_with_carry_8b(state, state->a, state->c);
         wait_cycles(4);
         break;
     }
     case 0x8a: // ADC D     A <- A + D + carry
     {
         state->pc += opbytes;
-        state->a = add_8b(state, state->a, state->d, 1);
+        state->a = add_with_carry_8b(state, state->a, state->d);
         wait_cycles(4);
         break;
     }
     case 0x8b: // ADC E     A <- A + E + carry
     {
         state->pc += opbytes;
-        state->a = add_8b(state, state->a, state->e, 1);
+        state->a = add_with_carry_8b(state, state->a, state->e);
         wait_cycles(4);
         break;
     }
     case 0x8c: // ADC H     A <- A + H + carry
     {
         state->pc += opbytes;
-        state->a = add_8b(state, state->a, state->h, 1);
+        state->a = add_with_carry_8b(state, state->a, state->h);
         wait_cycles(4);
         break;
     }
     case 0x8d: // ADC L     A <- A + L + carry
     {
         state->pc += opbytes;
-        state->a = add_8b(state, state->a, state->l, 1);
+        state->a = add_with_carry_8b(state, state->a, state->l);
         wait_cycles(4);
         break;
     }
@@ -599,14 +599,14 @@ void emulate8080(State *state)
     {
         state->pc += opbytes;
         uint16_t address = combine_bytes_to_word(state->h, state->l);
-        state->a = add_8b(state, state->a, state->memory[address], 1);
+        state->a = add_with_carry_8b(state, state->a, state->memory[address]);
         wait_cycles(4);
         break;
     }
     case 0x8f: // ADC A     A <- A + A + carry
     {
         state->pc += opbytes;
-        state->a = add_8b(state, state->a, state->a, 1);
+        state->a = add_with_carry_8b(state, state->a, state->a);
         wait_cycles(4);
         break;
     }
@@ -728,7 +728,7 @@ void emulate8080(State *state)
     {
         opbytes = 2;
         state->pc += opbytes;
-        state->a = add_8b(state, state->a, code[1], 1);
+        state->a = add_with_carry_8b(state, state->a, code[1]);
         wait_cycles(7);
         break;
     }
@@ -1123,23 +1123,26 @@ void subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend)
     state->conditions.parity = get_parity_flag(res);
 }
 
-uint8_t add_8b(struct State *state, uint8_t operand1, uint8_t operand2, int with_carry = 0)
+uint8_t add_8b(struct State *state, uint8_t operand1, uint8_t operand2)
 {
-    uint16_t result_16b = operand1 + operand2;
-    if (with_carry)
-    {
-        result_16b += state->conditions.carry;
-        state->conditions.aux_carry = ((operand1 & 0x0F) + (operand2 & 0x0F) + state->conditions.carry) > 0x0F;
-        state->conditions.carry = result_16b > 0xFF;
+    uint8_t result = operand1 + operand2;
 
-    } else
-    {
-        state->conditions.carry = get_carry_flag_from_sum_8b(operand1, operand2);
-        state->conditions.aux_carry = get_aux_carry_flag_from_sum(operand1, operand2);
-    }
+    state->conditions.carry = get_carry_flag_from_sum_8b(operand1, operand2);
+    state->conditions.aux_carry = get_aux_carry_flag_from_sum(operand1, operand2);
+    state->conditions.sign = get_sign_flag(result);
+    state->conditions.zero = get_zero_flag(result);
+    state->conditions.parity = get_parity_flag(result);
 
+    return result;
+}
+
+uint8_t add_with_carry_8b(struct State *state, uint8_t operand1, uint8_t operand2)
+{
+    uint16_t result_16b = operand1 + operand2 + state->conditions.carry;
     uint8_t result_8b = result_16b & 0xFF;
 
+    state->conditions.aux_carry = ((operand1 & 0x0F) + (operand2 & 0x0F) + state->conditions.carry) > 0x0F;
+    state->conditions.carry = result_16b > 0xFF;
     state->conditions.sign = get_sign_flag(result_8b);
     state->conditions.zero = get_zero_flag(result_8b);
     state->conditions.parity = get_parity_flag(result_8b);
