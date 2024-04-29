@@ -1110,7 +1110,7 @@ void sbb(uint8_t *a, uint8_t b, Conditions *f) {
 
     f->zero = (result == 0);
     f->sign = (result & 0x80) != 0; // Set if MSB is 1
-    f->parity = __builtin_parity(result)    // Set if parity is even
+    f->parity = __builtin_parity(result);    // Set if parity is even
     f->carry = (*a < b + (f->carry ? 1 : 0)); // Set if borrow required
     f->aux_carry = ((*a & 0x0F) < (b & 0x0F) + (f->carry ? 1 : 0)); // Set if borrow from lower nibble
 
