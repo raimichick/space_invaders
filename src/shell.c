@@ -625,7 +625,17 @@ void emulate8080(State *state)
     }
 //    case 0xec: printf("CPE, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xed: printf("-"); break;
-//    case 0xee: printf("XRI D8, $%02x", code[1]); opbytes = 2; break;
+    case 0xee:  // XRI D8   :   A <- A ^ code[1]; opbytes = 2
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        state->a = state->a ^ code[1];
+        state->conditions.carry = 0;
+        state->conditions.zero = get_zero_flag(state->a);
+        state->conditions.sign = get_sign_flag(state->a);
+        state->conditions.parity = get_parity_flag(state->a);
+        break;
+    }
 //    case 0xef: printf("RST 5"); break;
 //    case 0xf0: printf("RP"); break;
     case 0xf1: // POP PSW; Pop Processor Status Word.

@@ -205,6 +205,28 @@ int test_XRA_A(State *state, State *expected_state)
     return state_compare(state, expected_state);
 }
 
+int test_XRI(State *state, State *expected_state)
+{
+    // Set state
+    state->a = 0xFF;
+    state->conditions.carry = 1;
+    state->conditions.sign = 1;
+    state->memory[0] = 0xee;
+    state->memory[1] = 0xDD;
+
+    // Set expected state
+    expected_state->a = 0x22;
+    expected_state->pc = 2;
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.parity = 1;
+    expected_state->conditions.carry = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
 int main(int argc, char *argv[])
 {
     // Set up a states to test with
@@ -238,6 +260,9 @@ int main(int argc, char *argv[])
         break;
     case 0xaf:
         result = test_XRA_A(state, expected_state);
+        break;
+    case 0xee:
+        result = test_XRI(state, expected_state);
         break;
     default:
         return 1; // Test failed due to incorrect test parameter
