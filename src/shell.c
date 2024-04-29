@@ -63,8 +63,7 @@ void emulate8080(State *state)
         uint16_t temp_BC = combine_bytes_to_word(state->b, state->c);
         state->conditions.carry = get_carry_flag_from_sum_16b(temp_HL, temp_BC);
         temp_HL += temp_BC;
-        state->h = temp_HL >> 8;
-        state->l = temp_HL;
+        split_word_to_bytes(temp_HL, &state->h, &state->l);
         wait_cycles(10);
         break;
     }
@@ -152,8 +151,7 @@ void emulate8080(State *state)
         uint16_t temp_DE = combine_bytes_to_word(state->d, state->e);
         state->conditions.carry = get_carry_flag_from_sum_16b(temp_HL, temp_DE);
         temp_HL += temp_DE;
-        state->h = temp_HL >> 8;
-        state->l = temp_HL;
+        split_word_to_bytes(temp_HL, &state->h, &state->l);
         wait_cycles(10);
         break;
     }
@@ -200,7 +198,7 @@ void emulate8080(State *state)
         state->l = code[1];
         wait_cycles(10);
         break;
-    }     
+    }
 //    case 0x22: printf("SHLD adr, $%02x%02x", code[2], code[1]); opbytes = 3; break;
     case 0x23: // INX H  LH <- LH + 1
     {
@@ -212,7 +210,7 @@ void emulate8080(State *state)
         wait_cycles(5);
         break;
     }
-      
+
     case 0x24: // INR H     H <- H+1
     {
         state->pc += opbytes;
@@ -234,7 +232,7 @@ void emulate8080(State *state)
         state->h = code[1];
         wait_cycles(7);
         break;
-    }    
+    }
 //    case 0x27: printf("DAA"); break;
 //    case 0x28: printf("-"); break;
     case 0x29: // DAD H     HL = HL + HL
@@ -279,10 +277,10 @@ void emulate8080(State *state)
     {
         opbytes = 3;
         state->pc += opbytes;
-        state->sp = combine_bytes_to_word(code[2], code[1]); 
+        state->sp = combine_bytes_to_word(code[2], code[1]);
         wait_cycles(10);
         break;
-    }   
+    }
     case 0x32: // STA adr code[2], code[1]
     {
         opbytes = 3;
@@ -290,8 +288,8 @@ void emulate8080(State *state)
         uint16_t temp_adr = combine_bytes_to_word(code[2], code[1]);
 	state->a = state->memory[temp_adr];
         wait_cycles(13);
-        break;            
-    }  
+        break;
+    }
 //    case 0x33: printf("INX SP"); break;
     case 0x34: // INR M     increment the value at memory address [HL]
     {
@@ -316,10 +314,19 @@ void emulate8080(State *state)
         state->memory[combine_bytes_to_word(state->h, state->l)] = code[1];
         wait_cycles(7);
         break;
-    }  
+    }
 //    case 0x37: printf("STC"); break;
 //    case 0x38: printf("-"); break;
-//    case 0x39: printf("DAD SP"); break;
+    case 0x39: // DAD SP    HL <- HL + SP
+    {
+        state->pc += opbytes;
+        uint16_t temp_HL = combine_bytes_to_word(state->h, state->l);
+        state->conditions.carry = get_carry_flag_from_sum_16b(temp_HL, state->sp);
+        temp_HL += state->sp;
+        split_word_to_bytes(temp_HL, &state->h, &state->l);
+        wait_cycles(10);
+        break;
+    }
     case 0x3a: // LDA adr A <- code[1] adr <- code[2]
     {
         opbytes = 3;
