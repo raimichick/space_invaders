@@ -245,7 +245,12 @@ void emulate8080(State *state)
     	}
     	state->conditions.zero = (state->a == 0);
     	state->conditions.sign = (state->a & 0x80) != 0;
-    	state->conditions.parity = __builtin_parity(state->a);    
+    	state->conditions.parity = 1; // Start with odd parity
+    	for (int i = 0; i < 8; i++) {
+        	if (state->a & (1 << i)) {
+            	state->conditions.parity = !state->conditions.parity; // Flip parity if bit is set
+        	}
+    	}
     	wait_cycles(4);
     	break;
     }
@@ -1110,10 +1115,19 @@ void sbb(uint8_t *a, uint8_t b, Conditions *f) {
 
     f->zero = (result == 0);
     f->sign = (result & 0x80) != 0; // Set if MSB is 1
-    f->parity = __builtin_parity(result);    // Set if parity is even
+
+    // Calculate parity manually
+    f->parity = 1; // Start with odd parity
+    for (int i = 0; i < 8; i++) {
+        if (result & (1 << i)) {
+            f->parity = !f->parity; // Flip parity if bit is set
+        }
+    }
+
     f->carry = (*a < b + (f->carry ? 1 : 0)); // Set if borrow required
     f->aux_carry = ((*a & 0x0F) < (b & 0x0F) + (f->carry ? 1 : 0)); // Set if borrow from lower nibble
 
     *a = (uint8_t)result;
 }
+
 
