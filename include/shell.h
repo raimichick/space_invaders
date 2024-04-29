@@ -24,5 +24,7 @@ uint8_t get_parity_flag(uint8_t register_value);
 uint8_t get_carry_flag_from_sum_8b(uint8_t val0, uint8_t val1);
 uint8_t get_carry_flag_from_sum_16b(uint16_t val0, uint16_t val1);
 uint8_t get_aux_carry_flag_from_sum(uint8_t val0, uint8_t val1);
+void sbb(uint8_t *a, uint8_t b, flags *f);
+void sub(uint8_t *a, uint8_t b, flags *f);
 
 void unimplementedInstr(uint8_t opcode);
