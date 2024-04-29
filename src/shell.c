@@ -422,14 +422,42 @@ void emulate8080(State *state)
         ana_helper(state, state->a);
         break;
     }
-//    case 0xa8: printf("XRA B"); break;
-//    case 0xa9: printf("XRA C"); break;
-//    case 0xaa: printf("XRA D"); break;
-//    case 0xab: printf("XRA E"); break;
-//    case 0xac: printf("XRA H"); break;
-//    case 0xad: printf("XRA L"); break;
-//    case 0xae: printf("XRA M"); break;
-    case 0xaf:  // XRA A
+    case 0xa8:  // XRA B    :   A = A ^ B
+    {
+        xra_helper(state, state->b);
+        break;
+    }
+    case 0xa9:  // XRA C    :   A = A ^ C
+    {
+        xra_helper(state, state->c);
+        break;
+    }
+    case 0xaa:  // XRA D    :   A = A ^ D
+    {
+        xra_helper(state, state->d);
+        break;
+    }
+    case 0xab:  // XRA E    :   A = A ^ E
+    {
+        xra_helper(state, state->e);
+        break;
+    }
+    case 0xac:  // XRA H    :   A = A ^ H
+    {
+        xra_helper(state, state->h);
+        break;
+    }
+    case 0xad:  // XRA L    :   A = A ^ L
+    {
+        xra_helper(state, state->l);
+        break;
+    }
+    case 0xae:  // XRA M    :   A = A ^ mem[HL]
+    {
+        xra_helper(state, state->memory[combine_h_l_addr(state)]);
+        break;
+    }
+    case 0xaf:  // XRA A    :   A = A ^ A
     {
         xra_helper(state, state->a);
         break;
