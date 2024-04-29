@@ -245,7 +245,7 @@ void emulate8080(State *state)
     	}
     	state->conditions.zero = (state->a == 0);
     	state->conditions.sign = (state->a & 0x80) != 0;
-    	state->conditions.parity = (state->a, 8);   
+    	state->conditions.parity = __builtin_parity(state->a);    
     	wait_cycles(4);
     	break;
     }
@@ -577,15 +577,15 @@ void emulate8080(State *state)
     	wait_cycles(4);
     	break;
     }
-    case 0x9e: // SBB M   Z, S, P, CY, AC	A <- A - (HL) - CY
-    {
+   case 0x9e: // SBB M   Z, S, P, CY, AC A <- A - (HL) - CY
+   {
     	uint16_t address = (state->h << 8) | state->l;
-    	uint8_t value = memory[address];
+    	uint8_t value = state->memory[address];
     	state->pc += opbytes;
     	sbb(&state->a, value, &state->conditions);
     	wait_cycles(7); 
     	break;
-    }
+   }
     case 0x9f: // SBB A   Z, S, P, CY, AC	A <- A - A - CY
     {
     	state->pc += opbytes;
@@ -1106,13 +1106,13 @@ void sub(uint8_t *a, uint8_t b, Conditions *f) {
 }
 
 void sbb(uint8_t *a, uint8_t b, Conditions *f) {
-    uint16_t result = *a - b - (f->cy ? 1 : 0);
+    uint16_t result = *a - b - (f->carry ? 1 : 0);
 
     f->zero = (result == 0);
     f->sign = (result & 0x80) != 0; // Set if MSB is 1
-    f->parity = (result, 8);    // Set if parity is even
-    f->carry = (*a < b + (f->cy ? 1 : 0)); // Set if borrow required
-    f->aux_carry = ((*a & 0x0F) < (b & 0x0F) + (f->cy ? 1 : 0)); // Set if borrow from lower nibble
+    f->parity = __builtin_parity(result)    // Set if parity is even
+    f->carry = (*a < b + (f->carry ? 1 : 0)); // Set if borrow required
+    f->aux_carry = ((*a & 0x0F) < (b & 0x0F) + (f->carry ? 1 : 0)); // Set if borrow from lower nibble
 
     *a = (uint8_t)result;
 }
