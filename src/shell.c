@@ -67,7 +67,14 @@ void emulate8080(State *state)
         wait_cycles(10);
         break;
     }
-//    case 0x0a: printf("LDAX B"); break;
+    case 0x0a: // LDAX B    A <- value at memory[BC]
+    {
+        state->pc += opbytes;
+        uint16_t temp_BC = combine_bytes_to_word(state->b, state->c);
+        state->a = state->memory[temp_BC];
+        wait_cycles(7);
+        break;
+    }
     case 0x0b: // DCX B     BC <- BC-1
     {
         state->pc += opbytes;
