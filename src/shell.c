@@ -239,13 +239,13 @@ void emulate8080(State *state)
         	state->a += 6;
         	state->conditions.aux_carry = 1;
     	}
-    	if (higher_nib > 9 || state->conditions.cy == 1) {
+    	if (higher_nib > 9 || state->conditions.carry == 1) {
         	state->a += 0x60;
         	state->conditions.carry = 1;
     	}
     	state->conditions.zero = (state->a == 0);
     	state->conditions.sign = (state->a & 0x80) != 0;
-    	state->conditions.parity = parity(state->a, 8);   
+    	state->conditions.parity = (state->a, 8);   
     	wait_cycles(4);
     	break;
     }
@@ -519,10 +519,10 @@ void emulate8080(State *state)
     	wait_cycles(4);
     	break;
     }
-    case 0x96: // SUB M   Z, S, P, CY, AC	A <- A - (HL)
-    {
-	uint16_t address = (state->h << 8) | state->l;
-    	uint8_t value = memory[address];
+   case 0x96: // SUB M   Z, S, P, CY, AC A <- A - (HL)
+   {
+   	uint16_t address = (state->h << 8) | state->l;
+    	uint8_t value = state->memory[address];
     	state->pc += opbytes;
     	sub(&state->a, value, &state->conditions);
     	wait_cycles(7);
@@ -719,11 +719,11 @@ void emulate8080(State *state)
         wait_cycles(11); // per Intel 8080 Programmers Manual
         break;
     }
-    case 0xd6: // SUI D8   Z, S, P, CY, AC	A <- A - byte
+    case 0xd6: // SUI D8   Z, S, P, CY, AC A <- A - byte
     {
-    	uint8_t immediate = memory[state->pc + 1];
+    	uint8_t immediate = state->memory[state->pc + 1];
     	state->pc += 2;
-    	sub(&state->a, immediate, &state->flags);
+    	sub(&state->a, immediate, &state->conditions);
     	wait_cycles(7); 
     	break;
     }
@@ -736,9 +736,9 @@ void emulate8080(State *state)
 //    case 0xdd: printf("-"); break;
     case 0xde: // SBI D8   Z, S, P, CY, AC	A <- A - byte - CY
     {
-    	uint8_t immediate = memory[state->pc + 1];
+    	uint8_t immediate = state->memory[state->pc + 1];
     	state->pc += 2;
-    	sbb(&state->a, immediate, &state->flags);
+    	sbb(&state->a, immediate, &state->conditions);
     	wait_cycles(7); 
     	break;
     }
@@ -1096,23 +1096,23 @@ void unimplementedInstr(uint8_t opcode)
 void sub(uint8_t *a, uint8_t b, Conditions *f) {
     uint16_t result = *a - b;
 
-    f->z = (result == 0);
-    f->s = (result & 0x80) != 0; // Set if MSB is 1
-    f->cy = (*a < b);            // Set if borrow required
-    f->ac = ((*a & 0x0F) < (b & 0x0F)); // Set if borrow from lower nibble
+    f->zero = (result == 0);
+    f->sign = (result & 0x80) != 0; // Set if MSB is 1
+    f->carry = (*a < b);            // Set if borrow required
+    f->aux_carry = ((*a & 0x0F) < (b & 0x0F)); // Set if borrow from lower nibble
 
     *a = (uint8_t)result;
-    f->p = 0; // Parity flag is not calculated
+    f->parity = 0; // Parity flag is not calculated
 }
 
 void sbb(uint8_t *a, uint8_t b, Conditions *f) {
     uint16_t result = *a - b - (f->cy ? 1 : 0);
 
-    f->z = (result == 0);
-    f->s = (result & 0x80) != 0; // Set if MSB is 1
-    f->p = parity(result, 8);    // Set if parity is even
-    f->cy = (*a < b + (f->cy ? 1 : 0)); // Set if borrow required
-    f->ac = ((*a & 0x0F) < (b & 0x0F) + (f->cy ? 1 : 0)); // Set if borrow from lower nibble
+    f->zero = (result == 0);
+    f->sign = (result & 0x80) != 0; // Set if MSB is 1
+    f->parity = (result, 8);    // Set if parity is even
+    f->carry = (*a < b + (f->cy ? 1 : 0)); // Set if borrow required
+    f->aux_carry = ((*a & 0x0F) < (b & 0x0F) + (f->cy ? 1 : 0)); // Set if borrow from lower nibble
 
     *a = (uint8_t)result;
 }
