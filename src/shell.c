@@ -235,17 +235,17 @@ void emulate8080(State *state)
     	state->pc += opbytes;
     	uint8_t lower_nib = state->a & 0x0F;
     	uint8_t higher_nib = (state->a >> 4) & 0x0F;
-    	if (lower_nib > 9 || state->flags.ac == 1) {
+    	if (lower_nib > 9 || state->conditions.aux_carry == 1) {
         	state->a += 6;
-        	state->flags.ac = 1;
+        	state->conditions.aux_carry = 1;
     	}
-    	if (higher_nib > 9 || state->flags.cy == 1) {
+    	if (higher_nib > 9 || state->conditions.cy == 1) {
         	state->a += 0x60;
-        	state->flags.cy = 1;
+        	state->conditions.carry = 1;
     	}
-    	state->flags.z = (state->a == 0);
-    	state->flags.s = (state->a & 0x80) != 0;
-    	state->flags.p = parity(state->a, 8);   
+    	state->conditions.zero = (state->a == 0);
+    	state->conditions.sign = (state->a & 0x80) != 0;
+    	state->conditions.parity = parity(state->a, 8);   
     	wait_cycles(4);
     	break;
     }
@@ -330,7 +330,7 @@ void emulate8080(State *state)
     case 0x37: // STC  CY = 1
     {
 	state->pc += opbytes;
-	state->cc.cy = 1;
+	state->conditions.carry = 1;
 	wait_cycles(4);
 	break;
     }
@@ -358,7 +358,7 @@ void emulate8080(State *state)
     case 0x3f: // CMC   CY != CY
     {
 	state->pc += opbytes;
-	state->cc.cy = ~state->cc.cy;
+	state->conditions.carry = ~state->conditions.carry;
 	wait_cycles(4);
 	break;
     }
@@ -480,42 +480,42 @@ void emulate8080(State *state)
     case 0x90: // SUB B   Z, S, P, CY, AC    A <- A - B
     {
     	state->pc += opbytes;
-	sub(&state->a, state->b, &state->flags);
+	sub(&state->a, state->b, &state->conditions);
     	wait_cycles(4);
     	break;
     }
     case 0x91: // SUB C   Z, S, P, CY, AC	A <- A - C
     {
 	state->pc += opbytes;
-    	sub(&state->a, state->c, &state->flags);
+    	sub(&state->a, state->c, &state->conditions);
     	wait_cycles(4);
     	break;
     }
     case 0x92: // SUB D   Z, S, P, CY, AC	A <- A - D
     {
 	state->pc += opbytes;
-    	sub(&state->a, state->d, &state->flags);
+    	sub(&state->a, state->d, &state->conditions);
     	wait_cycles(4);
     	break;
     }
     case 0x93: // SUB E   Z, S, P, CY, AC	A <- A - E
     {
 	state->pc += opbytes;
-    	sub(&state->a, state->e, &state->flags);
+    	sub(&state->a, state->e, &state->conditions);
     	wait_cycles(4);
     	break;
     }
     case 0x94: // SUB H  Z, S, P, CY, AC    A <- A - H
     {
 	state->pc += opbytes;
-    	sub(&state->a, state->h, &state->flags);
+    	sub(&state->a, state->h, &state->conditions);
     	wait_cycles(4);
     	break;
     }
     case 0x95: // SUB L  Z, S, P, CY, AC	A <- A - L
     {
 	state->pc += opbytes;
-    	sub(&state->a, state->l, &state->flags);
+    	sub(&state->a, state->l, &state->conditions);
     	wait_cycles(4);
     	break;
     }
@@ -524,56 +524,56 @@ void emulate8080(State *state)
 	uint16_t address = (state->h << 8) | state->l;
     	uint8_t value = memory[address];
     	state->pc += opbytes;
-    	sub(&state->a, value, &state->flags);
+    	sub(&state->a, value, &state->conditions);
     	wait_cycles(7);
     	break;
     }
     case 0x97: // SUB A  Z, S, P, CY, AC	A <- A - A
     {
 	state->pc += opbytes;
-    	sub(&state->a, state->a, &state->flags);
+    	sub(&state->a, state->a, &state->conditions);
     	wait_cycles(4);
     	break;
     }
     case 0x98: // SBB B   Z, S, P, CY, AC	A <- A - B - CY
     {
     	state->pc += opbytes;
-    	sbb(&state->a, state->b, &state->flags);
+    	sbb(&state->a, state->b, &state->conditions);
     	wait_cycles(4);
     	break;
     }
     case 0x99: // SBB C   Z, S, P, CY, AC	A <- A - C - CY
     {
     	state->pc += opbytes;
-    	sbb(&state->a, state->c, &state->flags);
+    	sbb(&state->a, state->c, &state->conditions);
     	wait_cycles(4);
     	break;
     }
     case 0x9a: // SBB D   Z, S, P, CY, AC	A <- A - D - CY
     {
     	state->pc += opbytes;
-    	sbb(&state->a, state->d, &state->flags);
+    	sbb(&state->a, state->d, &state->conditions);
     	wait_cycles(4);
     	break;
     }
     case 0x9b: // SBB E   Z, S, P, CY, AC	A <- A - E - CY
     {
     	state->pc += opbytes;
-    	sbb(&state->a, state->e, &state->flags);
+    	sbb(&state->a, state->e, &state->conditions);
     	wait_cycles(4);
     	break;
     }
     case 0x9c: // SBB H   Z, S, P, CY, AC	A <- A - H - CY
     {
     	state->pc += opbytes;
-    	sbb(&state->a, state->h, &state->flags);
+    	sbb(&state->a, state->h, &state->conditions);
     	wait_cycles(4);
     	break;
     }
     case 0x9d: // SBB L   Z, S, P, CY, AC	A <- A - L - CY
     {
     	state->pc += opbytes;
-    	sbb(&state->a, state->l, &state->flags);
+    	sbb(&state->a, state->l, &state->conditions);
     	wait_cycles(4);
     	break;
     }
@@ -582,14 +582,14 @@ void emulate8080(State *state)
     	uint16_t address = (state->h << 8) | state->l;
     	uint8_t value = memory[address];
     	state->pc += opbytes;
-    	sbb(&state->a, value, &state->flags);
+    	sbb(&state->a, value, &state->conditions);
     	wait_cycles(7); 
     	break;
     }
     case 0x9f: // SBB A   Z, S, P, CY, AC	A <- A - A - CY
     {
     	state->pc += opbytes;
-    	sbb(&state->a, state->a, &state->flags); // Subtracting A from A
+    	sbb(&state->a, state->a, &state->conditions); // Subtracting A from A
     	wait_cycles(4);
     	break;
     }
