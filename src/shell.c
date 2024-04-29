@@ -382,82 +382,82 @@ void emulate8080(State *state)
 //    case 0x9d: printf("SBB L"); break;
 //    case 0x9e: printf("SBB M"); break;
 //    case 0x9f: printf("SBB A"); break;
-    case 0xa0:  // ANA B    :   A = A & B
+    case 0xa0:  // ANA B    :   A <- A & B
     {
         ana_helper(state, state->b);
         break;
     }
-    case 0xa1:  // ANA C    :   A = A & C
+    case 0xa1:  // ANA C    :   A <- A & C
     {
         ana_helper(state, state->c);
         break;
     }
-    case 0xa2:  // ANA D    :   A = A & D
+    case 0xa2:  // ANA D    :   A <- A & D
     {
         ana_helper(state, state->d);
         break;
     }
-    case 0xa3:  // ANA E    :   A = A & E
+    case 0xa3:  // ANA E    :   A <- A & E
     {
         ana_helper(state, state->e);
         break;
     }
-    case 0xa4:  // ANA H    :   A = A & H
+    case 0xa4:  // ANA H    :   A <- A & H
     {
         ana_helper(state, state->h);
         break;
     }
-    case 0xa5:  // ANA L    :   A = A & L
+    case 0xa5:  // ANA L    :   A <- A & L
     {
         ana_helper(state, state->l);
         break;
     }
-    case 0xa6:  // ANA M    :   A = A & mem[HL]
+    case 0xa6:  // ANA M    :   A <- A & mem[HL]
     {
         ana_helper(state, state->memory[combine_h_l_addr(state)]);
         break;
     }
-    case 0xa7:  // ANA A    :   A = A & A
+    case 0xa7:  // ANA A    :   A <- A & A
     {
         ana_helper(state, state->a);
         break;
     }
-    case 0xa8:  // XRA B    :   A = A ^ B
+    case 0xa8:  // XRA B    :   A <- A ^ B
     {
         xra_helper(state, state->b);
         break;
     }
-    case 0xa9:  // XRA C    :   A = A ^ C
+    case 0xa9:  // XRA C    :   A <- A ^ C
     {
         xra_helper(state, state->c);
         break;
     }
-    case 0xaa:  // XRA D    :   A = A ^ D
+    case 0xaa:  // XRA D    :   A <- A ^ D
     {
         xra_helper(state, state->d);
         break;
     }
-    case 0xab:  // XRA E    :   A = A ^ E
+    case 0xab:  // XRA E    :   A <- A ^ E
     {
         xra_helper(state, state->e);
         break;
     }
-    case 0xac:  // XRA H    :   A = A ^ H
+    case 0xac:  // XRA H    :   A <- A ^ H
     {
         xra_helper(state, state->h);
         break;
     }
-    case 0xad:  // XRA L    :   A = A ^ L
+    case 0xad:  // XRA L    :   A <- A ^ L
     {
         xra_helper(state, state->l);
         break;
     }
-    case 0xae:  // XRA M    :   A = A ^ mem[HL]
+    case 0xae:  // XRA M    :   A <- A ^ mem[HL]
     {
         xra_helper(state, state->memory[combine_h_l_addr(state)]);
         break;
     }
-    case 0xaf:  // XRA A    :   A = A ^ A
+    case 0xaf:  // XRA A    :   A <- A ^ A
     {
         xra_helper(state, state->a);
         break;

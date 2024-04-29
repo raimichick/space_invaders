@@ -45,6 +45,13 @@ add_test(NAME ana_m COMMAND test_ana_reg 0xa6)
 add_test(NAME ana_a COMMAND test_ana_reg 0xa7)
 
 # XRA REG Tests
+add_test(NAME xra_b COMMAND test_xra_reg 0xa8)
+add_test(NAME xra_c COMMAND test_xra_reg 0xa9)
+add_test(NAME xra_d COMMAND test_xra_reg 0xaa)
+add_test(NAME xra_e COMMAND test_xra_reg 0xab)
+add_test(NAME xra_h COMMAND test_xra_reg 0xac)
+add_test(NAME xra_l COMMAND test_xra_reg 0xad)
+add_test(NAME xra_m COMMAND test_xra_reg 0xae)
 add_test(NAME xra_a COMMAND test_xra_reg 0xaf)
 
 # Jump Tests
