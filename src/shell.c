@@ -471,22 +471,120 @@ void emulate8080(State *state)
         break;
     }
 //    case 0x7f: printf("MOV A,A");  break;
-//    case 0x80: printf("ADD B");  break;
-//    case 0x81: printf("ADD C"); break;
-//    case 0x82: printf("ADD D"); break;
-//    case 0x83: printf("ADD E"); break;
-//    case 0x84: printf("ADD H"); break;
-//    case 0x85: printf("ADD L"); break;
-//    case 0x86: printf("ADD M"); break;
-//    case 0x87: printf("ADD A"); break;
-//    case 0x88: printf("ADC B"); break;
-//    case 0x89: printf("ADC C"); break;
-//    case 0x8a: printf("ADC D"); break;
-//    case 0x8b: printf("ADC E"); break;
-//    case 0x8c: printf("ADC H"); break;
-//    case 0x8d: printf("ADC L"); break;
-//    case 0x8e: printf("ADC M"); break;
-//    case 0x8f: printf("ADC A"); break;
+    case 0x80: // ADD B     A <- A + B
+    {
+        state->pc += opbytes;
+        state->a = add_8b(state, state->a, state->b);
+        wait_cycles(4);
+        break;
+    }
+    case 0x81: // ADD C     A <- A + C
+    {
+        state->pc += opbytes;
+        state->a = add_8b(state, state->a, state->c);
+        wait_cycles(4);
+        break;
+    }
+    case 0x82: // ADD D     A <- A + D
+    {
+        state->pc += opbytes;
+        state->a = add_8b(state, state->a, state->d);
+        wait_cycles(4);
+        break;
+    }
+    case 0x83: // ADD E     A <- A + E
+    {
+        state->pc += opbytes;
+        state->a = add_8b(state, state->a, state->e);
+        wait_cycles(4);
+        break;
+    }
+    case 0x84: // ADD H     A <- A + H
+    {
+        state->pc += opbytes;
+        state->a = add_8b(state, state->a, state->h);
+        wait_cycles(4);
+        break;
+    }
+    case 0x85: // ADD L     A <- A + L
+    {
+        state->pc += opbytes;
+        state->a = add_8b(state, state->a, state->l);
+        wait_cycles(4);
+        break;
+    }
+    case 0x86: // ADD M     A <- A + memory[HL]
+    {
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(state->h, state->l);
+        state->a = add_8b(state, state->a, state->memory[address]);
+        wait_cycles(4);
+        break;
+    }
+    case 0x87: // ADD A     A <- A + A
+    {
+        state->pc += opbytes;
+        state->a = add_8b(state, state->a, state->a);
+        wait_cycles(4);
+        break;
+    }
+    case 0x88: // ADC B     A <- A + B + carry
+    {
+        state->pc += opbytes;
+        state->a = add_8b(state, state->a, state->b, 1);
+        wait_cycles(4);
+        break;
+    }
+    case 0x89: // ADC C     A <- A + C + carry
+    {
+        state->pc += opbytes;
+        state->a = add_8b(state, state->a, state->c, 1);
+        wait_cycles(4);
+        break;
+    }
+    case 0x8a: // ADC D     A <- A + D + carry
+    {
+        state->pc += opbytes;
+        state->a = add_8b(state, state->a, state->d, 1);
+        wait_cycles(4);
+        break;
+    }
+    case 0x8b: // ADC E     A <- A + E + carry
+    {
+        state->pc += opbytes;
+        state->a = add_8b(state, state->a, state->e, 1);
+        wait_cycles(4);
+        break;
+    }
+    case 0x8c: // ADC H     A <- A + H + carry
+    {
+        state->pc += opbytes;
+        state->a = add_8b(state, state->a, state->h, 1);
+        wait_cycles(4);
+        break;
+    }
+    case 0x8d: // ADC L     A <- A + L + carry
+    {
+        state->pc += opbytes;
+        state->a = add_8b(state, state->a, state->l, 1);
+        wait_cycles(4);
+        break;
+    }
+    case 0x8e: // ADC M     A <- A + memory[HL] + carry
+    {
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(state->h, state->l);
+        state->a = add_8b(state, state->a, state->memory[address], 1);
+        wait_cycles(4);
+        break;
+    }
+    case 0x8f: // ADC A     A <- A + A + carry
+    {
+        state->pc += opbytes;
+        state->a = add_8b(state, state->a, state->a, 1);
+        wait_cycles(4);
+        break;
+    }
 //    case 0x90: printf("SUB B"); break;
 //    case 0x91: printf("SUB C"); break;
 //    case 0x92: printf("SUB D"); break;
@@ -992,6 +1090,31 @@ void subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend)
     state->conditions.sign = get_sign_flag(res);
     state->conditions.parity = get_parity_flag(res);
 }
+
+uint8_t add_8b(struct State *state, uint8_t operand1, uint8_t operand2, int with_carry = 0)
+{
+    uint16_t result_16b = operand1 + operand2;
+    if (with_carry)
+    {
+        result_16b += state->conditions.carry;
+        state->conditions.aux_carry = ((operand1 & 0x0F) + (operand2 & 0x0F) + state->conditions.carry) > 0x0F;
+        state->conditions.carry = result_16b > 0xFF;
+
+    } else
+    {
+        state->conditions.carry = get_carry_flag_from_sum_8b(operand1, operand2);
+        state->conditions.aux_carry = get_aux_carry_flag_from_sum(operand1, operand2);
+    }
+
+    uint8_t result_8b = result_16b & 0xFF;
+
+    state->conditions.sign = get_sign_flag(result_8b);
+    state->conditions.zero = get_zero_flag(result_8b);
+    state->conditions.parity = get_parity_flag(result_8b);
+
+    return result_8b;
+}
+
 
 uint16_t combine_bytes_to_word(uint8_t hi_byte, uint8_t lo_byte)
 {
