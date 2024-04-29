@@ -1093,7 +1093,7 @@ void unimplementedInstr(uint8_t opcode)
     exit(1);
 }
 
-void sub(uint8_t *a, uint8_t b, flags *f) {
+void sub(uint8_t *a, uint8_t b, Conditions *f) {
     uint16_t result = *a - b;
 
     f->z = (result == 0);
@@ -1105,7 +1105,7 @@ void sub(uint8_t *a, uint8_t b, flags *f) {
     f->p = 0; // Parity flag is not calculated
 }
 
-void sbb(uint8_t *a, uint8_t b, flags *f) {
+void sbb(uint8_t *a, uint8_t b, Conditions *f) {
     uint16_t result = *a - b - (f->cy ? 1 : 0);
 
     f->z = (result == 0);
