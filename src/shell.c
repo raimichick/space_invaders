@@ -462,14 +462,46 @@ void emulate8080(State *state)
         xra_helper(state, state->a);
         break;
     }
-//    case 0xb0: printf("ORA B"); break;
-//    case 0xb1: printf("ORA C"); break;
-//    case 0xb2: printf("ORA D"); break;
-//    case 0xb3: printf("ORA E"); break;
-//    case 0xb4: printf("ORA H"); break;
-//    case 0xb5: printf("ORA L"); break;
-//    case 0xb6: printf("ORA M"); break;
-//    case 0xb7: printf("ORA A"); break;
+    case 0xb0:  // ORA B    :   A <- A | B
+    {
+        ora_helper(state, state->b);
+        break;
+    }
+    case 0xb1:  // ORA C    :   A <- A | C
+    {
+        ora_helper(state, state->c);
+        break;
+    }
+    case 0xb2:  // ORA D    :   A <- A | D
+    {
+        ora_helper(state, state->d);
+        break;
+    }
+    case 0xb3:  // ORA E    :   A <- A | E
+    {
+        ora_helper(state, state->e);
+        break;
+    }
+    case 0xb4:  // ORA H    :   A <- A | H
+    {
+        ora_helper(state, state->h);
+        break;
+    }
+    case 0xb5:  // ORA L    :   A <- A | L
+    {
+        ora_helper(state, state->l);
+        break;
+    }
+    case 0xb6:  // ORA M    :   A <- A | M
+    {
+        ora_helper(state, state->memory[combine_h_l_addr(state)]);
+        break;
+    }
+    case 0xb7:  // ORA A    :   A <- A | A
+    {
+        ora_helper(state, state->a);
+        break;
+    }
 //    case 0xb8: printf("CMP B"); break;
 //    case 0xb9: printf("CMP C"); break;
 //    case 0xba: printf("CMP D"); break;
@@ -671,7 +703,17 @@ void emulate8080(State *state)
         wait_cycles(11); // per Intel 8080 Programmers Manual.
         break;
     }
-//    case 0xf6: printf("ORI D8, $%02x", code[1]); opbytes = 2; break;
+    case 0xf6:  // ORI D8   :   A <- A | code[1]; opbytes = 2
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        state->a = state->a | code[1];
+        state->conditions.carry = 0;
+        state->conditions.zero = get_zero_flag(state->a);
+        state->conditions.sign = get_sign_flag(state->a);
+        state->conditions.parity = get_parity_flag(state->a);
+        break;
+    }
 //    case 0xf7: printf("RST 6"); break;
 //    case 0xf8: printf("RM"); break;
 //    case 0xf9: printf("SPHL"); break;
@@ -788,6 +830,24 @@ void xra_helper(State *state, uint8_t xorwith_val)
     */
     state->pc += 1;
     state->a = state->a ^ xorwith_val;
+    state->conditions.carry = 0;
+    state->conditions.aux_carry = 0;
+    state->conditions.zero = get_zero_flag(state->a);
+    state->conditions.sign = get_sign_flag(state->a);
+    state->conditions.parity = get_parity_flag(state->a);
+}
+
+void ora_helper(State *state, uint8_t orwith_val)
+{
+    /* Helper function for ORA opcodes - performs logical OR on the
+     * accumulator and provided value orwith_val
+     * Sets carry and aux_carry to 0 - manual says carry should be 0, unclear
+     * about aux_carry
+     * Updates zero, sign, and parity
+     * Increments the program counter by 1
+    */
+    state->pc += 1;
+    state->a = state->a | orwith_val;
     state->conditions.carry = 0;
     state->conditions.aux_carry = 0;
     state->conditions.zero = get_zero_flag(state->a);
