@@ -70,6 +70,14 @@ add_test(NAME ori COMMAND test_ora_ori 0xf6)
 # Jump Tests
 add_test(NAME jnz COMMAND test_jump 0xc2)
 add_test(NAME jmp COMMAND test_jump 0xc3)
+add_test(NAME jz COMMAND test_jump 0xca)
+add_test(NAME jnc COMMAND test_jump 0xd2)
+add_test(NAME jc COMMAND test_jump 0xda)
+add_test(NAME jpo COMMAND test_jump 0xe2)
+add_test(NAME pchl COMMAND test_jump 0xe9)
+add_test(NAME jpe COMMAND test_jump 0xea)
+add_test(NAME jp COMMAND test_jump 0xf2)
+add_test(NAME jm COMMAND test_jump 0xfa)
 
 # Pop Tests
 add_test(NAME pop_b COMMAND test_push_pop 0xc1)
@@ -82,7 +90,15 @@ add_test(NAME push_b COMMAND test_push_pop 0xc5)
 add_test(NAME adi_d8 COMMAND test_adi 0xc6)
 
 # Return Tests
+add_test(NAME rnz COMMAND test_return 0xc0)
+add_test(NAME rz COMMAND test_return 0xc8)
 add_test(NAME ret COMMAND test_return 0xc9)
+add_test(NAME rnc COMMAND test_return 0xd0)
+add_test(NAME rc COMMAND test_return 0xd8)
+add_test(NAME rpo COMMAND test_return 0xe0)
+add_test(NAME rpe COMMAND test_return 0xe8)
+add_test(NAME rp COMMAND test_return 0xf0)
+add_test(NAME rm COMMAND test_return 0xf8)
 
 # NICK's TESTS
 add_executable(test_load tests/test_load.c)
