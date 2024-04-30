@@ -22,6 +22,7 @@ add_executable(test_adi tests/test_adi.c)
 add_executable(test_jump tests/test_jump.c)
 add_executable(test_xra_xri tests/test_xra_xri.c)
 add_executable(test_ana_reg tests/test_ana_reg.c)
+add_executable(test_ora_ori tests/test_ora_ori.c)
 
 # MOV REG to REG Tests - create a unique name, use the opcode as the first argument for the executable (COMMAND function_name arg1)
 add_test(NAME mov_a_d COMMAND mov_reg_to_reg 0x7a)
@@ -54,6 +55,17 @@ add_test(NAME xra_l COMMAND test_xra_xri 0xad)
 add_test(NAME xra_m COMMAND test_xra_xri 0xae)
 add_test(NAME xra_a COMMAND test_xra_xri 0xaf)
 add_test(NAME xri COMMAND test_xra_xri 0xee)
+
+# ORA and ORI Tests
+add_test(NAME ora_b COMMAND test_ora_ori 0xb0)
+add_test(NAME ora_c COMMAND test_ora_ori 0xb1)
+add_test(NAME ora_d COMMAND test_ora_ori 0xb2)
+add_test(NAME ora_e COMMAND test_ora_ori 0xb3)
+add_test(NAME ora_h COMMAND test_ora_ori 0xb4)
+add_test(NAME ora_l COMMAND test_ora_ori 0xb5)
+add_test(NAME ora_m COMMAND test_ora_ori 0xb6)
+add_test(NAME ora_a COMMAND test_ora_ori 0xb7)
+add_test(NAME ori COMMAND test_ora_ori 0xf6)
 
 # Jump Tests
 add_test(NAME jnz COMMAND test_jump 0xc2)
