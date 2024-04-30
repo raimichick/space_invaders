@@ -157,7 +157,7 @@ void emulate8080(State *state)
         state->l = code[1];
         wait_cycles(10);
         break;
-    }     
+    }
 //    case 0x22: printf("SHLD adr, $%02x%02x", code[2], code[1]); opbytes = 3; break;
     case 0x23: // INX H  LH <- LH + 1
     {
@@ -169,7 +169,6 @@ void emulate8080(State *state)
         wait_cycles(5);
         break;
     }
-      
 //    case 0x24: printf("INR H"); break;
 //    case 0x25: printf("DCR H"); break;
     case 0x26: // MVI H, D8
@@ -179,7 +178,7 @@ void emulate8080(State *state)
         state->h = code[1];
         wait_cycles(7);
         break;
-    }    
+    }
 //    case 0x27: printf("DAA"); break;
 //    case 0x28: printf("-"); break;
     case 0x29: // DAD H     HL = HL + HL
@@ -204,19 +203,19 @@ void emulate8080(State *state)
     {
         opbytes = 3;
         state->pc += opbytes;
-        state->sp = combine_bytes_to_word(code[2], code[1]); 
+        state->sp = combine_bytes_to_word(code[2], code[1]);
         wait_cycles(10);
         break;
-    }   
+    }
     case 0x32: // STA adr code[2], code[1]
     {
         opbytes = 3;
         state->pc += opbytes;
         uint16_t temp_adr = combine_bytes_to_word(code[2], code[1]);
-	state->a = state->memory[temp_adr];
+        state->a = state->memory[temp_adr];
         wait_cycles(13);
-        break;            
-    }  
+        break;
+    }
 //    case 0x33: printf("INX SP"); break;
 //    case 0x34: printf("INR M"); break;
 //    case 0x35: printf("DCR M"); break;
@@ -227,7 +226,7 @@ void emulate8080(State *state)
         state->memory[combine_bytes_to_word(state->h, state->l)] = code[1];
         wait_cycles(7);
         break;
-    }  
+    }
 //    case 0x37: printf("STC"); break;
 //    case 0x38: printf("-"); break;
 //    case 0x39: printf("DAD SP"); break;
@@ -238,7 +237,7 @@ void emulate8080(State *state)
         state->a = state->memory[combine_bytes_to_word(code[2], code[1])];
         wait_cycles(17);
         break;
-    } 
+    }
 //    case 0x3b: printf("DCX SP"); break;
 //    case 0x3c: printf("INR A"); break;
 //    case 0x3d: printf("DCR A"); break;
@@ -249,7 +248,7 @@ void emulate8080(State *state)
         state->a = code[1];
         wait_cycles(7);
         break;
-    }    
+    }
 //    case 0x3f: printf("CMC"); break;
 //    case 0x40: printf("MOV B,B"); break;
 //    case 0x41: printf("MOV B,C");  break;
@@ -276,9 +275,9 @@ void emulate8080(State *state)
    case 0x56: // MOV D, M
     {
         mov_mem_to_reg(state, &state->d);
-	wait_cycles(5);
+        wait_cycles(5);
         break;
-    } 
+    }
 //    case 0x57: printf("MOV D,A");  break;
 //    case 0x58: printf("MOV E,B");  break;
 //    case 0x59: printf("MOV E,C");  break;
@@ -297,9 +296,9 @@ void emulate8080(State *state)
    case 0x66: // MOV H, M
    {
         mov_mem_to_reg(state, &state->h);
-	wait_cycles(5);
+        wait_cycles(5);
         break;
-   }     
+   }
 //    case 0x67: printf("MOV H,A");  break;
 //    case 0x68: printf("MOV L,B");  break;
 //    case 0x69: printf("MOV L,C");  break;
@@ -308,12 +307,12 @@ void emulate8080(State *state)
 //    case 0x6c: printf("MOV L,H");  break;
 //    case 0x6d: printf("MOV L,L");  break;
 //    case 0x6e: printf("MOV L,M");  break;
-   case 0x6f: // MOV L, A 
+   case 0x6f: // MOV L, A
    {
        mov_reg_to_reg(state, &state->l, &state->a);
        wait_cycles(5);
        break;
-   } 
+   }
 //    case 0x70: printf("MOV M,B");  break;
 //    case 0x71: printf("MOV M,C");  break;
 //    case 0x72: printf("MOV M,D");  break;
@@ -510,21 +509,26 @@ void emulate8080(State *state)
 //    case 0xbd: printf("CMP L"); break;
 //    case 0xbe: printf("CMP M"); break;
 //    case 0xbf: printf("CMP A"); break;
-//    case 0xc0: printf("RNZ"); break;
+    case 0xc0:  // RNZ; return if zero = 0
+    {
+        if (state->conditions.zero == 0) return_helper(state);
+        else state->pc += opbytes;
+        break;
+    }
     case 0xc1:  // POP B; Pops stack into BC register pair
     {
         state->pc += opbytes;
         pop_stack_to_register_pair(state, &state->b, &state->c);
         break;
     }
-    case 0xc2:  //JNZ, $%02x%02x, code[2], code[1]
+    case 0xc2:  // JNZ code[2] code[1]; jump if zero = 0
     {
         opbytes = 3;
         if (state->conditions.zero == 0) jump_to_addr(state, code);
         else state->pc += opbytes;
         break;
     }
-    case 0xc3:  // JMP, $%02x%02x", code[2], code[1])
+    case 0xc3:  // JMP code[2] code[1]
     {
         jump_to_addr(state, code);
         break;
@@ -550,13 +554,24 @@ void emulate8080(State *state)
         break;
     }
 //    case 0xc7: printf("RST 0"); break;
-//    case 0xc8: printf("RZ"); break;
+    case 0xc8:  // RZ; return if zero = 1
+    {
+        if (state->conditions.zero == 1) return_helper(state);
+        else state->pc += opbytes;
+        break;
+    }
     case 0xc9:  // RET
     {
         return_helper(state);
         break;
     }
-//    case 0xca: printf("JZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xca:  // JZ code[2] code[1]; jump if zero = 1
+    {
+        opbytes = 3;
+        if (state->conditions.zero == 1) jump_to_addr(state, code);
+        else state->pc += opbytes;
+        break;
+    }
 //    case 0xcb: printf("-"); break;
 //    case 0xcc: printf("CZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
     case 0xcd: // CALL code[2], code[1]; Push next seq. instr. to stack. Set pc to given args.
@@ -570,7 +585,12 @@ void emulate8080(State *state)
     }
 //    case 0xce: printf("ACI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xcf: printf("RST 1"); break;
-//    case 0xd0: printf("RNC"); break;
+    case 0xd0:  // RNC; return if carry = 0
+    {
+        if (state->conditions.carry == 0) return_helper(state);
+        else state->pc += opbytes;
+        break;
+    }
     case 0xd1: // POP D; Pops stack into DE register pair.
     {
         state->pc += opbytes;
@@ -578,7 +598,13 @@ void emulate8080(State *state)
         wait_cycles(10); // per Intel 8080 Programmers Manual
         break;
     }
-//    case 0xd2: printf("JNC, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xd2:  // JNC code[2] code[1]; jump if carry = 0
+    {
+        opbytes = 3;
+        if (state->conditions.carry == 0) jump_to_addr(state, code);
+        else state->pc += opbytes;
+        break;
+    }
     case 0xd3: // OUT D8, code[1]; Send the data from A onto the 8bit data bus for transmission to spec'd port
     {
         opbytes = 2;
@@ -598,15 +624,31 @@ void emulate8080(State *state)
     }
 //    case 0xd6: printf("SUI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xd7: printf("RST 2"); break;
-//    case 0xd8: printf("RC 1"); break;
+    case 0xd8:  // RC; return if carry = 1
+    {
+        if (state->conditions.carry == 1) return_helper(state);
+        else state->pc += opbytes;
+        break;
+    }
 //    case 0xd9: printf("-"); break;
-//    case 0xda: printf("JC, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xda:  // JC code[2] code[1]; jump if carry = 1
+    {
+        opbytes = 3;
+        if (state->conditions.carry == 1) jump_to_addr(state, code);
+        else state->pc += opbytes;
+        break;
+    }
 //    case 0xdb: printf("IN D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xdc: printf("CC, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xdd: printf("-"); break;
 //    case 0xde: printf("SBI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xdf: printf("RST 3"); break;
-//    case 0xe0: printf("RPO"); break;
+    case 0xe0:  // RPO; return if parity = 0 (odd)
+    {
+        if (state->conditions.parity == 0) return_helper(state);
+        else state->pc += opbytes;
+        break;
+    }
     case 0xe1: // POP H; Pops stack into HL register pair.
     {
         state->pc += opbytes;
@@ -614,7 +656,13 @@ void emulate8080(State *state)
         wait_cycles(10); // per Intel 8080 Programmers Manual
         break;
     }
-//    case 0xe2: printf("JPO, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xe2:  // JPO code[2] code[1]; jump if parity = 0 (odd)
+    {
+        opbytes = 3;
+        if (state->conditions.parity == 0) jump_to_addr(state, code);
+        else state->pc += opbytes;
+        break;
+    }
 //    case 0xe3: printf("XTHL"); break;
 //    case 0xe4: printf("CPO, $%02x%02x", code[2], code[1]); opbytes = 3; break;
     case 0xe5: // PUSH H; Pushes register pair HL to the stack.
@@ -638,9 +686,24 @@ void emulate8080(State *state)
         break;
     }
 //    case 0xe7: printf("RST 4"); break;
-//    case 0xe8: printf("RPE"); break;
-//    case 0xe9: printf("PCHL"); break;
-//    case 0xea: printf("JPE, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xe8:  // RPE; return if parity = 1 (even)
+    {
+        if (state->conditions.parity == 1) return_helper(state);
+        else state->pc += opbytes;
+        break;
+    }
+    case 0xe9:  // PCHL; load program counter; pc <- HL
+    {
+        state->pc = combine_h_l_addr(state);
+        break;
+    }
+    case 0xea:  // JPE code[2] code[1]); jump if parity = 1 (even)
+    {
+        opbytes = 3;
+        if (state->conditions.parity == 1) jump_to_addr(state, code);
+        else state->pc += opbytes;
+        break;
+    }
     case 0xeb: // XCHG; H <-> D, L <-> E; The contents of H and D, L and E are swapped.
     {
         state->pc += opbytes;
@@ -669,7 +732,12 @@ void emulate8080(State *state)
         break;
     }
 //    case 0xef: printf("RST 5"); break;
-//    case 0xf0: printf("RP"); break;
+    case 0xf0:  // RP; return if zero = 0 (positive)
+    {
+        if (state->conditions.zero == 0) return_helper(state);
+        else state->pc += opbytes;
+        break;
+    }
     case 0xf1: // POP PSW; Pop Processor Status Word.
     {
         state->pc += opbytes;
@@ -684,7 +752,13 @@ void emulate8080(State *state)
         wait_cycles(10); // per Intel 8080 Programmers Manual.
         break;
     }
-//    case 0xf2: printf("JP, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xf2:  // JP code[2] code[1]; jump if sign = 0 (positive)
+    {
+        opbytes = 3;
+        if (state->conditions.sign == 0) jump_to_addr(state, code);
+        else state->pc += opbytes;
+        break;
+    }
 //    case 0xf3: printf("DI"); break;
 //    case 0xf4: printf("CP, $%02x%02x", code[2], code[1]); opbytes = 3; break;
     case 0xf5: // PUSH PSW; Push Processor Status Word.
@@ -715,9 +789,20 @@ void emulate8080(State *state)
         break;
     }
 //    case 0xf7: printf("RST 6"); break;
-//    case 0xf8: printf("RM"); break;
+    case 0xf8:  // RM; return if zero = 1 (negative)
+    {
+        if (state->conditions.zero == 1) return_helper(state);
+        else state->pc += opbytes;
+        break;
+    }
 //    case 0xf9: printf("SPHL"); break;
-//    case 0xfa: printf("JM, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xfa:  // JM code[2] code[1]; jump if sign = 1 (negative)
+    {
+        opbytes = 3;
+        if (state->conditions.sign == 1) jump_to_addr(state, code);
+        else state->pc += opbytes;
+        break;
+    }
     case 0xfb: // EI; "The interrupt system is enabled following the execution of the next instruction"...
     {
         state->pc += opbytes;
