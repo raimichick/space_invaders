@@ -733,11 +733,11 @@ void emulate8080(State *state)
     }
     case 0xd6: // SUI D8   Z, S, P, CY, AC A <- A - byte
     {
-    	uint8_t immediate = state->memory[state->pc + 1];
-    	state->pc += 2;
-    	sub(&state->a, immediate, &state->conditions);
-    	wait_cycles(7); 
-    	break;
+        uint8_t immediate = state->memory[state->pc + 1];
+        state->pc += 2;
+        subtract_8b(state, &state->a, immediate);
+        wait_cycles(7);
+        break;
     }
 //    case 0xd7: printf("RST 2"); break;
 //    case 0xd8: printf("RC 1"); break;
@@ -748,11 +748,11 @@ void emulate8080(State *state)
 //    case 0xdd: printf("-"); break;
     case 0xde: // SBI D8   Z, S, P, CY, AC	A <- A - byte - CY
     {
-    	uint8_t immediate = state->memory[state->pc + 1];
-    	state->pc += 2;
-    	sbb(&state->a, immediate, &state->conditions);
-    	wait_cycles(7); 
-    	break;
+        uint8_t immediate = state->memory[state->pc + 1];
+        state->pc += 2;
+        subtract_8b(state, &state->a, immediate + state->conditions.carry);
+        wait_cycles(7);
+        break;
     }
 //    case 0xdf: printf("RST 3"); break;
 //    case 0xe0: printf("RPO"); break;
