@@ -478,7 +478,15 @@ void emulate8080(State *state)
     }
 //    case 0xca: printf("JZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xcb: printf("-"); break;
-//    case 0xcc: printf("CZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xcc: // CZ, code[2], code[1]; Call if Zero flag set.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.zero == 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xcd: // CALL code[2], code[1]; Push next seq. instr. to stack. Set pc to given args.
     {
         opbytes = 3;

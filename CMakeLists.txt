@@ -97,6 +97,7 @@ add_test(NAME test_PUSH_PSW, COMMAND test_push_pop 0xf5)
 add_executable(test_call tests/test_call.c)
 add_test(NAME test_CALL, COMMAND test_call 0xcd)
 add_test(NAME test_CNZ, COMMAND test_call 0xc4)
+add_test(NAME test_CZ, COMMAND test_call 0xcc)
 
 add_executable(test_immediates tests/test_immediates.c)
 add_test(NAME test_ANI_D8, COMMAND test_immediates 0xe6)
