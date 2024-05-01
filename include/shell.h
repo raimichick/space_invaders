@@ -14,7 +14,7 @@ void xra_helper(struct State *state, uint8_t xorwith_val);
 void jump_to_addr(struct State *state, uint8_t *code);
 void call_helper(struct State *state);
 void return_helper(struct State *state);
-void subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend);
+uint8_t subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend);
 void wait_cycles(int clockCycles);
 uint16_t combine_bytes_to_word(uint8_t hi_byte, uint8_t lo_byte);
 void split_word_to_bytes(uint16_t word, uint8_t *hi_byte, uint8_t *lo_byte);

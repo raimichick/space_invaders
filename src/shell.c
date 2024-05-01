@@ -828,19 +828,21 @@ uint8_t get_aux_carry_flag_from_sum(uint8_t val0, uint8_t val1){
     return ((val0 & 0x0F) + (val1 & 0x0F)) > 0x0F;
 }
 
-void subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend)
+uint8_t subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend)
 {
     // NOTE: The carry flag is cleared if there's a carry, and set if there's no carry.
         // This is opposite of the addition instructions.
     // val = minuend - subtrahend
-    uint16_t twos_complement = !(subtrahend) + 0x01;
-    uint16_t res = twos_complement + minuend;
+    uint16_t twos_complement = ~(subtrahend) + 0x01;
+    uint16_t res_16b = twos_complement + minuend;
     state->conditions.zero = minuend == subtrahend;
     state->conditions.carry = minuend < subtrahend;
     state->conditions.aux_carry = !get_aux_carry_flag_from_sum(twos_complement, minuend);
     // TODO consider changer param name from "register_value".
-    state->conditions.sign = get_sign_flag(res);
-    state->conditions.parity = get_parity_flag(res);
+    state->conditions.sign = get_sign_flag(res_16b);
+    state->conditions.parity = get_parity_flag(res_16b);
+    uint8_t res_8b = res_16b;
+    return res_8b;
 }
 
 uint16_t combine_bytes_to_word(uint8_t hi_byte, uint8_t lo_byte)
