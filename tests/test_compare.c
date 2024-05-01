@@ -1,3 +1,4 @@
+#include "../include/opcodes.h"
 #include "../include/shell.h"
 #include "../include/state.h"
 
@@ -6,7 +7,7 @@
 
 int test_CPI_D8(State *state, State *expected_state)
 {
-    state->memory[0] = 0xfe;
+    state->memory[0] = CPI;
     state->memory[1] = 0x40;
     state->a = 0x4a;
     state->conditions.carry = 1;
@@ -36,7 +37,7 @@ int main(int argc, char *argv[])
     // clang-format off
     switch (strtol(argv[1], NULL, 16))
     {
-        case 0xfe: result = test_CPI_D8(state, expected_state); break;
+        case CPI: result = test_CPI_D8(state, expected_state); break;
         default: return 1; // Test failed due to incorrect test parameter
     }
     // clang-format on
