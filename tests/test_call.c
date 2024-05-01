@@ -4,15 +4,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define	CNZ	0xc4
-#define	CZ	0xcc
-#define	CALL	0xcd
-#define	CNC	0xd4
-#define	CC	0xdc
-#define	CPO	0xe4
-#define	CPE	0xec
-#define	CP	0xf4
-#define	CM	0xfc
+#define CNZ 0xc4
+#define CZ 0xcc
+#define CALL 0xcd
+#define CNC 0xd4
+#define CC 0xdc
+#define CPO 0xe4
+#define CPE 0xec
+#define CP 0xf4
+#define CM 0xfc
 
 int test_CALL(State *state, State *expected_state)
 {
