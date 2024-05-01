@@ -57,33 +57,37 @@ add_test(NAME adi_d8 COMMAND test_adi 0xc6)
 # Return Tests
 add_test(NAME ret COMMAND test_return 0xc9)
 
-# NICK's TESTS
-add_executable(test_load tests/test_load.c)
-add_executable(test_add tests/test_add.c)
-add_executable(test_subtract tests/test_subtract.c)
-add_executable(test_move_immediate tests/test_move_immediate.c)
-add_executable(test_rotate tests/test_rotate.c)
-
 # Test Load Instructions
+add_executable(test_load tests/test_load.c)
 add_test(NAME test_LXI_B COMMAND test_load 0x01)
 add_test(NAME test_LXI_D COMMAND test_load 0x11)
 add_test(NAME test_LDAX_D COMMAND test_load 0x1a)
 
 # Test Add Instructions
+add_executable(test_add tests/test_add.c)
 add_test(NAME test_DAD_B COMMAND test_add 0x09)
 add_test(NAME test_INX_D COMMAND test_add 0x13)
 add_test(NAME test_DAD_D COMMAND test_add 0x19)
 
 # Test Subtract Instructions
+add_executable(test_subtract tests/test_subtract.c)
+add_test(NAME test_DCR_A COMMAND test_subtract 0x3d)
 add_test(NAME test_DCR_B COMMAND test_subtract 0x05)
 add_test(NAME test_DCR_C COMMAND test_subtract 0x0d)
+add_test(NAME test_DCR_D COMMAND test_subtract 0x15)
+add_test(NAME test_DCR_E COMMAND test_subtract 0x1d)
+add_test(NAME test_DCR_H COMMAND test_subtract 0x25)
+add_test(NAME test_DCR_L COMMAND test_subtract 0x2d)
+add_test(NAME test_DCR_M COMMAND test_subtract 0x35)
 add_test(NAME test_subtract_helper COMMAND test_subtract 0xFFFF)
 
 # Test Move Immediate Instructions
+add_executable(test_move_immediate tests/test_move_immediate.c)
 add_test(NAME test_MVI_B COMMAND test_move_immediate 0x06)
 add_test(NAME test_MVI_C COMMAND test_move_immediate 0x0e)
 
 # Test Rotate Instructions
+add_executable(test_rotate tests/test_rotate.c)
 add_test(NAME test_RRC COMMAND test_rotate 0x0f)
 
 # CRAIG's TESTS

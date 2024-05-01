@@ -1,3 +1,4 @@
+#include "../include/opcodes.h"
 #include "../include/shell.h"
 #include "../include/state.h"
 
@@ -44,11 +45,30 @@ int test_subtract_helper(State *state, State *expected_state)
     return 0;
 }
 
+int test_DCR_A(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = DCR_A;
+    state->a = 0xff;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->a = 0xfe;
+    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.sign = 1;
+    expected_state->conditions.parity = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
 int test_DCR_B(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
-    state->memory[0] = 0x05;
-    state->memory[1] = 0x05;
+    state->memory[0] = DCR_B;
+    state->memory[1] = DCR_B;
     state->b = 0x01;
 
     // Set up the expected register states
@@ -79,7 +99,7 @@ int test_DCR_B(State *state, State *expected_state)
 int test_DCR_C(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
-    state->memory[0] = 0x0d;
+    state->memory[0] = DCR_C;
     state->c = 0xff;
 
     // Set up the expected register states
@@ -93,6 +113,108 @@ int test_DCR_C(State *state, State *expected_state)
     emulate8080(state);
 
     return state_compare(state, expected_state);
+}
+
+int test_DCR_D(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = DCR_D;
+    state->d = 0xff;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->d = 0xfe;
+    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.sign = 1;
+    expected_state->conditions.parity = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_DCR_E(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = DCR_E;
+    state->e = 0xff;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->e = 0xfe;
+    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.sign = 1;
+    expected_state->conditions.parity = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_DCR_H(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = DCR_H;
+    state->h = 0xff;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->h = 0xfe;
+    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.sign = 1;
+    expected_state->conditions.parity = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_DCR_L(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = DCR_L;
+    state->l = 0xff;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->l = 0xfe;
+    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.sign = 1;
+    expected_state->conditions.parity = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_DCR_M(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = DCR_M;
+    state->memory[0x1234] = 0x56;
+    state->h = 0x12;
+    state->l = 0x34;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->h = 0x12;
+    expected_state->l = 0x34;
+    expected_state->memory[0x1234] = 0x55;
+    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.parity = 1;
+
+    emulate8080(state);
+
+    if (state_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0x1234] != expected_state->memory[0x1234]) return 1;
+
+    return 0;
 }
 
 /* Tests for various subtract instructions
@@ -109,11 +231,29 @@ int main(int argc, char *argv[])
 
     switch (strtol(argv[1], NULL, 16))
     {
-    case 0x05:
+    case DCR_A:
+        result = test_DCR_A(state, expected_state);
+        break;
+    case DCR_B:
         result = test_DCR_B(state, expected_state);
         break;
-    case 0x0d:
+    case DCR_C:
         result = test_DCR_C(state, expected_state);
+        break;
+    case DCR_D:
+        result = test_DCR_D(state, expected_state);
+        break;
+    case DCR_E:
+        result = test_DCR_E(state, expected_state);
+        break;
+    case DCR_H:
+        result = test_DCR_H(state, expected_state);
+        break;
+    case DCR_L:
+        result = test_DCR_L(state, expected_state);
+        break;
+    case DCR_M:
+        result = test_DCR_M(state, expected_state);
         break;
     case 0xFFFF:
         result = test_subtract_helper(state, expected_state);
