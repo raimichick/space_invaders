@@ -1,7 +1,27 @@
 #include "../include/shell.h"
 #include "../include/state.h"
 
-#include <string.h>
+#include <stdlib.h>
+
+int test_MOV_A_M(State *state, State *expected_state)
+{
+    // Modify state for tests
+    state->memory[0] = 0x7e;
+    state->memory[1] = 1;
+    state->memory[2] = 5;
+    state->h = 0;
+    state->l = 2;
+
+    // Set up the expected register states
+    expected_state->a = 5;
+    expected_state->h = 0;
+    expected_state->l = 2;
+    expected_state->pc = 1;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
 
 /* Tests for moving a value from memory to a register
  * Select a test by passing the opcode value as the first argument
@@ -9,19 +29,24 @@
  */
 int main(int argc, char *argv[])
 {
-    if (strcmp(argv[1], "0x7e") == 0) // Test MOV A,M
+    // Set up states to test with
+    State *state = Init8080();
+    State *expected_state = Init8080();
+
+    int result;
+
+    switch (strtol(argv[1], NULL, 16))
     {
-        // Initialize state
-        State *state = Init8080();
-        // Modify state for tests
-        state->memory[0] = 0x7e;
-        state->memory[1] = 1;
-        state->memory[2] = 5;
-        state->l = 2;
-        // Run command to test
-        emulate8080(state);
-        // Validate output - Reg A = 5, pc advanced by 1
-        if ((state->a == 5) && state->pc == 1) return 0;
+    case 0x7e:
+        result = test_MOV_A_M(state, expected_state);
+        break;
+    default:
+        return 1; // Test failed due to incorrect test parameter
     }
-    return 1;
+
+    // Clean up the state memory
+    Free8080(state);
+    Free8080(expected_state);
+
+    return result;
 }

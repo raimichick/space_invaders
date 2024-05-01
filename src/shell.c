@@ -218,8 +218,7 @@ void emulate8080(State *state)
         state->h = temp_LH;
         wait_cycles(5);
         break;
-    }
-      
+    }      
 //    case 0x24: printf("INR H"); break;
 //    case 0x25: printf("DCR H"); break;
     case 0x26: // MVI H, D8
@@ -340,6 +339,7 @@ void emulate8080(State *state)
 	wait_cycles(4);
 	break;
     }
+
 //    case 0x38: printf("-"); break;
 //    case 0x39: printf("DAD SP"); break;
     case 0x3a: // LDA adr A <- code[1] adr <- code[2]

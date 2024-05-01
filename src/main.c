@@ -37,5 +37,5 @@ int main()
         state->pc += opbytes;
     }
 
-    free(state->memory);
+    Free8080(state);
 }
