@@ -14,7 +14,7 @@ void xra_helper(struct State *state, uint8_t xorwith_val);
 void jump_to_addr(struct State *state, uint8_t *code);
 void call_helper(struct State *state);
 void return_helper(struct State *state);
-void subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend);
+uint8_t subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend);
 uint8_t add_8b(struct State *state, uint8_t operand1, uint8_t operand2);
 uint8_t add_with_carry_8b(struct State *state, uint8_t operand1,
                           uint8_t operand2);
