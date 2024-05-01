@@ -4,6 +4,46 @@
 #include <stdlib.h>
 #include <string.h>
 
+int test_subtract_helper(State *state, State *expected_state)
+{
+    // 10 - 1
+    uint8_t val = 10;
+    uint8_t res = subtract_8b(state, val, 1);
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 1;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.carry = 0;
+    if (res != 9) return 1;
+    if (state_compare(state, expected_state) != 0) return 1;
+
+    // 0 - 1
+    val = 0x00;
+    res = subtract_8b(state, val, 1);
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.parity = 1;
+    expected_state->conditions.sign = 1;
+    expected_state->conditions.carry = 1;
+
+    if (res != 0xff) return 1;
+    if (state_compare(state, expected_state) != 0) return 1;
+
+    // Test from page 18 manual
+    val = 0x3E;
+    res = subtract_8b(state, val, 0x3E);
+    expected_state->conditions.zero = 1;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 1;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.carry = 0;
+
+    if (res != 0x0) return 1;
+    if (state_compare(state, expected_state) != 0) return 1;
+
+    return 0;
+}
+
 int test_DCR_B(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
@@ -74,6 +114,9 @@ int main(int argc, char *argv[])
         break;
     case 0x0d:
         result = test_DCR_C(state, expected_state);
+        break;
+    case 0xFFFF:
+        result = test_subtract_helper(state, expected_state);
         break;
     default:
         return 1; // Test failed due to incorrect test parameter

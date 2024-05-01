@@ -77,6 +77,7 @@ add_test(NAME test_DAD_D COMMAND test_add 0x19)
 # Test Subtract Instructions
 add_test(NAME test_DCR_B COMMAND test_subtract 0x05)
 add_test(NAME test_DCR_C COMMAND test_subtract 0x0d)
+add_test(NAME test_subtract_helper COMMAND test_subtract 0xFFFF)
 
 # Test Move Immediate Instructions
 add_test(NAME test_MVI_B COMMAND test_move_immediate 0x06)

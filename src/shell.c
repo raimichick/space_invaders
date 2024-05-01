@@ -834,14 +834,14 @@ uint8_t subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend)
         // This is opposite of the addition instructions.
     // val = minuend - subtrahend
     uint16_t twos_complement = ~(subtrahend) + 0x01;
-    uint16_t res_16b = twos_complement + minuend;
+    uint8_t res_8b = twos_complement + minuend;
     state->conditions.zero = minuend == subtrahend;
     state->conditions.carry = minuend < subtrahend;
-    state->conditions.aux_carry = !get_aux_carry_flag_from_sum(twos_complement, minuend);
+    //state->conditions.aux_carry = !get_aux_carry_flag_from_sum(twos_complement, minuend);
+    state->conditions.aux_carry = get_aux_carry_flag_from_sum(minuend, twos_complement);
     // TODO consider changer param name from "register_value".
-    state->conditions.sign = get_sign_flag(res_16b);
-    state->conditions.parity = get_parity_flag(res_16b);
-    uint8_t res_8b = res_16b;
+    state->conditions.sign = get_sign_flag(res_8b);
+    state->conditions.parity = get_parity_flag(res_8b);
     return res_8b;
 }
 
