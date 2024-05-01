@@ -1109,7 +1109,7 @@ uint8_t increment_8b(State *state, uint8_t value_to_increment)
 uint8_t decrement_8b(struct State *state, uint8_t value_to_decrement)
 {
     uint8_t result = value_to_decrement - 1;
-    state->conditions.aux_carry = !get_aux_carry_flag_from_sum(value_to_decrement, 0xFF);
+    state->conditions.aux_carry = get_aux_carry_flag_from_sum(value_to_decrement, 0xFF);
     state->conditions.zero = get_zero_flag(result);
     state->conditions.sign = get_sign_flag(result);
     state->conditions.parity = get_parity_flag(result);

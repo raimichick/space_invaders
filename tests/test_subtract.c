@@ -54,7 +54,7 @@ int test_DCR_A(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->a = 0xaa;
-    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.aux_carry = 1;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 1;
     expected_state->conditions.parity = 1;
@@ -74,7 +74,7 @@ int test_DCR_B(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->b = 0x00;
-    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.aux_carry = 1;
     expected_state->conditions.zero = 1;
     expected_state->conditions.sign = 0;
     expected_state->conditions.parity = 1;
@@ -86,7 +86,7 @@ int test_DCR_B(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 2;
     expected_state->b = 0xff;
-    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.aux_carry = 0;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 1;
     expected_state->conditions.parity = 1;
@@ -105,7 +105,7 @@ int test_DCR_C(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->c = 0xfe;
-    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.aux_carry = 1;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 1;
     expected_state->conditions.parity = 0;
@@ -124,7 +124,7 @@ int test_DCR_D(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->d = 0x7f;
-    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.aux_carry = 0;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.parity = 0;
@@ -143,7 +143,7 @@ int test_DCR_E(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->e = 0x61;
-    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.aux_carry = 1;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.parity = 0;
@@ -162,7 +162,7 @@ int test_DCR_H(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->h = 0x98;
-    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.aux_carry = 1;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 1;
     expected_state->conditions.parity = 0;
@@ -181,7 +181,7 @@ int test_DCR_L(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->l = 0x01;
-    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.aux_carry = 1;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.parity = 0;
@@ -204,7 +204,7 @@ int test_DCR_M(State *state, State *expected_state)
     expected_state->h = 0x12;
     expected_state->l = 0x34;
     expected_state->memory[0x1234] = 0x55;
-    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.aux_carry = 1;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.parity = 1;
