@@ -18,7 +18,7 @@ int test_CPI_D8(State *state, State *expected_state)
     expected_state->pc = 2;
     expected_state->a = 0x4a;
     expected_state->conditions.carry = 0;
-    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.aux_carry = 0;
     expected_state->conditions.zero = 0;
     expected_state->conditions.parity = 1;
     expected_state->conditions.sign = 0;

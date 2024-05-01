@@ -120,6 +120,7 @@ add_test(NAME test_DAD_D COMMAND test_add 0x19)
 # Test Subtract Instructions
 add_test(NAME test_DCR_B COMMAND test_subtract 0x05)
 add_test(NAME test_DCR_C COMMAND test_subtract 0x0d)
+add_test(NAME test_subtract_helper COMMAND test_subtract 0xFFFF)
 
 # Test Move Immediate Instructions
 add_test(NAME test_MVI_B COMMAND test_move_immediate 0x06)
@@ -139,6 +140,14 @@ add_test(NAME test_PUSH_PSW, COMMAND test_push_pop 0xf5)
 
 add_executable(test_call tests/test_call.c)
 add_test(NAME test_CALL, COMMAND test_call 0xcd)
+add_test(NAME test_CNZ, COMMAND test_call 0xc4)
+add_test(NAME test_CZ, COMMAND test_call 0xcc)
+add_test(NAME test_CNC, COMMAND test_call 0xd4)
+add_test(NAME test_CC, COMMAND test_call 0xdc)
+add_test(NAME test_CPO, COMMAND test_call 0xe4)
+add_test(NAME test_CPE COMMAND test_call 0xec)
+add_test(NAME test_CP, COMMAND test_call 0xf4)
+add_test(NAME test_CM, COMMAND test_call 0xfc)
 
 add_executable(test_immediates tests/test_immediates.c)
 add_test(NAME test_ANI_D8, COMMAND test_immediates 0xe6)
