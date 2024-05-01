@@ -561,7 +561,15 @@ void emulate8080(State *state)
     }
 //    case 0xe2: printf("JPO, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xe3: printf("XTHL"); break;
-//    case 0xe4: printf("CPO, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xe4: // CPO code[2], code[1]. CALL if parity flag not set.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.parity != 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xe5: // PUSH H; Pushes register pair HL to the stack.
     {
         state->pc += opbytes;
