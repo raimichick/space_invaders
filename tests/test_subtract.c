@@ -49,15 +49,15 @@ int test_DCR_A(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
     state->memory[0] = DCR_A;
-    state->a = 0xff;
+    state->a = 0xab;
 
     // Set up the expected register states
     expected_state->pc = 1;
-    expected_state->a = 0xfe;
+    expected_state->a = 0xaa;
     expected_state->conditions.aux_carry = 0;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 1;
-    expected_state->conditions.parity = 0;
+    expected_state->conditions.parity = 1;
 
     emulate8080(state);
 
@@ -119,14 +119,14 @@ int test_DCR_D(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
     state->memory[0] = DCR_D;
-    state->d = 0xff;
+    state->d = 0x80;
 
     // Set up the expected register states
     expected_state->pc = 1;
-    expected_state->d = 0xfe;
-    expected_state->conditions.aux_carry = 0;
+    expected_state->d = 0x7f;
+    expected_state->conditions.aux_carry = 1;
     expected_state->conditions.zero = 0;
-    expected_state->conditions.sign = 1;
+    expected_state->conditions.sign = 0;
     expected_state->conditions.parity = 0;
 
     emulate8080(state);
@@ -138,14 +138,14 @@ int test_DCR_E(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
     state->memory[0] = DCR_E;
-    state->e = 0xff;
+    state->e = 0x62;
 
     // Set up the expected register states
     expected_state->pc = 1;
-    expected_state->e = 0xfe;
+    expected_state->e = 0x61;
     expected_state->conditions.aux_carry = 0;
     expected_state->conditions.zero = 0;
-    expected_state->conditions.sign = 1;
+    expected_state->conditions.sign = 0;
     expected_state->conditions.parity = 0;
 
     emulate8080(state);
@@ -157,11 +157,11 @@ int test_DCR_H(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
     state->memory[0] = DCR_H;
-    state->h = 0xff;
+    state->h = 0x99;
 
     // Set up the expected register states
     expected_state->pc = 1;
-    expected_state->h = 0xfe;
+    expected_state->h = 0x98;
     expected_state->conditions.aux_carry = 0;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 1;
@@ -176,14 +176,14 @@ int test_DCR_L(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
     state->memory[0] = DCR_L;
-    state->l = 0xff;
+    state->l = 0x02;
 
     // Set up the expected register states
     expected_state->pc = 1;
-    expected_state->l = 0xfe;
+    expected_state->l = 0x01;
     expected_state->conditions.aux_carry = 0;
     expected_state->conditions.zero = 0;
-    expected_state->conditions.sign = 1;
+    expected_state->conditions.sign = 0;
     expected_state->conditions.parity = 0;
 
     emulate8080(state);
@@ -259,7 +259,7 @@ int main(int argc, char *argv[])
         result = test_subtract_helper(state, expected_state);
         break;
     default:
-        return 1; // Test failed due to incorrect test parameter
+        result = 1; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory
