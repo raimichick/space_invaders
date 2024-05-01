@@ -101,7 +101,7 @@ add_test(NAME test_CZ, COMMAND test_call 0xcc)
 add_test(NAME test_CNC, COMMAND test_call 0xd4)
 add_test(NAME test_CC, COMMAND test_call 0xdc)
 add_test(NAME test_CPO, COMMAND test_call 0xe4)
-#add_test(NAME test_CPE COMMAND test_call 0xec)
+add_test(NAME test_CPE COMMAND test_call 0xec)
 #add_test(NAME test_CP, COMMAND test_call 0xf4)
 #add_test(NAME test_CM, COMMAND test_call 0xfc)
 

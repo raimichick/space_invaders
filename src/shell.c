@@ -608,7 +608,15 @@ void emulate8080(State *state)
         wait_cycles(5); // TODO this is from the chart but both manual disagree (and disagree with one another).
         break;
     }
-//    case 0xec: printf("CPE, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xec: // CPE code[2], code[1]. CALL if parity flag is set.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.parity == 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
 //    case 0xed: printf("-"); break;
 //    case 0xee: printf("XRI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xef: printf("RST 5"); break;
