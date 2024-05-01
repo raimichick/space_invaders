@@ -262,6 +262,7 @@ int main(int argc, char *argv[])
         }
         case 0xc4: result = test_CNZ(state, expected_state); break;
         case 0xcc: result = test_CZ(state, expected_state); break;
+        case 0xd4: result = test_CNC(state, expected_state); break;
         default: return 1; // Test failed due to incorrect test parameter
     }
     // clang-format on

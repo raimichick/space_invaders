@@ -539,7 +539,15 @@ void emulate8080(State *state)
 //    case 0xd9: printf("-"); break;
 //    case 0xda: printf("JC, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xdb: printf("IN D8, $%02x", code[1]); opbytes = 2; break;
-//    case 0xdc: printf("CC, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xdc: // CC, code[2], code[1]; Call if Carry flag set.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.carry == 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
 //    case 0xdd: printf("-"); break;
 //    case 0xde: printf("SBI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xdf: printf("RST 3"); break;
