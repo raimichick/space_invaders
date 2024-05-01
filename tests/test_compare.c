@@ -38,7 +38,8 @@ int main(int argc, char *argv[])
     switch (strtol(argv[1], NULL, 16))
     {
         case CPI: result = test_CPI_D8(state, expected_state); break;
-        default: return 1; // Test failed due to incorrect test parameter
+        default: result = 1; // Test failed due to incorrect test parameter
+        return result;
     }
     // clang-format on
 
