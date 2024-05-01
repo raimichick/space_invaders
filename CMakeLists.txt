@@ -20,8 +20,9 @@ add_executable(test_mov_reg_to_mem tests/test_mov_reg_to_mem.c)
 add_executable(test_return tests/test_return.c)
 add_executable(test_adi tests/test_adi.c)
 add_executable(test_jump tests/test_jump.c)
-add_executable(test_xra_reg tests/test_xra_reg.c)
+add_executable(test_xra_xri tests/test_xra_xri.c)
 add_executable(test_ana_reg tests/test_ana_reg.c)
+add_executable(test_ora_ori tests/test_ora_ori.c)
 
 # MOV REG to REG Tests - create a unique name, use the opcode as the first argument for the executable (COMMAND function_name arg1)
 add_test(NAME mov_a_d COMMAND mov_reg_to_reg 0x7a)
@@ -35,14 +36,48 @@ add_test(NAME mov_a_m COMMAND test_mov_mem_to_reg 0x7e)
 add_test(NAME mov_m_a COMMAND test_mov_reg_to_mem 0x77)
 
 # ANA REG Tests
+add_test(NAME ana_b COMMAND test_ana_reg 0xa0)
+add_test(NAME ana_c COMMAND test_ana_reg 0xa1)
+add_test(NAME ana_d COMMAND test_ana_reg 0xa2)
+add_test(NAME ana_e COMMAND test_ana_reg 0xa3)
+add_test(NAME ana_h COMMAND test_ana_reg 0xa4)
+add_test(NAME ana_l COMMAND test_ana_reg 0xa5)
+add_test(NAME ana_m COMMAND test_ana_reg 0xa6)
 add_test(NAME ana_a COMMAND test_ana_reg 0xa7)
 
-# XRA REG Tests
-add_test(NAME xra_a COMMAND test_xra_reg 0xaf)
+# XRA and XRI Tests
+add_test(NAME xra_b COMMAND test_xra_xri 0xa8)
+add_test(NAME xra_c COMMAND test_xra_xri 0xa9)
+add_test(NAME xra_d COMMAND test_xra_xri 0xaa)
+add_test(NAME xra_e COMMAND test_xra_xri 0xab)
+add_test(NAME xra_h COMMAND test_xra_xri 0xac)
+add_test(NAME xra_l COMMAND test_xra_xri 0xad)
+add_test(NAME xra_m COMMAND test_xra_xri 0xae)
+add_test(NAME xra_a COMMAND test_xra_xri 0xaf)
+add_test(NAME xri COMMAND test_xra_xri 0xee)
+
+# ORA and ORI Tests
+add_test(NAME ora_b COMMAND test_ora_ori 0xb0)
+add_test(NAME ora_c COMMAND test_ora_ori 0xb1)
+add_test(NAME ora_d COMMAND test_ora_ori 0xb2)
+add_test(NAME ora_e COMMAND test_ora_ori 0xb3)
+add_test(NAME ora_h COMMAND test_ora_ori 0xb4)
+add_test(NAME ora_l COMMAND test_ora_ori 0xb5)
+add_test(NAME ora_m COMMAND test_ora_ori 0xb6)
+add_test(NAME ora_a COMMAND test_ora_ori 0xb7)
+add_test(NAME ori COMMAND test_ora_ori 0xf6)
 
 # Jump Tests
 add_test(NAME jnz COMMAND test_jump 0xc2)
 add_test(NAME jmp COMMAND test_jump 0xc3)
+add_test(NAME jz COMMAND test_jump 0xca)
+add_test(NAME jnc COMMAND test_jump 0xd2)
+add_test(NAME jc COMMAND test_jump 0xda)
+add_test(NAME jpo COMMAND test_jump 0xe2)
+add_test(NAME pchl COMMAND test_jump 0xe9)
+add_test(NAME jpe COMMAND test_jump 0xea)
+add_test(NAME jp COMMAND test_jump 0xf2)
+add_test(NAME jm COMMAND test_jump 0xfa)
 
 # Pop Tests
 add_test(NAME pop_b COMMAND test_push_pop 0xc1)
@@ -55,7 +90,15 @@ add_test(NAME push_b COMMAND test_push_pop 0xc5)
 add_test(NAME adi_d8 COMMAND test_adi 0xc6)
 
 # Return Tests
+add_test(NAME rnz COMMAND test_return 0xc0)
+add_test(NAME rz COMMAND test_return 0xc8)
 add_test(NAME ret COMMAND test_return 0xc9)
+add_test(NAME rnc COMMAND test_return 0xd0)
+add_test(NAME rc COMMAND test_return 0xd8)
+add_test(NAME rpo COMMAND test_return 0xe0)
+add_test(NAME rpe COMMAND test_return 0xe8)
+add_test(NAME rp COMMAND test_return 0xf0)
+add_test(NAME rm COMMAND test_return 0xf8)
 
 # NICK's TESTS
 add_executable(test_load tests/test_load.c)

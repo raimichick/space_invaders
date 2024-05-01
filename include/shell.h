@@ -11,6 +11,8 @@ void mov_reg_to_mem(struct State *state, uint8_t *from);
 void mov_mem_to_reg(struct State *state, uint8_t *to);
 void ana_helper(struct State *state, uint8_t andwith_val);
 void xra_helper(struct State *state, uint8_t xorwith_val);
+void ora_helper(struct State *state, uint8_t orwith_val);
+uint16_t combine_h_l_addr(struct State *state);
 void jump_to_addr(struct State *state, uint8_t *code);
 void call_helper(struct State *state, uint16_t call_address);
 void return_helper(struct State *state);
