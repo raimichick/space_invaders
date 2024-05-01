@@ -217,6 +217,72 @@ int test_DCR_M(State *state, State *expected_state)
     return 0;
 }
 
+int test_DCX_B(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = DCX_B;
+    state->b = 0x00;
+    state->c = 0x00;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->b = 0xff;
+    expected_state->c = 0xff;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_DCX_D(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = DCX_D;
+    state->d = 0xff;
+    state->e = 0xff;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->d = 0xff;
+    expected_state->e = 0xfe;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_DCX_H(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = DCX_H;
+    state->h = 0x01;
+    state->l = 0x00;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->h = 0x00;
+    expected_state->l = 0xff;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_DCX_SP(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = DCX_SP;
+    state->sp = 0x5678;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->sp = 0x5677;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
 /* Tests for various subtract instructions
  * Select a test by passing the opcode value as the first argument
  *
@@ -254,6 +320,18 @@ int main(int argc, char *argv[])
         break;
     case DCR_M:
         result = test_DCR_M(state, expected_state);
+        break;
+    case DCX_B:
+        result = test_DCX_B(state, expected_state);
+        break;
+    case DCX_D:
+        result = test_DCX_D(state, expected_state);
+        break;
+    case DCX_H:
+        result = test_DCX_H(state, expected_state);
+        break;
+    case DCX_SP:
+        result = test_DCX_SP(state, expected_state);
         break;
     case 0xFFFF:
         result = test_subtract_helper(state, expected_state);

@@ -79,6 +79,10 @@ add_test(NAME test_DCR_E COMMAND test_subtract 0x1d)
 add_test(NAME test_DCR_H COMMAND test_subtract 0x25)
 add_test(NAME test_DCR_L COMMAND test_subtract 0x2d)
 add_test(NAME test_DCR_M COMMAND test_subtract 0x35)
+add_test(NAME test_DCX_B COMMAND test_subtract 0x0b)
+add_test(NAME test_DCX_D COMMAND test_subtract 0x1b)
+add_test(NAME test_DCX_H COMMAND test_subtract 0x2b)
+add_test(NAME test_DCX_SP COMMAND test_subtract 0x3b)
 add_test(NAME test_subtract_helper COMMAND test_subtract 0xFFFF)
 
 # Test Move Immediate Instructions
