@@ -441,7 +441,15 @@ void emulate8080(State *state)
         jump_to_addr(state, code);
         break;
     }
-//    case 0xc4: printf("CNZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xc4: // CNZ code[2], code[1]. CALL if not zero.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.zero != 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xc5:  // PUSH B
     {
         state->pc += opbytes;
@@ -475,8 +483,9 @@ void emulate8080(State *state)
     {
         opbytes = 3;
         state->pc += opbytes;
-        call_helper(state);
-        state->pc = combine_bytes_to_word(code[2], code[1]);
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        call_helper(state, address);
+        //state->pc = combine_bytes_to_word(code[2], code[1]);
         wait_cycles(17); // per Intel 8080 Programmers Manual
         break;
     }
@@ -740,11 +749,11 @@ void jump_to_addr(State *state, uint8_t *code)
     state->pc = (code[2] << 8) | code[1];
 }
 
-void call_helper(State* state){
+void call_helper(State* state, uint16_t call_address){
     /*
-    * (1) The most significant 8 bits of data are stored at the memory address
+    * (1) The most significant 8 bits of data are stored at the memory call_address
     *       one less than the contents of the stack pointer.
-    * (2) The least significant 8 bits of data are stored at the memory address
+    * (2) The least significant 8 bits of data are stored at the memory call_address
     *       two less than the contents of the stack pointer.
     * (3) The stack pointer is automatically decremented by two.
     */
@@ -756,6 +765,7 @@ void call_helper(State* state){
                         &state->memory[state->sp-1],
                         &state->memory[state->sp-2]
                         );
+    state->pc = call_address;
     state->sp -= 2;
 }
 
