@@ -188,6 +188,60 @@ int test_CZ(State *state, State *expected_state)
     return 0;
 }
 
+int test_CNC(State *state, State *expected_state)
+{
+    /*** This function assumes that RET and MVI B are working. ***/
+    // The first CNC should be skipped.
+    state->memory[0] = 0xd4; // CNC 0x5511
+    state->memory[1] = 0x11;
+    state->memory[2] = 0x55;
+    state->conditions.carry = 1;
+    expected_state->pc = 0x3;
+    expected_state->conditions.carry = 1;
+    emulate8080(state);
+    if (state_compare(state, expected_state) == 1) return 1;
+
+    // The second CNC should execute.
+    state->memory[3] = 0xd4; // CNC 0x5511
+    state->memory[4] = 0x11;
+    state->memory[5] = 0x55;
+    state->conditions.carry = 0;
+    state->sp = 0xcccf;
+    state->memory[0x5511] = 0x06; // MVI B D8
+    state->memory[0x5512] = 0x55; // D8 to be put in B is 0x55
+    state->memory[0x5513] = 0xc9; // RET
+    state->b = 0x00;
+
+    // Set up the expected register states just after executed CNC, before MVI B
+    expected_state->pc = 0x5511;
+    expected_state->memory[0xcccd] = 0x06; // return pc
+    expected_state->memory[0xccce] = 0x00;
+    expected_state->sp = 0xcccd;
+    expected_state->b = 0x00;
+    expected_state->conditions.carry = 0;
+    emulate8080(state); // Runs CNC
+    if (state->memory[0xccce] != expected_state->memory[0xccce]) return 1;
+    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return 1;
+    if (state_compare(state, expected_state) == 1) return 1;
+
+    // Set up the expected register states just after MVI B, D8
+    expected_state->pc = 0x5513;
+    expected_state->memory[state->sp - 1] = 0x55;
+    expected_state->memory[state->sp] = 0x11;
+    expected_state->sp = 0xcccd;
+    expected_state->b = 0x55;
+    emulate8080(state); // Runs MVI B, D8
+    if (state_compare(state, expected_state) == 1) return 1;
+
+    // Set up the expected register states after RET
+    expected_state->pc = 6;
+    expected_state->sp = 0xcccf;
+    expected_state->b = 0x55;
+    expected_state->conditions.carry = 0;
+    emulate8080(state); // runs RET
+    if (state_compare(state, expected_state) == 1) return 1;
+    return 0;
+}
 int main(int argc, char *argv[])
 {
     State *state = Init8080();

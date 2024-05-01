@@ -517,7 +517,15 @@ void emulate8080(State *state)
         wait_cycles(10); // per Intel 8080 Programmers Manual
         break;
     }
-//    case 0xd4: printf("CNC, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xd4: // CNC code[2], code[1]. CALL if no carry.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.carry != 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xd5: // PUSH D; Pushes register pair DE to the stack.
     {
         state->pc += opbytes;
