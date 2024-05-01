@@ -637,7 +637,15 @@ void emulate8080(State *state)
     }
 //    case 0xf2: printf("JP, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xf3: printf("DI"); break;
-//    case 0xf4: printf("CP, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xf4: // CP code[2], code[1]. CALL if sign flag is not set.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.sign != 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xf5: // PUSH PSW; Push Processor Status Word.
     {
         // TODO update state->conditions struct to be in same order as manual?
@@ -665,7 +673,15 @@ void emulate8080(State *state)
         // TODO emulator 101 recommended skipping over this for now.
         wait_cycles(4); // per Intel 8080 Programmers Manual.
     }
-//    case 0xfc: printf("CM, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xfc: // CM code[2], code[1]. CALL if sign flag is set.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.sign == 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
 //    case 0xfd: printf("-"); break;
     case 0xfe: // CPI D8, code[1]; Compare immediate with accumulator. AKA reg.a - immediate.
     {
