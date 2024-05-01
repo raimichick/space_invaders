@@ -12,7 +12,7 @@ void mov_mem_to_reg(struct State *state, uint8_t *to);
 void ana_helper(struct State *state, uint8_t andwith_val);
 void xra_helper(struct State *state, uint8_t xorwith_val);
 void jump_to_addr(struct State *state, uint8_t *code);
-void call_helper(struct State *state);
+void call_helper(struct State *state, uint16_t call_address);
 void return_helper(struct State *state);
 uint8_t subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend);
 uint8_t add_8b(struct State *state, uint8_t operand1, uint8_t operand2);

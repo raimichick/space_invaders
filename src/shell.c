@@ -685,7 +685,15 @@ void emulate8080(State *state)
         jump_to_addr(state, code);
         break;
     }
-//    case 0xc4: printf("CNZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xc4: // CNZ code[2], code[1]. CALL if not zero.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.zero != 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xc5:  // PUSH B
     {
         state->pc += opbytes;
@@ -714,13 +722,22 @@ void emulate8080(State *state)
     }
 //    case 0xca: printf("JZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xcb: printf("-"); break;
-//    case 0xcc: printf("CZ, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xcc: // CZ, code[2], code[1]; Call if Zero flag set.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.zero == 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xcd: // CALL code[2], code[1]; Push next seq. instr. to stack. Set pc to given args.
     {
         opbytes = 3;
         state->pc += opbytes;
-        call_helper(state);
-        state->pc = combine_bytes_to_word(code[2], code[1]);
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        call_helper(state, address);
+        //state->pc = combine_bytes_to_word(code[2], code[1]);
         wait_cycles(17); // per Intel 8080 Programmers Manual
         break;
     }
@@ -751,7 +768,15 @@ void emulate8080(State *state)
         wait_cycles(10); // per Intel 8080 Programmers Manual
         break;
     }
-//    case 0xd4: printf("CNC, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xd4: // CNC code[2], code[1]. CALL if no carry.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.carry != 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xd5: // PUSH D; Pushes register pair DE to the stack.
     {
         state->pc += opbytes;
@@ -765,7 +790,15 @@ void emulate8080(State *state)
 //    case 0xd9: printf("-"); break;
 //    case 0xda: printf("JC, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xdb: printf("IN D8, $%02x", code[1]); opbytes = 2; break;
-//    case 0xdc: printf("CC, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xdc: // CC, code[2], code[1]; Call if Carry flag set.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.carry == 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
 //    case 0xdd: printf("-"); break;
 //    case 0xde: printf("SBI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xdf: printf("RST 3"); break;
@@ -779,7 +812,15 @@ void emulate8080(State *state)
     }
 //    case 0xe2: printf("JPO, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xe3: printf("XTHL"); break;
-//    case 0xe4: printf("CPO, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xe4: // CPO code[2], code[1]. CALL if parity flag not set.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.parity != 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xe5: // PUSH H; Pushes register pair HL to the stack.
     {
         state->pc += opbytes;
@@ -818,7 +859,15 @@ void emulate8080(State *state)
         wait_cycles(5); // TODO this is from the chart but both manual disagree (and disagree with one another).
         break;
     }
-//    case 0xec: printf("CPE, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xec: // CPE code[2], code[1]. CALL if parity flag is set.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.parity == 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
 //    case 0xed: printf("-"); break;
 //    case 0xee: printf("XRI D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xef: printf("RST 5"); break;
@@ -839,7 +888,15 @@ void emulate8080(State *state)
     }
 //    case 0xf2: printf("JP, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xf3: printf("DI"); break;
-//    case 0xf4: printf("CP, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xf4: // CP code[2], code[1]. CALL if sign flag is not set.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.sign != 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xf5: // PUSH PSW; Push Processor Status Word.
     {
         // TODO update state->conditions struct to be in same order as manual?
@@ -867,7 +924,15 @@ void emulate8080(State *state)
         // TODO emulator 101 recommended skipping over this for now.
         wait_cycles(4); // per Intel 8080 Programmers Manual.
     }
-//    case 0xfc: printf("CM, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0xfc: // CM code[2], code[1]. CALL if sign flag is set.
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]);
+        if (state->conditions.sign == 1) call_helper(state, address);
+        wait_cycles(17); // per Intel 8080 Programmers Manual
+        break;
+    }
 //    case 0xfd: printf("-"); break;
     case 0xfe: // CPI D8, code[1]; Compare immediate with accumulator. AKA reg.a - immediate.
     {
@@ -991,11 +1056,11 @@ void jump_to_addr(State *state, uint8_t *code)
     state->pc = (code[2] << 8) | code[1];
 }
 
-void call_helper(State* state){
+void call_helper(State* state, uint16_t call_address){
     /*
-    * (1) The most significant 8 bits of data are stored at the memory address
+    * (1) The most significant 8 bits of data are stored at the memory call_address
     *       one less than the contents of the stack pointer.
-    * (2) The least significant 8 bits of data are stored at the memory address
+    * (2) The least significant 8 bits of data are stored at the memory call_address
     *       two less than the contents of the stack pointer.
     * (3) The stack pointer is automatically decremented by two.
     */
@@ -1007,6 +1072,7 @@ void call_helper(State* state){
                         &state->memory[state->sp-1],
                         &state->memory[state->sp-2]
                         );
+    state->pc = call_address;
     state->sp -= 2;
 }
 
