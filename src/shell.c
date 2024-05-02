@@ -860,7 +860,12 @@ void emulate8080(State *state)
         opbytes = 2;
         state->pc += opbytes;
         subtract_8b(state, state->a, code[1]);
-        wait_cycles(7); // per Intel 8080 Programmers Manual.
+        uint8_t result = state->a - code[1];
+        state->conditions.zero = (result == 0);
+        state->conditions.sign = ((result & 0x80) != 0); // Set if bit 7 of the result is set
+        state->conditions.parity = parity(result);
+        state->conditions.carry = (state->a < code[1]);
+        wait_cycles(7); 
         break;
     }
 //    case 0xff: printf("RST 7"); break;
