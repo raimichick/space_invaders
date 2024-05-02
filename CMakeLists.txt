@@ -137,7 +137,6 @@ add_test(NAME test_MVI_C COMMAND test_move_immediate 0x0e)
 add_executable(test_rotate tests/test_rotate.c)
 add_test(NAME test_RRC COMMAND test_rotate 0x0f)
 
-# CRAIG's TESTS
 add_executable(test_push_pop tests/test_push_pop.c)
 add_test(NAME test_POP_D, COMMAND test_push_pop 0xd1)
 add_test(NAME test_PUSH_D, COMMAND test_push_pop 0xd5)
@@ -165,3 +164,4 @@ add_test(NAME test_XCHG, COMMAND test_xchg 0xeb)
 
 add_executable(test_compare tests/test_compare.c)
 add_test(NAME test_CPI_D8, COMMAND test_compare 0xfe)
+add_test(NAME test_CMP_B, COMMAND test_compare 0xb8)

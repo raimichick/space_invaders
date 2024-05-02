@@ -745,7 +745,13 @@ void emulate8080(State *state)
         ora_helper(state, state->a);
         break;
     }
-//    case 0xb8: printf("CMP B"); break;
+    case 0xb8: // CMP B
+    {
+        state->pc += opbytes;
+        subtract_8b(state, state->a, state->b);
+        wait_cycles(7); // per Intel 8080 Programmers Manual.
+        break;
+    }
 //    case 0xb9: printf("CMP C"); break;
 //    case 0xba: printf("CMP D"); break;
 //    case 0xbb: printf("CMP E"); break;
