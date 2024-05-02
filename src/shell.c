@@ -485,123 +485,123 @@ void emulate8080(State *state)
 //    case 0x8f: printf("ADC A"); break;
     case 0x90: // SUB B   Z, S, P, CY, AC    A <- A - B
     {
-       state->pc += opbytes;
-       uint8_t b = state->b;
-       subtract_8b(state, state->a, b);
-       wait_cycles(4);
-       break;
+        state->pc += opbytes;
+        uint8_t b = state->b;
+        state->a = subtract_8b(state, state->a, b);
+        wait_cycles(4);
+        break;
     }
-    case 0x91: // SUB C   Z, S, P, CY, AC	A <- A - C
+    case 0x91: // SUB C   Z, S, P, CY, AC    A <- A - C
     {
-	state->pc += opbytes;
-    	uint8_t c = state->c;
-	subtract_8b(state, state->a, c);
-    	wait_cycles(4);
-    	break;
+        state->pc += opbytes;
+        uint8_t c = state->c;
+        state->a = subtract_8b(state, state->a, c);
+        wait_cycles(4);
+        break;
     }
-    case 0x92: // SUB D   Z, S, P, CY, AC	A <- A - D
+    case 0x92: // SUB D   Z, S, P, CY, AC    A <- A - D
     {
-	state->pc += opbytes;
-    	uint8_t d = state->d;
-	subtract_8b(state, state->a, d);
-    	wait_cycles(4);
-    	break;
+        state->pc += opbytes;
+        uint8_t d = state->d;
+        state->a = subtract_8b(state, state->a, d);
+        wait_cycles(4);
+        break;
     }
-    case 0x93: // SUB E   Z, S, P, CY, AC	A <- A - E
+    case 0x93: // SUB E   Z, S, P, CY, AC    A <- A - E
     {
-	state->pc += opbytes;
-    	uint8_t e = state->e;
-	subtract_8b(state, state->a, e);
-    	wait_cycles(4);
-    	break;
+        state->pc += opbytes;
+        uint8_t e = state->e;
+        state->a = subtract_8b(state, state->a, e);
+        wait_cycles(4);
+        break;
     }
-    case 0x94: // SUB H  Z, S, P, CY, AC    A <- A - H
+    case 0x94: // SUB H   Z, S, P, CY, AC    A <- A - H
     {
-	state->pc += opbytes;
-    	uint8_t h = state->h;
-	subtract_8b(state, state->a, h);
-    	wait_cycles(4);
-    	break;
+        state->pc += opbytes;
+        uint8_t h = state->h;
+        state->a = subtract_8b(state, state->a, h);
+        wait_cycles(4);
+        break;
     }
-    case 0x95: // SUB L  Z, S, P, CY, AC	A <- A - L
+    case 0x95: // SUB L   Z, S, P, CY, AC    A <- A - L
     {
-	state->pc += opbytes;
-    	uint8_t l = state->l;
-	subtract_8b(state, state->a, l);
-    	wait_cycles(4);
-    	break;
+        state->pc += opbytes;
+        uint8_t l = state->l;
+        state->a = subtract_8b(state, state->a, l);
+        wait_cycles(4);
+        break;
     }
     case 0x96: // SUB M   Z, S, P, CY, AC    A <- A - (HL)
     {
         uint16_t address = (state->h << 8) | state->l;
         uint8_t value = state->memory[address];
         state->pc += opbytes;
-        subtract_8b(state, state->a, value);
+        state->a = subtract_8b(state, state->a, value);
         wait_cycles(7);
         break;
     }
-    case 0x97: // SUB A  Z, S, P, CY, AC	A <- A - A
+    case 0x97: // SUB A   Z, S, P, CY, AC    A <- A - A
     {
-	state->pc += opbytes;
-    	subtract_8b(state, state->a, state->a);
-    	wait_cycles(4);
-    	break;
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->a);
+        wait_cycles(4);
+        break;
     }
     case 0x98: // SBB B   Z, S, P, CY, AC    A <- A - B - CY
     {
         state->pc += opbytes;
-        subtract_8b(state, state->a, state->b + (state->conditions.carry ? 1 : 0));
+        state->a = subtract_8b(state, state->a, state->b + (state->conditions.carry ? 1 : 0));
         wait_cycles(4);
         break;
     }
-    case 0x99: // SBB C   Z, S, P, CY, AC	A <- A - C - CY
+    case 0x99: // SBB C   Z, S, P, CY, AC    A <- A - C - CY
     {
-    	state->pc += opbytes;
-    	subtract_8b(state, state->a, state->c + (state->conditions.carry ? 1 : 0));
-    	wait_cycles(4);
-    	break;
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->c + (state->conditions.carry ? 1 : 0));
+        wait_cycles(4);
+        break;
     }
-    case 0x9a: // SBB D   Z, S, P, CY, AC	A <- A - D - CY
+    case 0x9a: // SBB D   Z, S, P, CY, AC    A <- A - D - CY
     {
-    	state->pc += opbytes;
-    	subtract_8b(state, state->a, state->d + (state->conditions.carry ? 1 : 0));
-    	wait_cycles(4);
-    	break;
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->d + (state->conditions.carry ? 1 : 0));
+        wait_cycles(4);
+        break;
     }
-    case 0x9b: // SBB E   Z, S, P, CY, AC	A <- A - E - CY
+    case 0x9b: // SBB E   Z, S, P, CY, AC    A <- A - E - CY
     {
-    	state->pc += opbytes;
-    	subtract_8b(state, state->a, state->e + (state->conditions.carry ? 1 : 0));
-    	wait_cycles(4);
-    	break;
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->e + (state->conditions.carry ? 1 : 0));
+        wait_cycles(4);
+        break;
     }
-    case 0x9c: // SBB H   Z, S, P, CY, AC	A <- A - H - CY
+    case 0x9c: // SBB H   Z, S, P, CY, AC    A <- A - H - CY
     {
-    	state->pc += opbytes;
-    	subtract_8b(state, state->a, state->h + (state->conditions.carry ? 1 : 0));
-    	wait_cycles(4);
-    	break;
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->h + (state->conditions.carry ? 1 : 0));
+        wait_cycles(4);
+        break;
     }
-    case 0x9d: // SBB L   Z, S, P, CY, AC	A <- A - L - CY
+    case 0x9d: // SBB L   Z, S, P, CY, AC    A <- A - L - CY
     {
-    	state->pc += opbytes;
-    	subtract_8b(state, state->a, state->l + (state->conditions.carry ? 1 : 0));
-    	wait_cycles(4);
-    	break;
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->l + (state->conditions.carry ? 1 : 0));
+        wait_cycles(4);
+        break;
     }
     case 0x9e: // SBB M   Z, S, P, CY, AC    A <- A - (HL) - CY
     {
         uint16_t address = (state->h << 8) | state->l;
         uint8_t value = state->memory[address];
         state->pc += opbytes;
-        subtract_8b(state, state->a, value + (state->conditions.carry ? 1 : 0));
+        state->a = subtract_8b(state, state->a, value + (state->conditions.carry ? 1 : 0));
         wait_cycles(7);
         break;
     }
     case 0x9f: // SBB A   Z, S, P, CY, AC    A <- A - A - CY
     {
         state->pc += opbytes;
-        subtract_8b(state, state->a, state->a + (state->conditions.carry ? 1 : 0));
+        state->a = subtract_8b(state, state->a, state->a + (state->conditions.carry ? 1 : 0));
         wait_cycles(4);
         break;
     }
@@ -746,11 +746,11 @@ void emulate8080(State *state)
 //    case 0xdb: printf("IN D8, $%02x", code[1]); opbytes = 2; break;
 //    case 0xdc: printf("CC, $%02x%02x", code[2], code[1]); opbytes = 3; break;
 //    case 0xdd: printf("-"); break;
-    case 0xde: // SBI D8   Z, S, P, CY, AC	A <- A - byte - CY
+    case 0xde: // SBI D8   Z, S, P, CY, AC    A <- A - byte - CY
     {
         uint8_t immediate = state->memory[state->pc + 1];
         state->pc += 2;
-        subtract_8b(state, &state->a, immediate + state->conditions.carry);
+        state->a = subtract_8b(state, state->a, immediate + (state->conditions.carry ? 1 : 0));
         wait_cycles(7);
         break;
     }
@@ -1071,19 +1071,21 @@ uint8_t get_aux_carry_flag_from_sum(uint8_t val0, uint8_t val1){
     return ((val0 & 0x0F) + (val1 & 0x0F)) > 0x0F;
 }
 
-void subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend)
+uint8_t subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend)
 {
     // NOTE: The carry flag is cleared if there's a carry, and set if there's no carry.
         // This is opposite of the addition instructions.
     // val = minuend - subtrahend
-    uint16_t twos_complement = !(subtrahend) + 0x01;
-    uint16_t res = twos_complement + minuend;
+    uint16_t twos_complement = ~(subtrahend) + 0x01;
+    uint8_t res_8b = twos_complement + minuend;
     state->conditions.zero = minuend == subtrahend;
     state->conditions.carry = minuend < subtrahend;
-    state->conditions.aux_carry = !get_aux_carry_flag_from_sum(twos_complement, minuend);
+    //state->conditions.aux_carry = !get_aux_carry_flag_from_sum(twos_complement, minuend);
+    state->conditions.aux_carry = get_aux_carry_flag_from_sum(minuend, twos_complement);
     // TODO consider changer param name from "register_value".
-    state->conditions.sign = get_sign_flag(res);
-    state->conditions.parity = get_parity_flag(res);
+    state->conditions.sign = get_sign_flag(res_8b);
+    state->conditions.parity = get_parity_flag(res_8b);
+    return res_8b;
 }
 
 uint16_t combine_bytes_to_word(uint8_t hi_byte, uint8_t lo_byte)
