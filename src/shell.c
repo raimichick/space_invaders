@@ -863,7 +863,13 @@ void emulate8080(State *state)
         uint8_t result = state->a - code[1];
         state->conditions.zero = (result == 0);
         state->conditions.sign = ((result & 0x80) != 0); // Set if bit 7 of the result is set
-        state->conditions.parity = parity(result);
+        int count = 0;
+        for (int i = 0; i < 8; i++) {
+            if (result & (1 << i)) {
+                count++;
+            }
+        }
+        state->conditions.parity = (count % 2 == 0);
         state->conditions.carry = (state->a < code[1]);
         wait_cycles(7); 
         break;
