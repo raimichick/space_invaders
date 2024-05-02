@@ -50,11 +50,6 @@ int test_CMP_BCDEHL(State *state, State *expected_state, uint8_t opcode)
     state->memory[0] = opcode;
     state->a = 0x0a;
     *state_reg = 0x05;
-    state->conditions.carry = 1;
-    state->conditions.aux_carry = 1;
-    state->conditions.zero = 1;
-    state->conditions.parity = 1;
-    state->conditions.sign = 1;
 
     expected_state->pc = 1;
     expected_state->a = 0x0a;
@@ -71,11 +66,6 @@ int test_CMP_BCDEHL(State *state, State *expected_state, uint8_t opcode)
     state->pc = 0;
     state->a = 0x02;
     *state_reg = 0x05;
-    state->conditions.carry = 1;
-    state->conditions.aux_carry = 1;
-    state->conditions.zero = 1;
-    state->conditions.parity = 1;
-    state->conditions.sign = 1;
 
     expected_state->pc = 1;
     expected_state->a = 0x02;
@@ -92,11 +82,6 @@ int test_CMP_BCDEHL(State *state, State *expected_state, uint8_t opcode)
     state->pc = 0;
     state->a = -0x1b;
     *state_reg = 0x05;
-    state->conditions.carry = 1;
-    state->conditions.aux_carry = 1;
-    state->conditions.zero = 1;
-    state->conditions.parity = 1;
-    state->conditions.sign = 1;
 
     expected_state->pc = 1;
     expected_state->a = -0x1b;
@@ -111,16 +96,79 @@ int test_CMP_BCDEHL(State *state, State *expected_state, uint8_t opcode)
     return 0;
 }
 
-int test_CMP_A(State *state, State *expected_state, uint8_t opcode)
+int test_CMP_M(State *state, State *expected_state)
+{
+    // Ex 1 from 8080 manual
+    state->memory[0] = CMP_M;
+    state->a = 0x0a;
+    state->h = 0x11;
+    state->l = 0x55;
+    state->memory[0x1155] = 0x05;
+
+    expected_state->pc = 1;
+    expected_state->a = 0x0a;
+    expected_state->h = 0x11;
+    expected_state->l = 0x55;
+    expected_state->memory[0x1155] = 0x05;
+    expected_state->conditions.carry = 0;
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 1;
+    expected_state->conditions.sign = 0;
+    emulate8080(state);
+    if (state_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0x1155] != expected_state->memory[0x1155]) return 1;
+
+    // Ex 2 from 8080 manual
+    state->pc = 0;
+    state->a = 0x02;
+    state->h = 0x11;
+    state->l = 0x55;
+    state->memory[0x1155] = 0x05;
+
+    expected_state->pc = 1;
+    expected_state->a = 0x02;
+    state->h = 0x11;
+    state->l = 0x55;
+    state->memory[0x1155] = 0x05;
+    expected_state->conditions.carry = 1;
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.parity = 0;
+    expected_state->conditions.sign = 1;
+    emulate8080(state);
+    if (state_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0x1155] != expected_state->memory[0x1155]) return 1;
+
+    // Ex 3 from 8080 manual
+    state->pc = 0;
+    state->a = -0x1b;
+    state->h = 0x11;
+    state->l = 0x55;
+    state->memory[0x1155] = 0x05;
+
+    expected_state->pc = 1;
+    expected_state->a = -0x1b;
+    state->h = 0x11;
+    state->l = 0x55;
+    state->memory[0x1155] = 0x05;
+    expected_state->conditions.carry = 0;
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 0;
+    expected_state->conditions.sign = 1;
+    emulate8080(state);
+    if (state_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0x1155] != expected_state->memory[0x1155]) return 1;
+
+    return 0;
+}
+
+int test_CMP_A(State *state, State *expected_state)
 {
     // state->a is positive
-    state->memory[0] = opcode;
+    state->memory[0] = CMP_A;
     state->a = 0x55;
-    state->conditions.carry = 1;
-    state->conditions.aux_carry = 1;
-    state->conditions.zero = 1;
-    state->conditions.parity = 1;
-    state->conditions.sign = 1;
 
     expected_state->pc = 1;
     expected_state->a = 0x55;
@@ -135,11 +183,6 @@ int test_CMP_A(State *state, State *expected_state, uint8_t opcode)
     // state->a is 0
     state->pc = 0;
     state->a = 0x0;
-    state->conditions.carry = 1;
-    state->conditions.aux_carry = 1;
-    state->conditions.zero = 1;
-    state->conditions.parity = 1;
-    state->conditions.sign = 1;
 
     expected_state->pc = 1;
     expected_state->a = 0x0;
@@ -154,11 +197,6 @@ int test_CMP_A(State *state, State *expected_state, uint8_t opcode)
     // state->a is negative
     state->pc = 0;
     state->a = -0x55;
-    state->conditions.carry = 1;
-    state->conditions.aux_carry = 1;
-    state->conditions.zero = 1;
-    state->conditions.parity = 1;
-    state->conditions.sign = 1;
 
     expected_state->pc = 1;
     expected_state->a = -0x55;
@@ -189,8 +227,8 @@ int main(int argc, char *argv[])
         case CMP_E: result = test_CMP_BCDEHL(state, expected_state, CMP_E); break;
         case CMP_H: result = test_CMP_BCDEHL(state, expected_state, CMP_H); break;
         case CMP_L: result = test_CMP_BCDEHL(state, expected_state, CMP_L); break;
-        // case CMP_M: result = test_CMP_M(state, expected_state, CMP_M); break;
-        case CMP_A: result = test_CMP_A(state, expected_state, CMP_A); break;
+        case CMP_M: result = test_CMP_M(state, expected_state); break;
+        case CMP_A: result = test_CMP_A(state, expected_state); break;
         default: result = 1; // Test failed due to incorrect test parameter
         return result;
     }

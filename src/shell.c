@@ -787,7 +787,14 @@ void emulate8080(State *state)
         wait_cycles(4); // per Intel 8080 Programmers Manual.
         break;
     }
-//    case 0xbe: printf("CMP M"); break;
+    case 0xbe: // CMP M
+    {
+        state->pc += opbytes;
+        uint16_t addr = combine_bytes_to_word(state->h, state->l);
+        subtract_8b(state, state->a, state->memory[addr]);
+        wait_cycles(7); // per Intel 8080 Programmers Manual.
+        break;
+    }
     case 0xbf: // CMP A
     {
         state->pc += opbytes;
