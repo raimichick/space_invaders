@@ -859,10 +859,10 @@ void emulate8080(State *state)
     {
         opbytes = 2;
         state->pc += opbytes;
-        subtract_8b(state, state->a, code[1]);
-        uint8_t result = state->a - code[1];
+        uint8_t immediate = code[1];
+        uint8_t result = state->a - immediate;
         state->conditions.zero = (result == 0);
-        state->conditions.sign = ((result & 0x80) != 0); // Set if bit 7 of the result is set
+        state->conditions.sign = (result & 0x80); // Set if bit 7 of the result is set
         int count = 0;
         for (int i = 0; i < 8; i++) {
             if (result & (1 << i)) {
@@ -870,8 +870,8 @@ void emulate8080(State *state)
             }
         }
         state->conditions.parity = (count % 2 == 0);
-        state->conditions.carry = (state->a < code[1]);
-        wait_cycles(7); 
+        state->conditions.carry = (state->a < immediate);
+        wait_cycles(7);
         break;
     }
 //    case 0xff: printf("RST 7"); break;
