@@ -729,7 +729,7 @@ void emulate8080(State *state)
     {
         uint8_t immediate = state->memory[state->pc + 1];
         state->pc += 2;
-        uint8_t result = subtract_8b(state, state->a, immediate);
+        uint8_t result = subtract_8b(state, &state->a, immediate);
         state->a = result;
         wait_cycles(7);
         break;
@@ -745,7 +745,7 @@ void emulate8080(State *state)
     {
         uint8_t immediate = state->memory[state->pc + 1];
         state->pc += 2;
-        uint8_t result = subtract_8b(state, state->a, immediate + (state->conditions.carry ? 1 : 0));
+        uint8_t result = subtract_8b(state, &state->a, immediate + (state->conditions.carry ? 1 : 0));
         state->a = result;
         wait_cycles(7);
         break;
