@@ -749,16 +749,52 @@ void emulate8080(State *state)
     {
         state->pc += opbytes;
         subtract_8b(state, state->a, state->b);
-        wait_cycles(7); // per Intel 8080 Programmers Manual.
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
         break;
     }
-//    case 0xb9: printf("CMP C"); break;
-//    case 0xba: printf("CMP D"); break;
-//    case 0xbb: printf("CMP E"); break;
-//    case 0xbc: printf("CMP H"); break;
-//    case 0xbd: printf("CMP L"); break;
+    case 0xb9: // CMP C
+    {
+        state->pc += opbytes;
+        subtract_8b(state, state->a, state->c);
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
+    }
+    case 0xba: // CMP D
+    {
+        state->pc += opbytes;
+        subtract_8b(state, state->a, state->d);
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
+    }
+    case 0xbb: // CMP E
+    {
+        state->pc += opbytes;
+        subtract_8b(state, state->a, state->e);
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
+    }
+    case 0xbc: // CMP H
+    {
+        state->pc += opbytes;
+        subtract_8b(state, state->a, state->h);
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
+    }
+    case 0xbd: // CMP L
+    {
+        state->pc += opbytes;
+        subtract_8b(state, state->a, state->l);
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
+    }
 //    case 0xbe: printf("CMP M"); break;
-//    case 0xbf: printf("CMP A"); break;
+    case 0xbf: // CMP A
+    {
+        state->pc += opbytes;
+        subtract_8b(state, state->a, state->a);
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
+    }
     case 0xc0:  // RNZ; return if zero = 0
     {
         if (state->conditions.zero == 0) return_helper(state);
