@@ -74,7 +74,8 @@ int main(int argc, char *argv[])
     case 0x01: result = test_LXI_B(state, expected_state); break;
     case 0x11: result = test_LXI_D(state, expected_state); break;
     case 0x1a: result = test_LDAX_D(state, expected_state); break;
-    default: return result = FAIL; // Test failed due to incorrect test parameter
+    default:
+        return result = FAIL; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory

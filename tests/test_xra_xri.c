@@ -237,33 +237,15 @@ int main(int argc, char *argv[])
 
     switch (strtol(argv[1], NULL, 16))
     {
-    case 0xa8:
-        result = test_XRA_B(state, expected_state);
-        break;
-    case 0xa9:
-        result = test_XRA_C(state, expected_state);
-        break;
-    case 0xaa:
-        result = test_XRA_D(state, expected_state);
-        break;
-    case 0xab:
-        result = test_XRA_E(state, expected_state);
-        break;
-    case 0xac:
-        result = test_XRA_H(state, expected_state);
-        break;
-    case 0xad:
-        result = test_XRA_L(state, expected_state);
-        break;
-    case 0xae:
-        result = test_XRA_M(state, expected_state);
-        break;
-    case 0xaf:
-        result = test_XRA_A(state, expected_state);
-        break;
-    case 0xee:
-        result = test_XRI(state, expected_state);
-        break;
+    case 0xa8: result = test_XRA_B(state, expected_state); break;
+    case 0xa9: result = test_XRA_C(state, expected_state); break;
+    case 0xaa: result = test_XRA_D(state, expected_state); break;
+    case 0xab: result = test_XRA_E(state, expected_state); break;
+    case 0xac: result = test_XRA_H(state, expected_state); break;
+    case 0xad: result = test_XRA_L(state, expected_state); break;
+    case 0xae: result = test_XRA_M(state, expected_state); break;
+    case 0xaf: result = test_XRA_A(state, expected_state); break;
+    case 0xee: result = test_XRI(state, expected_state); break;
     default:
         return result = FAIL; // Test failed due to incorrect test parameter
     }

@@ -48,14 +48,9 @@ int main(int argc, char *argv[])
 
     switch (strtol(argv[1], NULL, 16))
     {
-    case 0x06:
-        result = test_MVI_B(state, expected_state);
-        break;
-    case 0x0e:
-        result = test_MVI_C(state, expected_state);
-        break;
-    default:
-        return result = FAIL; // Test failed due to incorrect test parameter
+    case 0x06: result = test_MVI_B(state, expected_state); break;
+    case 0x0e: result = test_MVI_C(state, expected_state); break;
+    default: return result = FAIL; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory

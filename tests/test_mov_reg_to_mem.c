@@ -41,7 +41,8 @@ int main(int argc, char *argv[])
     switch (strtol(argv[1], NULL, 16))
     {
     case 0x77: result = test_MOV_M_A(state, expected_state); break;
-    default: return result = FAIL; // Test failed due to incorrect test parameter
+    default:
+        return result = FAIL; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory

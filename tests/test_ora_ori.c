@@ -246,7 +246,8 @@ int main(int argc, char *argv[])
     case 0xb6: result = test_ORA_M(state, expected_state); break;
     case 0xb7: result = test_ORA_A(state, expected_state); break;
     case 0xf6: result = test_ORI(state, expected_state); break;
-    default: return result = FAIL; // Test failed due to incorrect test parameter
+    default:
+        return result = FAIL; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory
