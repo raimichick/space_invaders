@@ -46,11 +46,11 @@ int test_XTHL(State *state, State *expected_state)
     expected_state->l = 0xf0;
 
     emulate8080(state);
-    if (state->memory[0x10ac] != expected_state->memory[0x10ac]) return 1;
-    if (state->memory[0x10ad] != expected_state->memory[0x10ad]) return 1;
-    if (state->memory[0x10ae] != expected_state->memory[0x10ae]) return 1;
-    if (state->memory[0x10af] != expected_state->memory[0x10af]) return 1;
-    return state_compare(state, expected_state) == 1;
+    if (state->memory[0x10ac] != expected_state->memory[0x10ac]) return FAIL;
+    if (state->memory[0x10ad] != expected_state->memory[0x10ad]) return FAIL;
+    if (state->memory[0x10ae] != expected_state->memory[0x10ae]) return FAIL;
+    if (state->memory[0x10af] != expected_state->memory[0x10af]) return FAIL;
+    return state_compare(state, expected_state);
 }
 
 int main(int argc, char *argv[])
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     {
         case XCHG: result = test_XCHG(state, expected_state); break;
         case XTHL: result = test_XTHL(state, expected_state); break;
-        default: return 1; // Test failed due to incorrect test parameter
+        default: result = FAIL; // Test failed due to incorrect test parameter
     }
     // clang-format on
 
