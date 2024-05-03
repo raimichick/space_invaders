@@ -196,7 +196,7 @@ int main(int argc, char *argv[])
     case 0xa5: result = test_ANA_L(state, expected_state); break;
     case 0xa6: result = test_ANA_M(state, expected_state); break;
     case 0xa7: result = test_ANA_A(state, expected_state); break;
-    default: result = 1; // Test failed due to incorrect test parameter
+    default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory

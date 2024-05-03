@@ -246,8 +246,7 @@ int main(int argc, char *argv[])
     case 0xae: result = test_XRA_M(state, expected_state); break;
     case 0xaf: result = test_XRA_A(state, expected_state); break;
     case 0xee: result = test_XRI(state, expected_state); break;
-    default:
-        return result = FAIL; // Test failed due to incorrect test parameter
+    default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory

@@ -544,7 +544,7 @@ int main(int argc, char *argv[])
         case CPE: result = test_CPE(state, expected_state); break;
         case CP: result = test_CP(state, expected_state); break;
         case CM: result = test_CM(state, expected_state); break;
-        default: return FAIL; // Test failed due to incorrect test parameter
+        default: result = FAIL; // Test failed due to incorrect test parameter
     }
     // clang-format on
 

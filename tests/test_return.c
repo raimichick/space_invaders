@@ -221,8 +221,7 @@ int main(int argc, char *argv[])
     case 0xe8: result = test_RPE(state, expected_state); break;
     case 0xf0: result = test_RP(state, expected_state); break;
     case 0xf8: result = test_RM(state, expected_state); break;
-    default:
-        return result = FAIL; // Test failed due to incorrect test parameter
+    default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory

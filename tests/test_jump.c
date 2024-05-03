@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
     case 0xea: result = test_JPE(state, expected_state); break;
     case 0xf2: result = test_JP(state, expected_state); break;
     case 0xfa: result = test_JM(state, expected_state); break;
-    default: return result = FAIL; // Test failed due to incorrect test parameter
+    default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory
