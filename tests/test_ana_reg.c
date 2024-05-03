@@ -188,32 +188,15 @@ int main(int argc, char *argv[])
 
     switch (strtol(argv[1], NULL, 16))
     {
-    case 0xa0:
-        result = test_ANA_B(state, expected_state);
-        break;
-    case 0xa1:
-        result = test_ANA_C(state, expected_state);
-        break;
-    case 0xa2:
-        result = test_ANA_D(state, expected_state);
-        break;
-    case 0xa3:
-        result = test_ANA_E(state, expected_state);
-        break;
-    case 0xa4:
-        result = test_ANA_H(state, expected_state);
-        break;
-    case 0xa5:
-        result = test_ANA_L(state, expected_state);
-        break;
-    case 0xa6:
-        result = test_ANA_M(state, expected_state);
-        break;
-    case 0xa7:
-        result = test_ANA_A(state, expected_state);
-        break;
-    default:
-        result = 1; // Test failed due to incorrect test parameter
+    case 0xa0: result = test_ANA_B(state, expected_state); break;
+    case 0xa1: result = test_ANA_C(state, expected_state); break;
+    case 0xa2: result = test_ANA_D(state, expected_state); break;
+    case 0xa3: result = test_ANA_E(state, expected_state); break;
+    case 0xa4: result = test_ANA_H(state, expected_state); break;
+    case 0xa5: result = test_ANA_L(state, expected_state); break;
+    case 0xa6: result = test_ANA_M(state, expected_state); break;
+    case 0xa7: result = test_ANA_A(state, expected_state); break;
+    default: result = 1; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory

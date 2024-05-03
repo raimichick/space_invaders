@@ -79,17 +79,10 @@ int main(int argc, char *argv[])
 
     switch (strtol(argv[1], NULL, 16))
     {
-    case 0x09:
-        result = test_DAD_B(state, expected_state);
-        break;
-    case 0x13:
-        result = test_INX_D(state, expected_state);
-        break;
-    case 0x19:
-        result = test_DAD_D(state, expected_state);
-        break;
-    default:
-        return 1; // Test failed due to incorrect test parameter
+    case 0x09: result = test_DAD_B(state, expected_state); break;
+    case 0x13: result = test_INX_D(state, expected_state); break;
+    case 0x19: result = test_DAD_D(state, expected_state); break;
+    default: return 1; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory

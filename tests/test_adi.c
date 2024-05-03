@@ -36,11 +36,8 @@ int main(int argc, char *argv[])
 
     switch (strtol(argv[1], NULL, 16))
     {
-    case 0xc6:
-        result = test_ADI_D8(state, expected_state);
-        break;
-    default:
-        return 1; // Test failed due to incorrect test parameter
+    case 0xc6: result = test_ADI_D8(state, expected_state); break;
+    default: return 1; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory

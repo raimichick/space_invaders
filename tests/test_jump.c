@@ -218,38 +218,17 @@ int main(int argc, char *argv[])
 
     switch (strtol(argv[1], NULL, 16))
     {
-    case 0xc2:
-        result = test_JNZ(state, expected_state);
-        break;
-    case 0xc3:
-        result = test_JMP(state, expected_state);
-        break;
-    case 0xca:
-        result = test_JZ(state, expected_state);
-        break;
-    case 0xd2:
-        result = test_JNC(state, expected_state);
-        break;
-    case 0xda:
-        result = test_JC(state, expected_state);
-        break;
-    case 0xe2:
-        result = test_JPO(state, expected_state);
-        break;
-    case 0xe9:
-        result = test_PCHL(state, expected_state);
-        break;
-    case 0xea:
-        result = test_JPE(state, expected_state);
-        break;
-    case 0xf2:
-        result = test_JP(state, expected_state);
-        break;
-    case 0xfa:
-        result = test_JM(state, expected_state);
-        break;
-    default:
-        return result = FAIL; // Test failed due to incorrect test parameter
+    case 0xc2: result = test_JNZ(state, expected_state); break;
+    case 0xc3: result = test_JMP(state, expected_state); break;
+    case 0xca: result = test_JZ(state, expected_state); break;
+    case 0xd2: result = test_JNC(state, expected_state); break;
+    case 0xda: result = test_JC(state, expected_state); break;
+    case 0xe2: result = test_JPO(state, expected_state); break;
+    case 0xe9: result = test_PCHL(state, expected_state); break;
+    case 0xea: result = test_JPE(state, expected_state); break;
+    case 0xf2: result = test_JP(state, expected_state); break;
+    case 0xfa: result = test_JM(state, expected_state); break;
+    default: return result = FAIL; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory
