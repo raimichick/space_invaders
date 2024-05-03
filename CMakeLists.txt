@@ -12,30 +12,22 @@ add_executable(space_invaders_8080 src/main.c)
 
 enable_testing()
 
-# DAMIAN's TESTS
-# Add your test file as an executable, first argument is executable name and second is path to file to convert to executable
-add_executable(mov_reg_to_reg tests/test_mov_reg_to_reg.c)
-add_executable(test_mov_mem_to_reg tests/test_mov_mem_to_reg.c)
-add_executable(test_mov_reg_to_mem tests/test_mov_reg_to_mem.c)
-add_executable(test_return tests/test_return.c)
-add_executable(test_adi tests/test_adi.c)
-add_executable(test_jump tests/test_jump.c)
-add_executable(test_xra_xri tests/test_xra_xri.c)
-add_executable(test_ana_reg tests/test_ana_reg.c)
-add_executable(test_ora_ori tests/test_ora_ori.c)
-
 # MOV REG to REG Tests - create a unique name, use the opcode as the first argument for the executable (COMMAND function_name arg1)
+add_executable(mov_reg_to_reg tests/test_mov_reg_to_reg.c)
 add_test(NAME mov_a_d COMMAND mov_reg_to_reg 0x7a)
 add_test(NAME mov_a_e COMMAND mov_reg_to_reg 0x7b)
 add_test(NAME mov_a_h COMMAND mov_reg_to_reg 0x7c)
 
 # MOV MEM to REG Tests - create a unique name, use the opcode as the first argument for the executable (COMMAND function_name arg1)
+add_executable(test_mov_mem_to_reg tests/test_mov_mem_to_reg.c)
 add_test(NAME mov_a_m COMMAND test_mov_mem_to_reg 0x7e)
 
 # MOV REG to MEM Tests - create a unique name, use the opcode as the first argument for the executable (COMMAND function_name arg1)
+add_executable(test_mov_reg_to_mem tests/test_mov_reg_to_mem.c)
 add_test(NAME mov_m_a COMMAND test_mov_reg_to_mem 0x77)
 
 # ANA REG Tests
+add_executable(test_ana_reg tests/test_ana_reg.c)
 add_test(NAME ana_b COMMAND test_ana_reg 0xa0)
 add_test(NAME ana_c COMMAND test_ana_reg 0xa1)
 add_test(NAME ana_d COMMAND test_ana_reg 0xa2)
@@ -46,6 +38,7 @@ add_test(NAME ana_m COMMAND test_ana_reg 0xa6)
 add_test(NAME ana_a COMMAND test_ana_reg 0xa7)
 
 # XRA and XRI Tests
+add_executable(test_xra_xri tests/test_xra_xri.c)
 add_test(NAME xra_b COMMAND test_xra_xri 0xa8)
 add_test(NAME xra_c COMMAND test_xra_xri 0xa9)
 add_test(NAME xra_d COMMAND test_xra_xri 0xaa)
@@ -57,6 +50,7 @@ add_test(NAME xra_a COMMAND test_xra_xri 0xaf)
 add_test(NAME xri COMMAND test_xra_xri 0xee)
 
 # ORA and ORI Tests
+add_executable(test_ora_ori tests/test_ora_ori.c)
 add_test(NAME ora_b COMMAND test_ora_ori 0xb0)
 add_test(NAME ora_c COMMAND test_ora_ori 0xb1)
 add_test(NAME ora_d COMMAND test_ora_ori 0xb2)
@@ -68,6 +62,7 @@ add_test(NAME ora_a COMMAND test_ora_ori 0xb7)
 add_test(NAME ori COMMAND test_ora_ori 0xf6)
 
 # Jump Tests
+add_executable(test_jump tests/test_jump.c)
 add_test(NAME jnz COMMAND test_jump 0xc2)
 add_test(NAME jmp COMMAND test_jump 0xc3)
 add_test(NAME jz COMMAND test_jump 0xca)
@@ -87,9 +82,11 @@ add_test(NAME push_b COMMAND test_push_pop 0xc5)
 
 # ADI D8 Test
 # TODO move this to test_immediates?
+add_executable(test_adi tests/test_adi.c)
 add_test(NAME adi_d8 COMMAND test_adi 0xc6)
 
 # Return Tests
+add_executable(test_return tests/test_return.c)
 add_test(NAME rnz COMMAND test_return 0xc0)
 add_test(NAME rz COMMAND test_return 0xc8)
 add_test(NAME ret COMMAND test_return 0xc9)
@@ -137,7 +134,6 @@ add_test(NAME test_MVI_C COMMAND test_move_immediate 0x0e)
 add_executable(test_rotate tests/test_rotate.c)
 add_test(NAME test_RRC COMMAND test_rotate 0x0f)
 
-# CRAIG's TESTS
 add_executable(test_push_pop tests/test_push_pop.c)
 add_test(NAME test_POP_D, COMMAND test_push_pop 0xd1)
 add_test(NAME test_PUSH_D, COMMAND test_push_pop 0xd5)
