@@ -29,12 +29,12 @@ int test_POP_B(State *state, State *expected_state)
 
     emulate8080(state);
 
-    if (state_compare(state, expected_state) == 1) return 1;
-    if (state->memory[0x1507] != expected_state->memory[0x1507]) return 1;
-    if (state->memory[0x1508] != expected_state->memory[0x1508]) return 1;
-    if (state->memory[0x1509] != expected_state->memory[0x1509]) return 1;
-    if (state->memory[0x150a] != expected_state->memory[0x150a]) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    if (state->memory[0x1507] != expected_state->memory[0x1507]) return FAIL;
+    if (state->memory[0x1508] != expected_state->memory[0x1508]) return FAIL;
+    if (state->memory[0x1509] != expected_state->memory[0x1509]) return FAIL;
+    if (state->memory[0x150a] != expected_state->memory[0x150a]) return FAIL;
+    return PASS;
 }
 
 int test_PUSH_B(State *state, State *expected_state)
@@ -62,12 +62,12 @@ int test_PUSH_B(State *state, State *expected_state)
 
     emulate8080(state);
 
-    if (state_compare(state, expected_state) == 1) return 1;
-    if (state->memory[0x13a3] != expected_state->memory[0x13a3]) return 1;
-    if (state->memory[0x13a4] != expected_state->memory[0x13a4]) return 1;
-    if (state->memory[0x13a5] != expected_state->memory[0x13a5]) return 1;
-    if (state->memory[0x13a6] != expected_state->memory[0x13a6]) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    if (state->memory[0x13a3] != expected_state->memory[0x13a3]) return FAIL;
+    if (state->memory[0x13a4] != expected_state->memory[0x13a4]) return FAIL;
+    if (state->memory[0x13a5] != expected_state->memory[0x13a5]) return FAIL;
+    if (state->memory[0x13a6] != expected_state->memory[0x13a6]) return FAIL;
+    return PASS;
 }
 
 int test_POP_D(State *state, State *expected_state)
@@ -95,12 +95,12 @@ int test_POP_D(State *state, State *expected_state)
 
     emulate8080(state);
 
-    if (state_compare(state, expected_state) == 1) return 1;
-    if (state->memory[0x1507] != expected_state->memory[0x1507]) return 1;
-    if (state->memory[0x1508] != expected_state->memory[0x1508]) return 1;
-    if (state->memory[0x1509] != expected_state->memory[0x1509]) return 1;
-    if (state->memory[0x150a] != expected_state->memory[0x150a]) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    if (state->memory[0x1507] != expected_state->memory[0x1507]) return FAIL;
+    if (state->memory[0x1508] != expected_state->memory[0x1508]) return FAIL;
+    if (state->memory[0x1509] != expected_state->memory[0x1509]) return FAIL;
+    if (state->memory[0x150a] != expected_state->memory[0x150a]) return FAIL;
+    return PASS;
 }
 
 int test_PUSH_D(State *state, State *expected_state)
@@ -128,12 +128,12 @@ int test_PUSH_D(State *state, State *expected_state)
 
     emulate8080(state);
 
-    if (state_compare(state, expected_state) == 1) return 1;
-    if (state->memory[0x13a3] != expected_state->memory[0x13a3]) return 1;
-    if (state->memory[0x13a4] != expected_state->memory[0x13a4]) return 1;
-    if (state->memory[0x13a5] != expected_state->memory[0x13a5]) return 1;
-    if (state->memory[0x13a6] != expected_state->memory[0x13a6]) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    if (state->memory[0x13a3] != expected_state->memory[0x13a3]) return FAIL;
+    if (state->memory[0x13a4] != expected_state->memory[0x13a4]) return FAIL;
+    if (state->memory[0x13a5] != expected_state->memory[0x13a5]) return FAIL;
+    if (state->memory[0x13a6] != expected_state->memory[0x13a6]) return FAIL;
+    return PASS;
 }
 
 int test_POP_H(State *state, State *expected_state)
@@ -161,12 +161,12 @@ int test_POP_H(State *state, State *expected_state)
 
     emulate8080(state);
 
-    if (state_compare(state, expected_state) == 1) return 1;
-    if (state->memory[0x1507] != expected_state->memory[0x1507]) return 1;
-    if (state->memory[0x1508] != expected_state->memory[0x1508]) return 1;
-    if (state->memory[0x1509] != expected_state->memory[0x1509]) return 1;
-    if (state->memory[0x150a] != expected_state->memory[0x150a]) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    if (state->memory[0x1507] != expected_state->memory[0x1507]) return FAIL;
+    if (state->memory[0x1508] != expected_state->memory[0x1508]) return FAIL;
+    if (state->memory[0x1509] != expected_state->memory[0x1509]) return FAIL;
+    if (state->memory[0x150a] != expected_state->memory[0x150a]) return FAIL;
+    return PASS;
 }
 
 int test_PUSH_H(State *state, State *expected_state)
@@ -194,12 +194,12 @@ int test_PUSH_H(State *state, State *expected_state)
 
     emulate8080(state);
 
-    if (state_compare(state, expected_state) == 1) return 1;
-    if (state->memory[0x13a3] != expected_state->memory[0x13a3]) return 1;
-    if (state->memory[0x13a4] != expected_state->memory[0x13a4]) return 1;
-    if (state->memory[0x13a5] != expected_state->memory[0x13a5]) return 1;
-    if (state->memory[0x13a6] != expected_state->memory[0x13a6]) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    if (state->memory[0x13a3] != expected_state->memory[0x13a3]) return FAIL;
+    if (state->memory[0x13a4] != expected_state->memory[0x13a4]) return FAIL;
+    if (state->memory[0x13a5] != expected_state->memory[0x13a5]) return FAIL;
+    if (state->memory[0x13a6] != expected_state->memory[0x13a6]) return FAIL;
+    return PASS;
 }
 
 int test_POP_PSW(State *state, State *expected_state)
@@ -226,10 +226,10 @@ int test_POP_PSW(State *state, State *expected_state)
 
     emulate8080(state);
 
-    if (state_compare(state, expected_state) == 1) return 1;
-    if (state->memory[0x2c00] != expected_state->memory[0x2c00]) return 1;
-    if (state->memory[0x2c01] != expected_state->memory[0x2c01]) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    if (state->memory[0x2c00] != expected_state->memory[0x2c00]) return FAIL;
+    if (state->memory[0x2c01] != expected_state->memory[0x2c01]) return FAIL;
+    return PASS;
 }
 
 int test_PUSH_PSW(State *state, State *expected_state)
@@ -264,10 +264,10 @@ int test_PUSH_PSW(State *state, State *expected_state)
     expected_state->conditions.aux_carry = 0;
 
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
-    if (state->memory[0x5029] != expected_state->memory[0x5029]) return 1;
-    if (state->memory[0x5028] != expected_state->memory[0x5028]) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    if (state->memory[0x5029] != expected_state->memory[0x5029]) return FAIL;
+    if (state->memory[0x5028] != expected_state->memory[0x5028]) return FAIL;
+    return PASS;
 }
 /* Tests for loading values into registers
  * Select a test by passing the opcode value as the first argument
@@ -290,7 +290,7 @@ int main(int argc, char *argv[])
         case 0xe5: result = test_PUSH_H(state, expected_state); break;
         case 0xf1: result = test_POP_PSW(state, expected_state); break;
         case 0xf5: result = test_PUSH_PSW(state, expected_state); break;
-        default: return 1; // Test failed due to incorrect test parameter
+        default: result = FAIL; // Test failed due to incorrect test parameter
     }
     // clang-format on
 

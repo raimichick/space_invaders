@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
         result = test_RM(state, expected_state);
         break;
     default:
-        return 1; // Test failed due to incorrect test parameter
+        return result = FAIL; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory

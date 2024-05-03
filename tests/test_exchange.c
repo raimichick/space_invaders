@@ -21,7 +21,7 @@ int test_XCHG(State *state, State *expected_state)
     expected_state->l = 0x55;
 
     emulate8080(state);
-    return state_compare(state, expected_state) == 1;
+    return state_compare(state, expected_state);
 }
 
 int test_XTHL(State *state, State *expected_state)

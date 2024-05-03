@@ -19,7 +19,7 @@ int test_CALL(State *state, State *expected_state)
     expected_state->sp = 0xcccd;
 
     emulate8080(state);
-    return state_compare(state, expected_state) == 1;
+    return state_compare(state, expected_state);
 }
 
 int test_CALL_RET(State *state, State *expected_state)
@@ -48,9 +48,9 @@ int test_CALL_RET(State *state, State *expected_state)
     expected_state->c = 0x9f;
     expected_state->conditions.carry = 0;
     emulate8080(state); // Runs Call
-    if (state->memory[0xccce] != expected_state->memory[0xccce]) return 1;
-    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return 1;
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0xccce] != expected_state->memory[0xccce]) return FAIL;
+    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return FAIL;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states just after DAD B
     expected_state->pc = 0x5512;
@@ -63,7 +63,7 @@ int test_CALL_RET(State *state, State *expected_state)
     expected_state->c = 0x9f;
     expected_state->conditions.carry = 0;
     emulate8080(state); // Runs DAD B
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states just RET
     expected_state->pc = 3;
@@ -74,7 +74,7 @@ int test_CALL_RET(State *state, State *expected_state)
     expected_state->c = 0x9f;
     expected_state->conditions.carry = 0;
     emulate8080(state); // runs RET
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     return 0;
 }
@@ -90,7 +90,7 @@ int test_CNZ(State *state, State *expected_state)
     expected_state->pc = 0x3;
     expected_state->conditions.zero = 1;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // The second CNZ should execute.
     state->memory[3] = CNZ; // CNZ 0x5511
@@ -111,9 +111,9 @@ int test_CNZ(State *state, State *expected_state)
     expected_state->b = 0x00;
     expected_state->conditions.zero = 0;
     emulate8080(state); // Runs CNZ
-    if (state->memory[0xccce] != expected_state->memory[0xccce]) return 1;
-    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return 1;
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0xccce] != expected_state->memory[0xccce]) return FAIL;
+    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return FAIL;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states just after MVI B, D8
     expected_state->pc = 0x5513;
@@ -122,7 +122,7 @@ int test_CNZ(State *state, State *expected_state)
     expected_state->sp = 0xcccd;
     expected_state->b = 0x55;
     emulate8080(state); // Runs MVI B, D8
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states after RET
     expected_state->pc = 6;
@@ -130,8 +130,8 @@ int test_CNZ(State *state, State *expected_state)
     expected_state->b = 0x55;
     expected_state->conditions.zero = 0;
     emulate8080(state); // runs RET
-    if (state_compare(state, expected_state) == 1) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
 }
 
 int test_CZ(State *state, State *expected_state)
@@ -145,7 +145,7 @@ int test_CZ(State *state, State *expected_state)
     expected_state->pc = 0x3;
     expected_state->conditions.zero = 0;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return 1;
 
     // The second CZ should execute.
     state->memory[3] = CZ; // CZ 0x5511
@@ -166,9 +166,9 @@ int test_CZ(State *state, State *expected_state)
     expected_state->b = 0x00;
     expected_state->conditions.zero = 1;
     emulate8080(state); // Runs CZ
-    if (state->memory[0xccce] != expected_state->memory[0xccce]) return 1;
-    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return 1;
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0xccce] != expected_state->memory[0xccce]) return FAIL;
+    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return FAIL;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states just after MVI B, D8
     expected_state->pc = 0x5513;
@@ -177,7 +177,7 @@ int test_CZ(State *state, State *expected_state)
     expected_state->sp = 0xcccd;
     expected_state->b = 0x55;
     emulate8080(state); // Runs MVI B, D8
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states after RET
     expected_state->pc = 6;
@@ -185,8 +185,8 @@ int test_CZ(State *state, State *expected_state)
     expected_state->b = 0x55;
     expected_state->conditions.zero = 1;
     emulate8080(state); // runs RET
-    if (state_compare(state, expected_state) == 1) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
 }
 
 int test_CNC(State *state, State *expected_state)
@@ -200,7 +200,7 @@ int test_CNC(State *state, State *expected_state)
     expected_state->pc = 0x3;
     expected_state->conditions.carry = 1;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return 1;
 
     // The second CNC should execute.
     state->memory[3] = CNC; // CNC 0x5511
@@ -221,9 +221,9 @@ int test_CNC(State *state, State *expected_state)
     expected_state->b = 0x00;
     expected_state->conditions.carry = 0;
     emulate8080(state); // Runs CNC
-    if (state->memory[0xccce] != expected_state->memory[0xccce]) return 1;
-    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return 1;
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0xccce] != expected_state->memory[0xccce]) return FAIL;
+    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return FAIL;
+    if (state_compare(state, expected_state) == FAIL) return PASS;
 
     // Set up the expected register states just after MVI B, D8
     expected_state->pc = 0x5513;
@@ -232,7 +232,7 @@ int test_CNC(State *state, State *expected_state)
     expected_state->sp = 0xcccd;
     expected_state->b = 0x55;
     emulate8080(state); // Runs MVI B, D8
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states after RET
     expected_state->pc = 6;
@@ -240,8 +240,8 @@ int test_CNC(State *state, State *expected_state)
     expected_state->b = 0x55;
     expected_state->conditions.carry = 0;
     emulate8080(state); // runs RET
-    if (state_compare(state, expected_state) == 1) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
 }
 
 int test_CC(State *state, State *expected_state)
@@ -255,7 +255,7 @@ int test_CC(State *state, State *expected_state)
     expected_state->pc = 0x3;
     expected_state->conditions.carry = 0;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // The second CC should execute.
     state->memory[3] = CC; // CC 0x5511
@@ -276,9 +276,9 @@ int test_CC(State *state, State *expected_state)
     expected_state->b = 0x00;
     expected_state->conditions.carry = 1;
     emulate8080(state); // Runs CC
-    if (state->memory[0xccce] != expected_state->memory[0xccce]) return 1;
-    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return 1;
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0xccce] != expected_state->memory[0xccce]) return FAIL;
+    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return FAIL;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states just after MVI B, D8
     expected_state->pc = 0x5513;
@@ -287,7 +287,7 @@ int test_CC(State *state, State *expected_state)
     expected_state->sp = 0xcccd;
     expected_state->b = 0x55;
     emulate8080(state); // Runs MVI B, D8
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states after RET
     expected_state->pc = 6;
@@ -295,8 +295,8 @@ int test_CC(State *state, State *expected_state)
     expected_state->b = 0x55;
     expected_state->conditions.carry = 1;
     emulate8080(state); // runs RET
-    if (state_compare(state, expected_state) == 1) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
 }
 
 int test_CPO(State *state, State *expected_state)
@@ -310,7 +310,7 @@ int test_CPO(State *state, State *expected_state)
     expected_state->pc = 0x3;
     expected_state->conditions.parity = 1;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // The second CPO should execute.
     state->memory[3] = CPO; // CPO 0x5511
@@ -331,9 +331,9 @@ int test_CPO(State *state, State *expected_state)
     expected_state->b = 0x00;
     expected_state->conditions.parity = 0;
     emulate8080(state); // Runs CPO
-    if (state->memory[0xccce] != expected_state->memory[0xccce]) return 1;
-    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return 1;
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0xccce] != expected_state->memory[0xccce]) return FAIL;
+    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return FAIL;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states just after MVI B, D8
     expected_state->pc = 0x5513;
@@ -342,7 +342,7 @@ int test_CPO(State *state, State *expected_state)
     expected_state->sp = 0xcccd;
     expected_state->b = 0x55;
     emulate8080(state); // Runs MVI B, D8
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states after RET
     expected_state->pc = 6;
@@ -350,8 +350,8 @@ int test_CPO(State *state, State *expected_state)
     expected_state->b = 0x55;
     expected_state->conditions.parity = 0;
     emulate8080(state); // runs RET
-    if (state_compare(state, expected_state) == 1) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
 }
 
 int test_CPE(State *state, State *expected_state)
@@ -365,7 +365,7 @@ int test_CPE(State *state, State *expected_state)
     expected_state->pc = 0x3;
     expected_state->conditions.parity = 0;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // The second CPE should execute.
     state->memory[3] = CPE; // CPE 0x5511
@@ -386,9 +386,9 @@ int test_CPE(State *state, State *expected_state)
     expected_state->b = 0x00;
     expected_state->conditions.parity = 1;
     emulate8080(state); // Runs CPE
-    if (state->memory[0xccce] != expected_state->memory[0xccce]) return 1;
-    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return 1;
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0xccce] != expected_state->memory[0xccce]) return FAIL;
+    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return FAIL;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states just after MVI B, D8
     expected_state->pc = 0x5513;
@@ -397,7 +397,7 @@ int test_CPE(State *state, State *expected_state)
     expected_state->sp = 0xcccd;
     expected_state->b = 0x55;
     emulate8080(state); // Runs MVI B, D8
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states after RET
     expected_state->pc = 6;
@@ -405,8 +405,8 @@ int test_CPE(State *state, State *expected_state)
     expected_state->b = 0x55;
     expected_state->conditions.parity = 1;
     emulate8080(state); // runs RET
-    if (state_compare(state, expected_state) == 1) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
 }
 
 int test_CP(State *state, State *expected_state)
@@ -420,7 +420,7 @@ int test_CP(State *state, State *expected_state)
     expected_state->pc = 0x3;
     expected_state->conditions.sign = 1;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // The second CP should execute.
     state->memory[3] = CP; // CP 0x5511
@@ -441,9 +441,9 @@ int test_CP(State *state, State *expected_state)
     expected_state->b = 0x00;
     expected_state->conditions.sign = 0;
     emulate8080(state); // Runs CP
-    if (state->memory[0xccce] != expected_state->memory[0xccce]) return 1;
-    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return 1;
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0xccce] != expected_state->memory[0xccce]) return FAIL;
+    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return FAIL;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states just after MVI B, D8
     expected_state->pc = 0x5513;
@@ -452,7 +452,7 @@ int test_CP(State *state, State *expected_state)
     expected_state->sp = 0xcccd;
     expected_state->b = 0x55;
     emulate8080(state); // Runs MVI B, D8
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states after RET
     expected_state->pc = 6;
@@ -460,8 +460,8 @@ int test_CP(State *state, State *expected_state)
     expected_state->b = 0x55;
     expected_state->conditions.sign = 0;
     emulate8080(state); // runs RET
-    if (state_compare(state, expected_state) == 1) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
 }
 
 int test_CM(State *state, State *expected_state)
@@ -475,7 +475,7 @@ int test_CM(State *state, State *expected_state)
     expected_state->pc = 0x3;
     expected_state->conditions.sign = 0;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // The second CM should execute.
     state->memory[3] = CM; // CM 0x5511
@@ -496,9 +496,9 @@ int test_CM(State *state, State *expected_state)
     expected_state->b = 0x00;
     expected_state->conditions.sign = 1;
     emulate8080(state); // Runs CM
-    if (state->memory[0xccce] != expected_state->memory[0xccce]) return 1;
-    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return 1;
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state->memory[0xccce] != expected_state->memory[0xccce]) return FAIL;
+    if (state->memory[0xcccd] != expected_state->memory[0xcccd]) return FAIL;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states just after MVI B, D8
     expected_state->pc = 0x5513;
@@ -507,7 +507,7 @@ int test_CM(State *state, State *expected_state)
     expected_state->sp = 0xcccd;
     expected_state->b = 0x55;
     emulate8080(state); // Runs MVI B, D8
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Set up the expected register states after RET
     expected_state->pc = 6;
@@ -515,8 +515,8 @@ int test_CM(State *state, State *expected_state)
     expected_state->b = 0x55;
     expected_state->conditions.sign = 1;
     emulate8080(state); // runs RET
-    if (state_compare(state, expected_state) == 1) return 1;
-    return 0;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
 }
 int main(int argc, char *argv[])
 {
@@ -544,7 +544,7 @@ int main(int argc, char *argv[])
         case CPE: result = test_CPE(state, expected_state); break;
         case CP: result = test_CP(state, expected_state); break;
         case CM: result = test_CM(state, expected_state); break;
-        default: return 1; // Test failed due to incorrect test parameter
+        default: return FAIL; // Test failed due to incorrect test parameter
     }
     // clang-format on
 
