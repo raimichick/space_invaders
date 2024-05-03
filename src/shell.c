@@ -727,58 +727,52 @@ void emulate8080(State *state)
     }
     case 0x90: // SUB B   Z, S, P, CY, AC    A <- A - B
     {
-       state->pc += opbytes;
-       uint8_t b = state->b;
-       subtract_8b(state, state->a, b);
-       wait_cycles(4);
-       break;
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->b);
+        wait_cycles(4);
+        break;
     }
     case 0x91: // SUB C   Z, S, P, CY, AC	A <- A - C
     {
         state->pc += opbytes;
-            uint8_t c = state->c;
-        subtract_8b(state, state->a, c);
-            wait_cycles(4);
-            break;
+        state->a = subtract_8b(state, state->a, state->c);
+        wait_cycles(4);
+        break;
     }
     case 0x92: // SUB D   Z, S, P, CY, AC	A <- A - D
     {
         state->pc += opbytes;
-            uint8_t d = state->d;
-        subtract_8b(state, state->a, d);
-            wait_cycles(4);
-            break;
+        state->a = subtract_8b(state, state->a, state->d);
+        wait_cycles(4);
+        break;
     }
     case 0x93: // SUB E   Z, S, P, CY, AC	A <- A - E
     {
         state->pc += opbytes;
-            uint8_t e = state->e;
-        subtract_8b(state, state->a, e);
-            wait_cycles(4);
-            break;
+        state->a = subtract_8b(state, state->a, state->e);
+        wait_cycles(4);
+        break;
     }
     case 0x94: // SUB H  Z, S, P, CY, AC    A <- A - H
     {
         state->pc += opbytes;
-            uint8_t h = state->h;
-        subtract_8b(state, state->a, h);
-            wait_cycles(4);
-            break;
+        state->a = subtract_8b(state, state->a, state->h);
+        wait_cycles(4);
+        break;
     }
     case 0x95: // SUB L  Z, S, P, CY, AC	A <- A - L
     {
         state->pc += opbytes;
-            uint8_t l = state->l;
-        subtract_8b(state, state->a, l);
-            wait_cycles(4);
-            break;
+        state->a = subtract_8b(state, state->a, state->l);
+        wait_cycles(4);
+        break;
     }
     case 0x96: // SUB M   Z, S, P, CY, AC    A <- A - (HL)
     {
-        uint16_t address = (state->h << 8) | state->l;
+        uint16_t address = combine_bytes_to_word(state->h, state->l);
         uint8_t value = state->memory[address];
         state->pc += opbytes;
-        subtract_8b(state, state->a, value);
+        state->a = subtract_8b(state, state->a, value);
         wait_cycles(7);
         break;
     }
@@ -792,58 +786,58 @@ void emulate8080(State *state)
     case 0x98: // SBB B   Z, S, P, CY, AC    A <- A - B - CY
     {
         state->pc += opbytes;
-        subtract_8b(state, state->a, state->b + state->conditions.carry);
+        state->a = subtract_8b(state, state->a, state->b + state->conditions.carry);
         wait_cycles(4);
         break;
     }
     case 0x99: // SBB C   Z, S, P, CY, AC	A <- A - C - CY
     {
         state->pc += opbytes;
-        subtract_8b(state, state->a, state->c + (state->conditions.carry ? 1 : 0));
+        state->a = subtract_8b(state, state->a, state->c + state->conditions.carry);
         wait_cycles(4);
         break;
     }
     case 0x9a: // SBB D   Z, S, P, CY, AC	A <- A - D - CY
     {
-            state->pc += opbytes;
-            subtract_8b(state, state->a, state->d + (state->conditions.carry ? 1 : 0));
-            wait_cycles(4);
-            break;
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->d + state->conditions.carry);
+        wait_cycles(4);
+        break;
     }
     case 0x9b: // SBB E   Z, S, P, CY, AC	A <- A - E - CY
     {
-            state->pc += opbytes;
-            subtract_8b(state, state->a, state->e + (state->conditions.carry ? 1 : 0));
-            wait_cycles(4);
-            break;
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->e + state->conditions.carry);
+        wait_cycles(4);
+        break;
     }
     case 0x9c: // SBB H   Z, S, P, CY, AC	A <- A - H - CY
     {
-            state->pc += opbytes;
-            subtract_8b(state, state->a, state->h + (state->conditions.carry ? 1 : 0));
-            wait_cycles(4);
-            break;
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->h + state->conditions.carry);
+        wait_cycles(4);
+        break;
     }
     case 0x9d: // SBB L   Z, S, P, CY, AC	A <- A - L - CY
     {
-            state->pc += opbytes;
-            subtract_8b(state, state->a, state->l + (state->conditions.carry ? 1 : 0));
-            wait_cycles(4);
-            break;
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->l + state->conditions.carry);
+        wait_cycles(4);
+        break;
     }
     case 0x9e: // SBB M   Z, S, P, CY, AC    A <- A - (HL) - CY
     {
-        uint16_t address = (state->h << 8) | state->l;
+        uint16_t address = combine_bytes_to_word(state->h, state->l);
         uint8_t value = state->memory[address];
         state->pc += opbytes;
-        subtract_8b(state, state->a, value + (state->conditions.carry ? 1 : 0));
+        state->a = subtract_8b(state, state->a, value + state->conditions.carry);
         wait_cycles(7);
         break;
     }
     case 0x9f: // SBB A   Z, S, P, CY, AC    A <- A - A - CY
     {
         state->pc += opbytes;
-        subtract_8b(state, state->a, state->a + (state->conditions.carry ? 1 : 0));
+        state->a = subtract_8b(state, state->a, state->a + state->conditions.carry);
         wait_cycles(4);
         break;
     }
