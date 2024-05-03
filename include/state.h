@@ -29,3 +29,5 @@ typedef struct State
 
 int state_compare(State *state, State *expected_state);
 State *Init8080(void);
+
+void Free8080(State *state);
