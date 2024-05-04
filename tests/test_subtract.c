@@ -415,7 +415,7 @@ int main(int argc, char *argv[])
         break;
     default:
         result = 1; // Test failed due to incorrect test parameter
-
+    }
     // Clean up the state memory
     Free8080(state);
     Free8080(expected_state);
