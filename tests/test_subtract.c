@@ -310,15 +310,15 @@ int test_SUB_B(State *state, State *expected_state)
     // Load the instruction and set up the memory
     state->memory[0] = SUB_B;
     state->a = 0x3e; // Set A register
-    state->b = 0x05; // Set B register
+    state->b = 0x3c; // Set B register
 
     // Set up the expected register states
     expected_state->pc = 1;
-    expected_state->a = 0x39; // Expected result of A - B
+    expected_state->a = 2; // Expected result of A - B
 
     // Set up flags
     expected_state->conditions.carry = 0;
-    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.aux_carry = 1;
     expected_state->conditions.parity = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.zero = 0;
@@ -333,16 +333,16 @@ int test_SUB_C(State *state, State *expected_state)
     // Load the instruction and set up the memory
     state->memory[0] = SUB_C;
     state->a = 0x3e;
-    state->c = 0x02;
+    state->c = 0x3c;
 
     // Set up the expected register states
     expected_state->pc = 1;
-    expected_state->a = 0x3e - 0x02;  // A <- A - C = 0x3e - 0x02
+    expected_state->a = 2;
 
     // Set up flags
     expected_state->conditions.carry = 0;
-    expected_state->conditions.aux_carry = 0;
-    expected_state->conditions.parity = 1;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.zero = 0;
 
