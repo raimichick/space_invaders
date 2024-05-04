@@ -166,3 +166,6 @@ add_test(NAME test_XCHG, COMMAND test_xchg 0xeb)
 
 add_executable(test_compare tests/test_compare.c)
 add_test(NAME test_CPI_D8, COMMAND test_compare 0xfe)
+
+add_executable(test_cmc tests/test_cmc.c)
+add_test(NAME test_CMC, COMMAND test_cmc 0x3f)
