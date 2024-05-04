@@ -283,6 +283,28 @@ int test_DCX_SP(State *state, State *expected_state)
     return state_compare(state, expected_state);
 }
 
+int test_SUB_A(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = SUB_A;
+    state->a = 0x3e;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->a = 0;
+
+    // Set up flags
+    expected_state->conditions.carry = 0;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 1;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.zero = 1;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
 /* Tests for various subtract instructions
  * Select a test by passing the opcode value as the first argument
  *
@@ -332,6 +354,9 @@ int main(int argc, char *argv[])
         break;
     case DCX_SP:
         result = test_DCX_SP(state, expected_state);
+        break;
+    case SUB_A:
+        result = test_SUB_A(state, expected_state);
         break;
     case 0xFFFF:
         result = test_subtract_helper(state, expected_state);
