@@ -123,6 +123,7 @@ add_test(NAME test_DCX_B COMMAND test_subtract 0x0b)
 add_test(NAME test_DCX_D COMMAND test_subtract 0x1b)
 add_test(NAME test_DCX_H COMMAND test_subtract 0x2b)
 add_test(NAME test_DCX_SP COMMAND test_subtract 0x3b)
+add_test(NAME test_SUB_A COMMAND test_subtract 0x97)
 add_test(NAME test_subtract_helper COMMAND test_subtract 0xFFFF)
 
 # Test Move Immediate Instructions
@@ -170,3 +171,6 @@ add_test(NAME test_CMP_H, COMMAND test_compare 0xbc)
 add_test(NAME test_CMP_L, COMMAND test_compare 0xbd)
 add_test(NAME test_CMP_M, COMMAND test_compare 0xbe)
 add_test(NAME test_CMP_A, COMMAND test_compare 0xbf)
+
+add_executable(test_cmc tests/test_cmc.c)
+add_test(NAME test_CMC, COMMAND test_cmc 0x3f)

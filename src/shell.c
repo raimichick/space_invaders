@@ -30,8 +30,24 @@ void emulate8080(State *state)
         wait_cycles(10);
         break;
     }
-//    case 0x02: printf("STAX B"); break;
-//    case 0x03: printf("INX B"); break;
+    case 0x02: // STAX B (BC) <- A
+    {
+        state->pc += opbytes;
+        uint16_t bc = (state->b << 8) | (state->c);
+        state->memory[bc] = state->a;
+        wait_cycles(7);
+        break;
+    }
+    case 0x03: // INX B BC <- BC + 1
+    {
+        state->pc += opbytes;
+        uint16_t temp_BC = combine_bytes_to_word(state->b, state->c);
+        temp_BC += 1;
+        state->b = temp_BC >> 8;
+        state->c = temp_BC;
+        wait_cycles(5);
+        break;
+    }
     case 0x04: // INR B     B <- B+1
     {
         state->pc += opbytes;
@@ -131,8 +147,14 @@ void emulate8080(State *state)
         wait_cycles(10);
         break;
     }
-//    case 0x12: printf("STAX D"); break;
-    case 0x13: // INX D      DE <- DE + 1
+    case 0x12: // STAX D (DE) <- A
+    {	state->pc += opbytes;
+	uint16_t de = (state->d << 8) | (state->e);
+	state->memory[de] = state->a;
+     	wait_cycles(7);
+	break;
+    }
+   case 0x13: // INX D      DE <- DE + 1
     {
         state->pc += opbytes;
         uint16_t temp_DE = combine_bytes_to_word(state->d, state->e);
@@ -155,7 +177,14 @@ void emulate8080(State *state)
         wait_cycles(5);
         break;
     }
-//    case 0x16: printf("MVI D, D8, $%02x", code[1]); opbytes = 2; break;
+    case 0x16: // MVI D, D8 D <- code[1]
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        state->d = code[1];
+        wait_cycles(7);
+        break;
+    }
     case 0x17: // RAL   Rotate A left using carry as an extra bit on top of A
         // EX: CY = 0, A = 10110101 -> CY = 1, A = 01101010
     {
@@ -210,6 +239,14 @@ void emulate8080(State *state)
         break;
     }
 //    case 0x1e: printf("MVI E,D8, $%02x", code[1]); opbytes = 2; break;
+    case 0x1e: // MVI E, D8 E <- code[1]
+    {
+	opbytes = 2;
+        state->pc += opbytes;
+        state->e = code[1];
+        wait_cycles(7);
+        break;
+    }
     case 0x1f: // RAR   Rotate A right using carry as an extra bit on bottom of A
         // EX: A = 01101010, CY = 1 -> A = 10110101, CY = 0
     {
@@ -220,8 +257,12 @@ void emulate8080(State *state)
         wait_cycles(4);
         break;
     }
-//    case 0x20: printf("RIM"); break;
-//    case 0x21: printf("LXI H,D16, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0x20: // RIM, unimplemented instruction treated as NOP
+    {
+	state->pc += opbytes;
+        wait_cycles(4);
+        break;
+    }
     case 0x21: // LXI H, D16   H <- code[2], L <- code[1]
     {
         opbytes = 3;
@@ -231,7 +272,16 @@ void emulate8080(State *state)
         wait_cycles(10);
         break;
     }
-//    case 0x22: printf("SHLD adr, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0x22: // SHLD  code[2] <-L; code[1]<-H
+    {
+    	opbytes = 3;
+    	state->pc += opbytes;
+    	uint16_t addr = combine_bytes_to_word(code[2], code[1]);
+        state->memory[addr] = state->l;
+        state->memory[addr+1] = state->h;
+    	wait_cycles(16);
+    	break;
+    }
     case 0x23: // INX H  LH <- LH + 1
     {
         state->pc += opbytes;
@@ -264,7 +314,26 @@ void emulate8080(State *state)
         wait_cycles(7);
         break;
     }
-//    case 0x27: printf("DAA"); break;
+    case 0x27: // DAA   Z, S, P, CY, AC
+    {
+    state->pc += opbytes;
+    uint8_t lower_nib = state->a & 0x0F;
+    if (lower_nib > 9 || state->conditions.aux_carry == 1) {
+        state->a += 6;
+        state->conditions.aux_carry = 1;
+    }
+    else state->conditions.aux_carry = 0;
+    uint8_t higher_nib = (state->a >> 4) & 0x0F;
+    if (higher_nib > 9 || state->conditions.carry == 1) {
+        state->a += 0x60;
+        state->conditions.carry = 1;
+    }
+    state->conditions.zero = get_zero_flag(state->a);
+    state->conditions.sign = get_sign_flag(state->a);
+    state->conditions.parity = get_parity_flag(state->a);
+    wait_cycles(4);
+    break;
+}
 //    case 0x28: printf("-"); break;
     case 0x29: // DAD H     HL = HL + HL
     {
@@ -277,7 +346,16 @@ void emulate8080(State *state)
         wait_cycles(10);
         break;
     }
-//    case 0x2a: printf("LHLD adr, $%02x%02x", code[2], code[1]); opbytes = 3; break;
+    case 0x2a: // LHLD  code[2] <-L; code[1]<-H
+    {
+        opbytes = 3;
+        state->pc += opbytes;
+        uint16_t address = combine_bytes_to_word(code[2], code[1]); // Combine bytes to form 16-bit address
+        state->l = state->memory[address]; // Load the value at address into L
+        state->h = state->memory[address + 1]; // Load the value at address + 1 into H
+        wait_cycles(16);
+        break;
+    }
     case 0x2b: // DCX H     HL = HL-1
     {
         state->pc += opbytes;
@@ -301,9 +379,26 @@ void emulate8080(State *state)
         wait_cycles(5);
         break;
     }
-//    case 0x2e: printf("MVI L, D8, $%02x", code[1]); opbytes = 2; break;
-//    case 0x2f: printf("CMA"); break;
-//    case 0x30: printf("SIM"); break;
+    case 0x2e: // MVI L, D8 L <- code[1]
+    {
+    	opbytes = 2;
+    	state->pc += opbytes;
+    	state->l = code[1];
+    	break;
+    }
+    case 0x2f: // CMA A <- !A
+    {
+    	state->pc += opbytes;
+    	state->a = ~(state->a);
+    	wait_cycles(4);
+    	break;
+    }
+    case 0x30: // SIM, unimplemented instruction treated as NOP
+    {
+	state->pc += opbytes;
+        wait_cycles(4);
+        break;
+    }
     case 0x31: // LXI SP, D16 code[2], code[1]
     {
         opbytes = 3;
@@ -317,11 +412,17 @@ void emulate8080(State *state)
         opbytes = 3;
         state->pc += opbytes;
         uint16_t temp_adr = combine_bytes_to_word(code[2], code[1]);
-        state->a = state->memory[temp_adr];
+	state->a = state->memory[temp_adr];
         wait_cycles(13);
         break;
     }
-//    case 0x33: printf("INX SP"); break;
+    case 0x33: // INX SP      SP = SP + 1
+    {
+        state->pc += opbytes;
+        state->sp++;
+        wait_cycles(5);
+        break;
+    }
     case 0x34: // INR M     increment the value at memory address [HL]
     {
         state->pc += opbytes;
@@ -346,7 +447,13 @@ void emulate8080(State *state)
         wait_cycles(7);
         break;
     }
-//    case 0x37: printf("STC"); break;
+    case 0x37: // STC  CY = 1
+    {
+	state->pc += opbytes;
+	state->conditions.carry = 1;
+	wait_cycles(4);
+	break;
+    }
 //    case 0x38: printf("-"); break;
     case 0x39: // DAD SP    HL <- HL + SP
     {
@@ -365,7 +472,7 @@ void emulate8080(State *state)
         state->a = state->memory[combine_bytes_to_word(code[2], code[1])];
         wait_cycles(17);
         break;
-    } 
+    }
     case 0x3b: // DCX SP    SP = SP-1
     {
         state->pc += opbytes;
@@ -395,7 +502,13 @@ void emulate8080(State *state)
         wait_cycles(7);
         break;
     }
-//    case 0x3f: printf("CMC"); break;
+    case 0x3f: // CMC   CY != CY
+    {
+        state->pc += opbytes;
+        state->conditions.carry = ~state->conditions.carry;
+        wait_cycles(4);
+        break;
+    }
 //    case 0x40: printf("MOV B,B"); break;
 //    case 0x41: printf("MOV B,C");  break;
 //    case 0x42: printf("MOV B,D");  break;
@@ -609,22 +722,122 @@ void emulate8080(State *state)
         wait_cycles(4);
         break;
     }
-//    case 0x90: printf("SUB B"); break;
-//    case 0x91: printf("SUB C"); break;
-//    case 0x92: printf("SUB D"); break;
-//    case 0x93: printf("SUB E"); break;
-//    case 0x94: printf("SUB H"); break;
-//    case 0x95: printf("SUB L"); break;
-//    case 0x96: printf("SUB M"); break;
-//    case 0x97: printf("SUB A"); break;
-//    case 0x98: printf("SBB B"); break;
-//    case 0x99: printf("SBB C"); break;
-//    case 0x9a: printf("SBB D"); break;
-//    case 0x9b: printf("SBB E"); break;
-//    case 0x9c: printf("SBB H"); break;
-//    case 0x9d: printf("SBB L"); break;
-//    case 0x9e: printf("SBB M"); break;
-//    case 0x9f: printf("SBB A"); break;
+    case 0x90: // SUB B   Z, S, P, CY, AC    A <- A - B
+    {
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->b);
+        wait_cycles(4);
+        break;
+    }
+    case 0x91: // SUB C   Z, S, P, CY, AC	A <- A - C
+    {
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->c);
+        wait_cycles(4);
+        break;
+    }
+    case 0x92: // SUB D   Z, S, P, CY, AC	A <- A - D
+    {
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->d);
+        wait_cycles(4);
+        break;
+    }
+    case 0x93: // SUB E   Z, S, P, CY, AC	A <- A - E
+    {
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->e);
+        wait_cycles(4);
+        break;
+    }
+    case 0x94: // SUB H  Z, S, P, CY, AC    A <- A - H
+    {
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->h);
+        wait_cycles(4);
+        break;
+    }
+    case 0x95: // SUB L  Z, S, P, CY, AC	A <- A - L
+    {
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->l);
+        wait_cycles(4);
+        break;
+    }
+    case 0x96: // SUB M   Z, S, P, CY, AC    A <- A - (HL)
+    {
+        uint16_t address = combine_bytes_to_word(state->h, state->l);
+        uint8_t value = state->memory[address];
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, value);
+        wait_cycles(7);
+        break;
+    }
+    case 0x97: // SUB A  Z, S, P, CY, AC	A <- A - A
+    {
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->a);
+        wait_cycles(4);
+        break;
+    }
+    case 0x98: // SBB B   Z, S, P, CY, AC    A <- A - B - CY
+    {
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->b + state->conditions.carry);
+        wait_cycles(4);
+        break;
+    }
+    case 0x99: // SBB C   Z, S, P, CY, AC	A <- A - C - CY
+    {
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->c + state->conditions.carry);
+        wait_cycles(4);
+        break;
+    }
+    case 0x9a: // SBB D   Z, S, P, CY, AC	A <- A - D - CY
+    {
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->d + state->conditions.carry);
+        wait_cycles(4);
+        break;
+    }
+    case 0x9b: // SBB E   Z, S, P, CY, AC	A <- A - E - CY
+    {
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->e + state->conditions.carry);
+        wait_cycles(4);
+        break;
+    }
+    case 0x9c: // SBB H   Z, S, P, CY, AC	A <- A - H - CY
+    {
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->h + state->conditions.carry);
+        wait_cycles(4);
+        break;
+    }
+    case 0x9d: // SBB L   Z, S, P, CY, AC	A <- A - L - CY
+    {
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->l + state->conditions.carry);
+        wait_cycles(4);
+        break;
+    }
+    case 0x9e: // SBB M   Z, S, P, CY, AC    A <- A - (HL) - CY
+    {
+        uint16_t address = combine_bytes_to_word(state->h, state->l);
+        uint8_t value = state->memory[address];
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, value + state->conditions.carry);
+        wait_cycles(7);
+        break;
+    }
+    case 0x9f: // SBB A   Z, S, P, CY, AC    A <- A - A - CY
+    {
+        state->pc += opbytes;
+        state->a = subtract_8b(state, state->a, state->a + state->conditions.carry);
+        wait_cycles(4);
+        break;
+    }
     case 0xa0:  // ANA B    :   A <- A & B
     {
         ana_helper(state, state->b);
@@ -947,7 +1160,14 @@ void emulate8080(State *state)
         wait_cycles(11); // per Intel 8080 Programmers Manual
         break;
     }
-//    case 0xd6: printf("SUI D8, $%02x", code[1]); opbytes = 2; break;
+    case 0xd6: // SUI D8   Z, S, P, CY, AC A <- A - byte
+    {
+        uint8_t immediate = state->memory[state->pc + 1];
+        state->pc += 2;
+        subtract_8b(state, state->a, immediate);
+        wait_cycles(7);
+        break;
+    }
 //    case 0xd7: printf("RST 2"); break;
     case 0xd8:  // RC; return if carry = 1
     {
@@ -974,7 +1194,14 @@ void emulate8080(State *state)
         break;
     }
 //    case 0xdd: printf("-"); break;
-//    case 0xde: printf("SBI D8, $%02x", code[1]); opbytes = 2; break;
+    case 0xde: // SBI D8   Z, S, P, CY, AC	A <- A - byte - CY
+    {
+        uint8_t immediate = state->memory[state->pc + 1];
+        state->pc += 2;
+        subtract_8b(state, state->a, immediate + state->conditions.carry);
+        wait_cycles(7);
+        break;
+    }
 //    case 0xdf: printf("RST 3"); break;
     case 0xe0:  // RPO; return if parity = 0 (odd)
     {
@@ -1165,7 +1392,13 @@ void emulate8080(State *state)
         else state->pc += opbytes;
         break;
     }
-//    case 0xf9: printf("SPHL"); break;
+    case 0xf9: // SPHL
+    {
+            state->sp = (state->h << 8) | state->l;
+            state->pc += opbytes;
+            wait_cycles(5);
+            break;
+    }
     case 0xfa:  // JM code[2] code[1]; jump if sign = 1 (negative)
     {
         opbytes = 3;
