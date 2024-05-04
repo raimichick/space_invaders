@@ -212,35 +212,16 @@ int main(int argc, char *argv[])
 
     switch (strtol(argv[1], NULL, 16))
     {
-    case 0xc0:
-        result = test_RNZ(state, expected_state);
-        break;
-    case 0xc8:
-        result = test_RZ(state, expected_state);
-        break;
-    case 0xc9:
-        result = test_RET(state, expected_state);
-        break;
-    case 0xd0:
-        result = test_RNC(state, expected_state);
-        break;
-    case 0xd8:
-        result = test_RC(state, expected_state);
-        break;
-    case 0xe0:
-        result = test_RPO(state, expected_state);
-        break;
-    case 0xe8:
-        result = test_RPE(state, expected_state);
-        break;
-    case 0xf0:
-        result = test_RP(state, expected_state);
-        break;
-    case 0xf8:
-        result = test_RM(state, expected_state);
-        break;
-    default:
-        return 1; // Test failed due to incorrect test parameter
+    case 0xc0: result = test_RNZ(state, expected_state); break;
+    case 0xc8: result = test_RZ(state, expected_state); break;
+    case 0xc9: result = test_RET(state, expected_state); break;
+    case 0xd0: result = test_RNC(state, expected_state); break;
+    case 0xd8: result = test_RC(state, expected_state); break;
+    case 0xe0: result = test_RPO(state, expected_state); break;
+    case 0xe8: result = test_RPE(state, expected_state); break;
+    case 0xf0: result = test_RP(state, expected_state); break;
+    case 0xf8: result = test_RM(state, expected_state); break;
+    default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory
