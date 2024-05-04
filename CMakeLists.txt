@@ -127,6 +127,8 @@ add_test(NAME test_DCX_D COMMAND test_subtract 0x1b)
 add_test(NAME test_DCX_H COMMAND test_subtract 0x2b)
 add_test(NAME test_DCX_SP COMMAND test_subtract 0x3b)
 add_test(NAME test_SUB_A COMMAND test_subtract 0x97)
+add_test(NAME test_SUB_B COMMAND test_subtract 0x90)
+add_test(NAME test_SUB_C COMMAND test_subtract 0x91)
 add_test(NAME test_subtract_helper COMMAND test_subtract 0xFFFF)
 
 # Test Move Immediate Instructions
