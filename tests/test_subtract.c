@@ -331,6 +331,7 @@ int main(int argc, char *argv[])
     case DCX_D: result = test_DCX_D(state, expected_state); break;
     case DCX_H: result = test_DCX_H(state, expected_state); break;
     case DCX_SP: result = test_DCX_SP(state, expected_state); break;
+    case SUB_A: result = test_SUB_A(state, expected_state); break;
     case 0xFFFF: result = test_subtract_helper(state, expected_state); break;
     default: result = FAIL; // Test failed due to incorrect test parameter
     }
