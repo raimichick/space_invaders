@@ -42,7 +42,7 @@ int test_CMP_BCDEHL(State *state, State *expected_state, uint8_t opcode)
         case CMP_E: state_reg = &state->e; exp_state_reg = &expected_state->e; break;
         case CMP_H: state_reg = &state->h; exp_state_reg = &expected_state->h; break;
         case CMP_L: state_reg = &state->l; exp_state_reg = &expected_state->l; break;
-        default: return 1;
+        default: return FAIL;
     }
     // clang-format on
 
@@ -60,7 +60,7 @@ int test_CMP_BCDEHL(State *state, State *expected_state, uint8_t opcode)
     expected_state->conditions.parity = 1;
     expected_state->conditions.sign = 0;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Ex 2 from 8080 manual
     state->pc = 0;
@@ -76,7 +76,7 @@ int test_CMP_BCDEHL(State *state, State *expected_state, uint8_t opcode)
     expected_state->conditions.parity = 0;
     expected_state->conditions.sign = 1;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // Ex 3 from 8080 manual
     state->pc = 0;
@@ -92,7 +92,7 @@ int test_CMP_BCDEHL(State *state, State *expected_state, uint8_t opcode)
     expected_state->conditions.parity = 0;
     expected_state->conditions.sign = 1;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
     return 0;
 }
 
@@ -116,8 +116,8 @@ int test_CMP_M(State *state, State *expected_state)
     expected_state->conditions.parity = 1;
     expected_state->conditions.sign = 0;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
-    if (state->memory[0x1155] != expected_state->memory[0x1155]) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    if (state->memory[0x1155] != expected_state->memory[0x1155]) return FAIL;
 
     // Ex 2 from 8080 manual
     state->pc = 0;
@@ -137,8 +137,8 @@ int test_CMP_M(State *state, State *expected_state)
     expected_state->conditions.parity = 0;
     expected_state->conditions.sign = 1;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
-    if (state->memory[0x1155] != expected_state->memory[0x1155]) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    if (state->memory[0x1155] != expected_state->memory[0x1155]) return FAIL;
 
     // Ex 3 from 8080 manual
     state->pc = 0;
@@ -158,8 +158,8 @@ int test_CMP_M(State *state, State *expected_state)
     expected_state->conditions.parity = 0;
     expected_state->conditions.sign = 1;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
-    if (state->memory[0x1155] != expected_state->memory[0x1155]) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    if (state->memory[0x1155] != expected_state->memory[0x1155]) return FAIL;
 
     return 0;
 }
@@ -178,7 +178,7 @@ int test_CMP_A(State *state, State *expected_state)
     expected_state->conditions.parity = 1;
     expected_state->conditions.sign = 0;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // state->a is 0
     state->pc = 0;
@@ -192,7 +192,7 @@ int test_CMP_A(State *state, State *expected_state)
     expected_state->conditions.parity = 1;
     expected_state->conditions.sign = 0;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
     // state->a is negative
     state->pc = 0;
@@ -206,9 +206,9 @@ int test_CMP_A(State *state, State *expected_state)
     expected_state->conditions.parity = 1;
     expected_state->conditions.sign = 0;
     emulate8080(state);
-    if (state_compare(state, expected_state) == 1) return 1;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
 
-    return 0;
+    return PASS;
 }
 
 int main(int argc, char *argv[])
