@@ -276,7 +276,7 @@ void emulate8080(State *state)
     {
     	opbytes = 3;
     	state->pc += opbytes;
-    	uint_16 addr = combine_bytes_to_word(code[2], code[1]);
+    	uint16_t addr = combine_bytes_to_word(code[2], code[1]);
         state->memory[addr] = state->l;
         state->memory[addr+1] = state->h;
     	wait_cycles(16);
