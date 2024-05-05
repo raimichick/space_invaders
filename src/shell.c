@@ -726,7 +726,6 @@ void emulate8080(State *state)
     {
         state->pc += opbytes;
         state->a = subtract_8b(state, state->a, state->b);
-        state->b = 0;  // Resetting B
         wait_cycles(4);
         break;
     }
@@ -734,7 +733,6 @@ void emulate8080(State *state)
     {
         state->pc += opbytes;
         state->a = subtract_8b(state, state->a, state->c);
-        state->c = 0; // Resetting C
         wait_cycles(4);
         break;
     }

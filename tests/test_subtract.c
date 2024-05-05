@@ -315,6 +315,7 @@ int test_SUB_B(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->a = 2; // Expected result of A - B
+    expected_state->b = 0x3c;
 
     // Set up flags
     expected_state->conditions.carry = 0;
@@ -338,6 +339,103 @@ int test_SUB_C(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->a = 2;
+    expected_state->c = 0x3c;
+
+    // Set up flags
+    expected_state->conditions.carry = 0;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 0;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.zero = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_SUB_D(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = SUB_D;
+    state->a = 0x3e;
+    state->d = 0x3c;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->a = 2;
+    expected_state->d = 0x3c;
+
+    // Set up flags
+    expected_state->conditions.carry = 0;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 0;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.zero = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_SUB_E(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = SUB_E;
+    state->a = 0x3e;
+    state->e = 0x3c;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->a = 2;
+    expected_state->e = 0x3c;
+
+    // Set up flags
+    expected_state->conditions.carry = 0;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 0;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.zero = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_SUB_H(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = SUB_H;
+    state->a = 0x3e;
+    state->h = 0x3c;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->a = 2;
+    expected_state->h = 0x3c;
+
+    // Set up flags
+    expected_state->conditions.carry = 0;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 0;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.zero = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_SUB_L(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = SUB_L;
+    state->a = 0x3e;
+    state->l = 0x3c;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->a = 2;
+    expected_state->l = 0x3c;
 
     // Set up flags
     expected_state->conditions.carry = 0;
@@ -409,6 +507,18 @@ int main(int argc, char *argv[])
         break;
     case SUB_C:
         result = test_SUB_C(state, expected_state);
+        break;
+    case SUB_D:
+        result = test_SUB_D(state, expected_state);
+        break;
+    case SUB_E:
+        result = test_SUB_E(state, expected_state);
+        break;
+    case SUB_H:
+        result = test_SUB_H(state, expected_state);
+        break;
+    case SUB_L:
+        result = test_SUB_L(state, expected_state);
         break;
     case 0xFFFF:
         result = test_subtract_helper(state, expected_state);
