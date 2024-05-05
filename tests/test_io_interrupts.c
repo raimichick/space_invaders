@@ -29,6 +29,15 @@ int test_DI(State *state, State *expected_state)
     return state_compare(state, expected_state);
 }
 
+int test_HLT(State *state, State *expected_state)
+{
+    state->memory[0x40] = HLT;
+    state->pc = 0x40;
+    expected_state->pc = 0x40;
+    emulate8080(state);
+    return state_compare(state, expected_state);
+}
+
 int main(int argc, char *argv[])
 {
     State *state = Init8080();
@@ -39,6 +48,7 @@ int main(int argc, char *argv[])
     {
     case EI: result = test_EI(state, expected_state); break;
     case DI: result = test_DI(state, expected_state); break;
+    case HLT: result = test_HLT(state, expected_state); break;
     default: result = FAIL; // Test failed due to incorrect test parameter
     }
 

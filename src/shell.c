@@ -578,7 +578,18 @@ void emulate8080(State *state)
 //    case 0x73: printf("MOV M,E");  break;
 //    case 0x74: printf("MOV M,H");  break;
 //    case 0x75: printf("MOV M,L");  break;
-//    case 0x76: printf("HLT");  break;
+    case 0x76: // HLT
+    {
+        /*
+        TODO: Emulator 101:  "I don't think we need to emulate this,
+            although you might want to call your quit code (or exit(0))
+            if you see this instruction."
+        */
+        //exit(0);
+        printf("HLT infinite loop: state->pc = 0x%04x", state->pc);
+        //wait_cycles(7);
+        break;
+    }
     case 0x77:  // MOV M,A
     {
         mov_reg_to_mem(state, &state->a);
@@ -1135,12 +1146,16 @@ void emulate8080(State *state)
         else state->pc += opbytes;
         break;
     }
-    case 0xd3: // OUT D8, code[1]; Send the data from A onto the 8bit data bus for transmission to spec'd port
+    case 0xd3: // OUT D8, code[1]; A -> 8b data on port specified by the 8b arg
     {
         opbytes = 2;
         state->pc += opbytes;
-        // TODO emulator 101 recommended skipping over this for now.
-        // TODO IO[code[1]] = state->a;
+        /*
+        TODO: Emulator 101: "IN and OUT are instructions that the 8080 hardware
+            used to talk to external hardware. For now, implement these but make
+            them do nothing besides skip over its data byte. (We'll have to
+            revisit this later)".
+        */
         wait_cycles(10); // per Intel 8080 Programmers Manual
         break;
     }
@@ -1183,7 +1198,19 @@ void emulate8080(State *state)
         else state->pc += opbytes;
         break;
     }
-//    case 0xdb: printf("IN D8, $%02x", code[1]); opbytes = 2; break;
+    case 0xdb: // IN D8  code[1]; 8b data on port specified by the 8b arg -> A
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        /*
+        TODO: Emulator 101: "IN and OUT are instructions that the 8080 hardware
+            used to talk to external hardware. For now, implement these but make
+            them do nothing besides skip over its data byte. (We'll have to
+            revisit this later)".
+        */
+        wait_cycles(10); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xdc: // CC, code[2], code[1]; Call if Carry flag set.
     {
         opbytes = 3;
