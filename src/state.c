@@ -91,7 +91,7 @@ int state_compare(State *state, State *expected_state)
     if (s->pc != es->pc)    { printf("Err: PC\n");  return FAIL; }
 
     if (s->interrupt_enabled != es->interrupt_enabled) { printf("Err: int_enable\n"); return FAIL; }
-    if (s->halt != es->halt) { printf("Err: int_enable\n"); return FAIL; }
+    if (s->halt != es->halt) { printf("Err: halt\n"); return FAIL; }
 
     if (s_cond.sign      != es_cond.sign)      { printf("Err: Sign\n");      return FAIL; }
     if (s_cond.zero      != es_cond.zero)      { printf("Err: Zero\n");      return FAIL; }
