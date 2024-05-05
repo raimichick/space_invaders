@@ -27,7 +27,7 @@ typedef struct State
     uint16_t pc;
     uint8_t *memory;
     Conditions conditions;
-    uint8_t int_enable;
+    uint8_t interrupt_enabled;
 } State;
 
 int state_compare(State *state, State *expected_state);

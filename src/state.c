@@ -43,6 +43,8 @@ State *Init8080(void)
     state->conditions.aux_carry = 0;
     state->conditions.pad = 0;
 
+    state->interrupt_enabled = 0;
+
     // The program ROM starts at 0x0000 in memory
     state->pc = 0x0000;
 
@@ -81,7 +83,7 @@ int state_compare(State *state, State *expected_state)
     if (s->sp != es->sp)    { printf("Err: SP\n");  return FAIL; }
     if (s->pc != es->pc)    { printf("Err: PC\n");  return FAIL; }
 
-    if (s->int_enable != es->int_enable) { printf("Err: int_enable\n"); return FAIL; }
+    if (s->interrupt_enabled != es->interrupt_enabled) { printf("Err: int_enable\n"); return FAIL; }
 
     if (s_cond.zero      != es_cond.zero)      { printf("Err: Zero\n");      return FAIL; }
     if (s_cond.sign      != es_cond.sign)      { printf("Err: Sign\n");      return FAIL; }
