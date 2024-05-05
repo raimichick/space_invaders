@@ -53,6 +53,11 @@ State *Init8080(void)
     // Stack pointer is initialized by the ROM after start
     state->sp = 0x0000;
 
+    for (int i = 0; i < sizeof state->ports; i++)
+    {
+        state->ports[i] = 0;
+    }
+
     return state;
 }
 
@@ -96,6 +101,12 @@ int state_compare(State *state, State *expected_state)
     if (s_cond.parity    != es_cond.parity)    { printf("Err: Parity\n");    return FAIL; }
     if (s_cond.pad2      != es_cond.pad2)      { printf("Err: Pad2\n");      return FAIL; }
     if (s_cond.carry     != es_cond.carry)     { printf("Err: Carry\n");     return FAIL; }
+
+    for (int i = 0; i < sizeof s->ports; i++)
+    {
+        if (s->ports[i] != es->ports[i]) { printf("Err: Port %d\n", i); return FAIL; }
+    }
+
     // clang-format on
     printf(DEFAULT_TXT_COLOR); // prints after this will be in default color
 

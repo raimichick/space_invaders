@@ -61,6 +61,41 @@ int test_RST_NUM(State *state, State *expected_state, uint8_t rst_opcode, int pc
     return state_compare(state, expected_state);
 }
 
+int test_IN(State *state, State *expected_state)
+{
+    state->memory[0] = IN;
+    state->memory[1] = 3;
+    state->ports[3] = 0x11;
+    state->a = 0x55;
+
+    expected_state->pc = 2;
+    expected_state->memory[1] = 3;
+    expected_state->ports[3] = 0x11;
+    expected_state->a = 0x11;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_OUT(State *state, State *expected_state)
+{
+    state->memory[0] = OUT;
+    state->pc = 0;
+    state->memory[1] = 3;
+    state->ports[3] = 0x11;
+    state->a = 0x55;
+
+    expected_state->pc = 2;
+    expected_state->memory[1] = 3;
+    expected_state->ports[3] = 0x55;
+    expected_state->a = 0x55;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
 int main(int argc, char *argv[])
 {
     State *state = Init8080();
@@ -80,6 +115,8 @@ int main(int argc, char *argv[])
     case RST_5: result = test_RST_NUM(state, expected_state, RST_5, 8 * 5); break;
     case RST_6: result = test_RST_NUM(state, expected_state, RST_6, 8 * 6); break;
     case RST_7: result = test_RST_NUM(state, expected_state, RST_7, 8 * 7); break;
+    case IN: result = test_IN(state, expected_state); break;
+    case OUT: result = test_OUT(state, expected_state); break;
     default: result = FAIL; // Test failed due to incorrect test parameter
     }
 

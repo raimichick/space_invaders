@@ -580,11 +580,10 @@ void emulate8080(State *state)
     case 0x76: // HLT
     {
         /*
-        TODO: Emulator 101:  "I don't think we need to emulate this,
+        Emulator 101:  "I don't think we need to emulate this,
             although you might want to call your quit code (or exit(0))
             if you see this instruction."
         */
-        //printf("HLT infinite loop: state->pc = 0x%04x", state->pc);
         state->halt = 1;
         wait_cycles(7);
         break;
@@ -1160,11 +1159,12 @@ void emulate8080(State *state)
         opbytes = 2;
         state->pc += opbytes;
         /*
-        TODO: Emulator 101: "IN and OUT are instructions that the 8080 hardware
+        Emulator 101: "IN and OUT are instructions that the 8080 hardware
             used to talk to external hardware. For now, implement these but make
             them do nothing besides skip over its data byte. (We'll have to
             revisit this later)".
         */
+        state->ports[code[1]] = state->a;
         wait_cycles(10); // per Intel 8080 Programmers Manual
         break;
     }
@@ -1217,11 +1217,12 @@ void emulate8080(State *state)
         opbytes = 2;
         state->pc += opbytes;
         /*
-        TODO: Emulator 101: "IN and OUT are instructions that the 8080 hardware
+        Emulator 101: "IN and OUT are instructions that the 8080 hardware
             used to talk to external hardware. For now, implement these but make
             them do nothing besides skip over its data byte. (We'll have to
             revisit this later)".
         */
+        state->a = state->ports[code[1]];
         wait_cycles(10); // per Intel 8080 Programmers Manual
         break;
     }
@@ -1422,7 +1423,7 @@ void emulate8080(State *state)
     }
     case 0xf5: // PUSH PSW; Push Processor Status Word.
     {
-        // TODO update state->conditions struct to be in same order as manual?
+        // TODO update this to use AF as PSW register now that conditions are in order
         state->pc += opbytes;
         state->memory[state->sp - 1] = state->a;
         uint8_t c = (state->conditions.carry << 0);
@@ -1771,7 +1772,6 @@ uint8_t subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend)
     state->conditions.carry = minuend < subtrahend;
     //state->conditions.aux_carry = !get_aux_carry_flag_from_sum(twos_complement, minuend);
     state->conditions.aux_carry = get_aux_carry_flag_from_sum(minuend, twos_complement);
-    // TODO consider changer param name from "register_value".
     state->conditions.sign = get_sign_flag(res_8b);
     state->conditions.parity = get_parity_flag(res_8b);
     return res_8b;

@@ -31,8 +31,7 @@ typedef struct State
     Conditions conditions;
     uint8_t interrupt_enabled;
     uint8_t halt;
-    uint8_t *read_ports[8];
-    uint8_t *write_ports[8];
+    uint8_t ports[8];
 } State;
 
 int state_compare(State *state, State *expected_state);

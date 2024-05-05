@@ -187,6 +187,8 @@ add_test(NAME test_RST_4, COMMAND test_io_interrupts 0xe7)
 add_test(NAME test_RST_5, COMMAND test_io_interrupts 0xef)
 add_test(NAME test_RST_6, COMMAND test_io_interrupts 0xf7)
 add_test(NAME test_RST_7, COMMAND test_io_interrupts 0xff)
+add_test(NAME test_IN, COMMAND test_io_interrupts 0xdb)
+add_test(NAME test_OUT, COMMAND test_io_interrupts 0xd3)
 
 add_executable(test_state tests/test_states.c)
 add_test(NAME test_state_at_10, COMMAND test_state 10)
