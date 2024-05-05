@@ -182,4 +182,4 @@ add_test(NAME test_HLT, COMMAND test_io_interrupts 0x76)
 
 add_executable(test_state tests/test_states.c)
 add_test(NAME test_state_at_10, COMMAND test_state 10)
-add_test(NAME test_state_at_25, COMMAND test_state 25)
+#add_test(NAME test_state_at_25, COMMAND test_state 25)

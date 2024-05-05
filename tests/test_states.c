@@ -8,7 +8,7 @@
 int test_states_at_10(State *state, State *expected_state)
 {
     for (size_t i = 0; i < 10; i++)
-        emulate8080(state);
+        if (emulate8080(state) == QUIT_CODE) return FAIL;
 
     expected_state->pc = 0x1a32;
     expected_state->sp = 0x23fe;
@@ -25,7 +25,7 @@ int test_states_at_10(State *state, State *expected_state)
 int test_states_at_25(State *state, State *expected_state)
 {
     for (size_t i = 0; i < 25; i++)
-        emulate8080(state);
+        if (emulate8080(state) == QUIT_CODE) return FAIL;
 
     expected_state->pc = 0x1a35;
     expected_state->sp = 0x23fe;
@@ -41,7 +41,7 @@ int test_states_at_25(State *state, State *expected_state)
     return state_compare(state, expected_state);
 }
 
-State* init_game_state()
+State *init_game_state()
 {
     FILE *game_file = fopen("../include/invaders_combined", "rb");
     if (game_file == NULL)
@@ -70,9 +70,9 @@ int main(int argc, char *argv[])
     int result = FAIL;
     switch (strtol(argv[1], NULL, 10))
     {
-        case 10: result = test_states_at_10(state, expected_state); break;
-        case 25: result = test_states_at_25(state, expected_state); break;
-        default: result = FAIL; // Test failed due to incorrect test parameter
+    case 10: result = test_states_at_10(state, expected_state); break;
+    case 25: result = test_states_at_25(state, expected_state); break;
+    default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
     Free8080(state);
@@ -80,4 +80,3 @@ int main(int argc, char *argv[])
 
     return result;
 }
-

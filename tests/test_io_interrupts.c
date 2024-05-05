@@ -34,7 +34,9 @@ int test_HLT(State *state, State *expected_state)
     state->memory[0x40] = HLT;
     state->pc = 0x40;
     expected_state->pc = 0x40;
-    emulate8080(state);
+
+    if (emulate8080(state) != QUIT_CODE) return FAIL;
+
     return state_compare(state, expected_state);
 }
 

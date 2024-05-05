@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void emulate8080(State *state)
+int emulate8080(State *state)
 {
 
     // Retrieve the opcode from memory at the current program counter location
@@ -585,9 +585,9 @@ void emulate8080(State *state)
             although you might want to call your quit code (or exit(0))
             if you see this instruction."
         */
-        //exit(0);
-        printf("HLT infinite loop: state->pc = 0x%04x", state->pc);
-        //wait_cycles(7);
+        //printf("HLT infinite loop: state->pc = 0x%04x", state->pc);
+        wait_cycles(7);
+        return QUIT_CODE;
         break;
     }
     case 0x77:  // MOV M,A
@@ -1467,6 +1467,7 @@ void emulate8080(State *state)
 //    case 0xff: printf("RST 7"); break;
     default: unimplementedInstr(*code); break;
     }
+    return 0;
     // clang-format off
 }
 

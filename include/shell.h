@@ -2,7 +2,7 @@
 #include "state.h"
 #include <stdint.h>
 
-void emulate8080(struct State *state);
+int emulate8080(struct State *state);
 
 void push_register_pair_to_stack(struct State *state, uint8_t rh, uint8_t rl);
 void pop_stack_to_register_pair(struct State *state, uint8_t *rh, uint8_t *rl);
