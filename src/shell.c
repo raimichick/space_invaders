@@ -1077,7 +1077,12 @@ void emulate8080(State *state)
         state->a = temp_accum;
         break;
     }
-//    case 0xc7: printf("RST 0"); break;
+    case 0xc7: // RST 0; Call function at memory 8 * 0  = 0;
+    {
+        call_helper(state, 8 * 0);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xc8:  // RZ; return if zero = 1
     {
         if (state->conditions.zero == 1) return_helper(state);
@@ -1124,7 +1129,12 @@ void emulate8080(State *state)
         wait_cycles(7);
         break;
     }
-//    case 0xcf: printf("RST 1"); break;
+    case 0xcf: // RST 1; Call function at memory 8 * 1  = 8;
+    {
+        call_helper(state, 8 * 1);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xd0:  // RNC; return if carry = 0
     {
         if (state->conditions.carry == 0) return_helper(state);
@@ -1182,7 +1192,12 @@ void emulate8080(State *state)
         wait_cycles(7);
         break;
     }
-//    case 0xd7: printf("RST 2"); break;
+    case 0xd7: // RST 2; Call function at memory 8 * 2  = 16;
+    {
+        call_helper(state, 8 * 2);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xd8:  // RC; return if carry = 1
     {
         if (state->conditions.carry == 1) return_helper(state);
@@ -1228,7 +1243,12 @@ void emulate8080(State *state)
         wait_cycles(7);
         break;
     }
-//    case 0xdf: printf("RST 3"); break;
+    case 0xdf: // RST 3; Call function at memory 8 * 3  = 24;
+    {
+        call_helper(state, 8 * 3);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xe0:  // RPO; return if parity = 0 (odd)
     {
         if (state->conditions.parity == 0) return_helper(state);
@@ -1292,7 +1312,12 @@ void emulate8080(State *state)
         wait_cycles(7);
         break;
     }
-//    case 0xe7: printf("RST 4"); break;
+    case 0xe7: // RST 4; Call function at memory 8 * 4  = 32;
+    {
+        call_helper(state, 8 * 4);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xe8:  // RPE; return if parity = 1 (even)
     {
         if (state->conditions.parity == 1) return_helper(state);
@@ -1346,7 +1371,12 @@ void emulate8080(State *state)
         state->conditions.parity = get_parity_flag(state->a);
         break;
     }
-//    case 0xef: printf("RST 5"); break;
+    case 0xef: // RST 5; Call function at memory 8 * 5  = 40;
+    {
+        call_helper(state, 8 * 5);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xf0:  // RP; return if zero = 0 (positive)
     {
         if (state->conditions.zero == 0) return_helper(state);
@@ -1417,7 +1447,12 @@ void emulate8080(State *state)
         state->conditions.parity = get_parity_flag(state->a);
         break;
     }
-//    case 0xf7: printf("RST 6"); break;
+    case 0xf7: // RST 6; Call function at memory 8 * 6  = 48;
+    {
+        call_helper(state, 8 * 6);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xf8:  // RM; return if zero = 1 (negative)
     {
         if (state->conditions.zero == 1) return_helper(state);
@@ -1463,7 +1498,12 @@ void emulate8080(State *state)
         wait_cycles(7); // per Intel 8080 Programmers Manual.
         break;
     }
-//    case 0xff: printf("RST 7"); break;
+    case 0xff: // RST 7; Call function at memory 8 * 7  = 56;
+    {
+        call_helper(state, 8 * 7);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     default: unimplementedInstr(*code); break;
     }
     // clang-format off
