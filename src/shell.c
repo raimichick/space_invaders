@@ -1348,7 +1348,13 @@ void emulate8080(State *state)
         else state->pc += opbytes;
         break;
     }
-//    case 0xf3: printf("DI"); break;
+    case 0xf3: // DI; Disable interrupts.
+    {
+        state->pc += opbytes;
+        state->interrupt_enabled = 0;
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
+    }
     case 0xf4: // CP code[2], code[1]. CALL if sign flag is not set.
     {
         opbytes = 3;
@@ -1406,11 +1412,12 @@ void emulate8080(State *state)
         else state->pc += opbytes;
         break;
     }
-    case 0xfb: // EI; "The interrupt system is enabled following the execution of the next instruction"...
+    case 0xfb: // EI; Enable interrupts.
     {
         state->pc += opbytes;
-        // TODO emulator 101 recommended skipping over this for now.
+        state->interrupt_enabled = 1;
         wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
     }
     case 0xfc: // CM code[2], code[1]. CALL if sign flag is set.
     {

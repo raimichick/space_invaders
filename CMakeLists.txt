@@ -174,3 +174,7 @@ add_test(NAME test_CMP_A, COMMAND test_compare 0xbf)
 
 add_executable(test_cmc tests/test_cmc.c)
 add_test(NAME test_CMC, COMMAND test_cmc 0x3f)
+
+add_executable(test_io_interrupts tests/test_io_interrupts.c)
+add_test(NAME test_EI, COMMAND test_io_interrupts 0xfb)
+add_test(NAME test_DI, COMMAND test_io_interrupts 0xf3)
