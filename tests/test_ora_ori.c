@@ -237,35 +237,16 @@ int main(int argc, char *argv[])
 
     switch (strtol(argv[1], NULL, 16))
     {
-    case 0xb0:
-        result = test_ORA_B(state, expected_state);
-        break;
-    case 0xb1:
-        result = test_ORA_C(state, expected_state);
-        break;
-    case 0xb2:
-        result = test_ORA_D(state, expected_state);
-        break;
-    case 0xb3:
-        result = test_ORA_E(state, expected_state);
-        break;
-    case 0xb4:
-        result = test_ORA_H(state, expected_state);
-        break;
-    case 0xb5:
-        result = test_ORA_L(state, expected_state);
-        break;
-    case 0xb6:
-        result = test_ORA_M(state, expected_state);
-        break;
-    case 0xb7:
-        result = test_ORA_A(state, expected_state);
-        break;
-    case 0xf6:
-        result = test_ORI(state, expected_state);
-        break;
-    default:
-        return 1; // Test failed due to incorrect test parameter
+    case 0xb0: result = test_ORA_B(state, expected_state); break;
+    case 0xb1: result = test_ORA_C(state, expected_state); break;
+    case 0xb2: result = test_ORA_D(state, expected_state); break;
+    case 0xb3: result = test_ORA_E(state, expected_state); break;
+    case 0xb4: result = test_ORA_H(state, expected_state); break;
+    case 0xb5: result = test_ORA_L(state, expected_state); break;
+    case 0xb6: result = test_ORA_M(state, expected_state); break;
+    case 0xb7: result = test_ORA_A(state, expected_state); break;
+    case 0xf6: result = test_ORI(state, expected_state); break;
+    default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory

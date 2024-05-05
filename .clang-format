@@ -4,5 +4,6 @@ IndentWidth: 4
 UseTab: Never
 BreakBeforeBraces: Allman
 AllowShortIfStatementsOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
 AllowShortLoopsOnASingleLine: false
 ColumnLimit: 80

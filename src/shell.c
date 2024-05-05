@@ -958,14 +958,63 @@ void emulate8080(State *state)
         ora_helper(state, state->a);
         break;
     }
-//    case 0xb8: printf("CMP B"); break;
-//    case 0xb9: printf("CMP C"); break;
-//    case 0xba: printf("CMP D"); break;
-//    case 0xbb: printf("CMP E"); break;
-//    case 0xbc: printf("CMP H"); break;
-//    case 0xbd: printf("CMP L"); break;
-//    case 0xbe: printf("CMP M"); break;
-//    case 0xbf: printf("CMP A"); break;
+    case 0xb8: // CMP B
+    {
+        state->pc += opbytes;
+        subtract_8b(state, state->a, state->b);
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
+    }
+    case 0xb9: // CMP C
+    {
+        state->pc += opbytes;
+        subtract_8b(state, state->a, state->c);
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
+    }
+    case 0xba: // CMP D
+    {
+        state->pc += opbytes;
+        subtract_8b(state, state->a, state->d);
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
+    }
+    case 0xbb: // CMP E
+    {
+        state->pc += opbytes;
+        subtract_8b(state, state->a, state->e);
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
+    }
+    case 0xbc: // CMP H
+    {
+        state->pc += opbytes;
+        subtract_8b(state, state->a, state->h);
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
+    }
+    case 0xbd: // CMP L
+    {
+        state->pc += opbytes;
+        subtract_8b(state, state->a, state->l);
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
+    }
+    case 0xbe: // CMP M
+    {
+        state->pc += opbytes;
+        uint16_t addr = combine_bytes_to_word(state->h, state->l);
+        subtract_8b(state, state->a, state->memory[addr]);
+        wait_cycles(7); // per Intel 8080 Programmers Manual.
+        break;
+    }
+    case 0xbf: // CMP A
+    {
+        state->pc += opbytes;
+        subtract_8b(state, state->a, state->a);
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
+    }
     case 0xc0:  // RNZ; return if zero = 0
     {
         if (state->conditions.zero == 0) return_helper(state);
@@ -1174,7 +1223,20 @@ void emulate8080(State *state)
         else state->pc += opbytes;
         break;
     }
-//    case 0xe3: printf("XTHL"); break;
+    case 0xe3: // XTHL; memory[sp] <-> L, memory[sp+1] <-> H
+    {
+        state->pc += opbytes;
+        uint8_t l_data          = state->l;
+        uint8_t sp_data         = state->memory[state->sp];
+        uint8_t h_data          = state->h;
+        uint8_t sp_plus_1_data  = state->memory[state->sp + 1];
+
+        state->l                        = sp_data;
+        state->memory[state->sp]        = l_data;
+        state->h                        = sp_plus_1_data;
+        state->memory[state->sp + 1]    = h_data;
+        break;
+    }
     case 0xe4: // CPO code[2], code[1]. CALL if parity flag not set.
     {
         opbytes = 3;

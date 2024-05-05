@@ -15,8 +15,8 @@ int test_subtract_helper(State *state, State *expected_state)
     expected_state->conditions.parity = 1;
     expected_state->conditions.sign = 0;
     expected_state->conditions.carry = 0;
-    if (res != 9) return 1;
-    if (state_compare(state, expected_state) != 0) return 1;
+    if (res != 9) return FAIL;
+    if (state_compare(state, expected_state) != PASS) return FAIL;
 
     // 0 - 1
     val = 0x00;
@@ -27,8 +27,8 @@ int test_subtract_helper(State *state, State *expected_state)
     expected_state->conditions.sign = 1;
     expected_state->conditions.carry = 1;
 
-    if (res != 0xff) return 1;
-    if (state_compare(state, expected_state) != 0) return 1;
+    if (res != 0xff) return FAIL;
+    if (state_compare(state, expected_state) != PASS) return FAIL;
 
     // Test from page 18 manual
     val = 0x3E;
@@ -39,10 +39,10 @@ int test_subtract_helper(State *state, State *expected_state)
     expected_state->conditions.sign = 0;
     expected_state->conditions.carry = 0;
 
-    if (res != 0x0) return 1;
-    if (state_compare(state, expected_state) != 0) return 1;
+    if (res != 0x0) return FAIL;
+    if (state_compare(state, expected_state) != PASS) return FAIL;
 
-    return 0;
+    return PASS;
 }
 
 int test_DCR_A(State *state, State *expected_state)
@@ -81,7 +81,7 @@ int test_DCR_B(State *state, State *expected_state)
 
     emulate8080(state);
 
-    if (state_compare(state, expected_state) != 0) return 1;
+    if (state_compare(state, expected_state) != PASS) return FAIL;
 
     // Set up the expected register states
     expected_state->pc = 2;
@@ -211,10 +211,10 @@ int test_DCR_M(State *state, State *expected_state)
 
     emulate8080(state);
 
-    if (state_compare(state, expected_state) == 1) return 1;
-    if (state->memory[0x1234] != expected_state->memory[0x1234]) return 1;
+    if (state_compare(state, expected_state) == 1) return FAIL;
+    if (state->memory[0x1234] != expected_state->memory[0x1234]) return FAIL;
 
-    return 0;
+    return PASS;
 }
 
 int test_DCX_B(State *state, State *expected_state)
@@ -526,7 +526,6 @@ int main(int argc, char *argv[])
     default:
         result = 1; // Test failed due to incorrect test parameter
     }
-
     // Clean up the state memory
     Free8080(state);
     Free8080(expected_state);
