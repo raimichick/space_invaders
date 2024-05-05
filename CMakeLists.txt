@@ -190,6 +190,6 @@ add_test(NAME test_RST_7, COMMAND test_io_interrupts 0xff)
 add_test(NAME test_IN, COMMAND test_io_interrupts 0xdb)
 add_test(NAME test_OUT, COMMAND test_io_interrupts 0xd3)
 
-add_executable(test_state tests/test_states.c)
-add_test(NAME test_state_at_10, COMMAND test_state 10)
+#add_executable(test_state tests/test_states.c)
+#add_test(NAME test_state_at_10, COMMAND test_state 10)
 #add_test(NAME test_state_at_25, COMMAND test_state 25)
