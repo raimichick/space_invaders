@@ -86,29 +86,30 @@ int state_compare(State *state, State *expected_state)
     if (s->pc != es->pc)    { printf("Err: PC\n");  return FAIL; }
 
     if (s->interrupt_enabled != es->interrupt_enabled) { printf("Err: int_enable\n"); return FAIL; }
+    if (s->halt != es->halt) { printf("Err: int_enable\n"); return FAIL; }
 
-    if (s_cond.sign      != es_cond.sign)       { printf("Err: Sign\n");      return FAIL; }
-    if (s_cond.zero      != es_cond.zero)       { printf("Err: Zero\n");      return FAIL; }
-    if (s_cond.pad0      != es_cond.pad0)       { printf("Err: Pad0\n");       return FAIL; }
-    if (s_cond.aux_carry != es_cond.aux_carry)  { printf("Err: Aux_Carry\n"); return FAIL; }
-    if (s_cond.pad1      != es_cond.pad1)       { printf("Err: Pad1\n");       return FAIL; }
-    if (s_cond.parity    != es_cond.parity)     { printf("Err: Parity\n");    return FAIL; }
-    if (s_cond.pad2      != es_cond.pad2)       { printf("Err: Pad2\n");       return FAIL; }
-    if (s_cond.carry     != es_cond.carry)      { printf("Err: Carry\n");     return FAIL; }
+    if (s_cond.sign      != es_cond.sign)      { printf("Err: Sign\n");      return FAIL; }
+    if (s_cond.zero      != es_cond.zero)      { printf("Err: Zero\n");      return FAIL; }
+    if (s_cond.pad0      != es_cond.pad0)      { printf("Err: Pad0\n");      return FAIL; }
+    if (s_cond.aux_carry != es_cond.aux_carry) { printf("Err: Aux_Carry\n"); return FAIL; }
+    if (s_cond.pad1      != es_cond.pad1)      { printf("Err: Pad1\n");      return FAIL; }
+    if (s_cond.parity    != es_cond.parity)    { printf("Err: Parity\n");    return FAIL; }
+    if (s_cond.pad2      != es_cond.pad2)      { printf("Err: Pad2\n");      return FAIL; }
+    if (s_cond.carry     != es_cond.carry)     { printf("Err: Carry\n");     return FAIL; }
     // clang-format on
     printf(DEFAULT_TXT_COLOR); // prints after this will be in default color
 
     return PASS;
 }
 
-void set_conditions(State *state, uint8_t hex_val){
-    state->conditions.sign        = hex_val >> 7;
-    state->conditions.zero        = hex_val >> 6;
-    state->conditions.pad0        = hex_val >> 5;
-    state->conditions.aux_carry   = hex_val >> 4;
-    state->conditions.pad1        = hex_val >> 3;
-    state->conditions.parity      = hex_val >> 2;
-    state->conditions.pad2        = hex_val >> 1;
-    state->conditions.carry       = hex_val >> 0;
+void set_conditions(State *state, uint8_t hex_val)
+{
+    state->conditions.sign = hex_val >> 7;
+    state->conditions.zero = hex_val >> 6;
+    state->conditions.pad0 = hex_val >> 5;
+    state->conditions.aux_carry = hex_val >> 4;
+    state->conditions.pad1 = hex_val >> 3;
+    state->conditions.parity = hex_val >> 2;
+    state->conditions.pad2 = hex_val >> 1;
+    state->conditions.carry = hex_val >> 0;
 }
-

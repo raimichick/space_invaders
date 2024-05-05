@@ -7,8 +7,8 @@
 
 int test_states_at_10(State *state, State *expected_state)
 {
-    for (size_t i = 0; i < 10; i++)
-        if (emulate8080(state) == QUIT_CODE) return FAIL;
+    for (size_t i = 0; state->halt == 0 && i < 10; i++)
+        emulate8080(state);
 
     expected_state->pc = 0x1a32;
     expected_state->sp = 0x23fe;
@@ -24,8 +24,8 @@ int test_states_at_10(State *state, State *expected_state)
 
 int test_states_at_25(State *state, State *expected_state)
 {
-    for (size_t i = 0; i < 25; i++)
-        if (emulate8080(state) == QUIT_CODE) return FAIL;
+    for (size_t i = 0; state->halt == 0 && i < 25; i++)
+        emulate8080(state);
 
     expected_state->pc = 0x1a35;
     expected_state->sp = 0x23fe;

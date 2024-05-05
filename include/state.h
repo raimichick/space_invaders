@@ -4,8 +4,6 @@
 #define PASS 0
 #define FAIL 1
 
-#define QUIT_CODE 1 // Used for detecting HLT.
-
 typedef struct Conditions
 {
     uint8_t sign : 1; // aka S
@@ -32,6 +30,9 @@ typedef struct State
     uint8_t *memory;
     Conditions conditions;
     uint8_t interrupt_enabled;
+    uint8_t halt;
+    uint8_t *read_ports[8];
+    uint8_t *write_ports[8];
 } State;
 
 int state_compare(State *state, State *expected_state);

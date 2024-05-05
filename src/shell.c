@@ -1,11 +1,10 @@
-// #include "../include/disassemble8080p.h"
 #include "../include/shell.h"
 #include "../include/state.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-int emulate8080(State *state)
+void emulate8080(State *state)
 {
 
     // Retrieve the opcode from memory at the current program counter location
@@ -586,8 +585,8 @@ int emulate8080(State *state)
             if you see this instruction."
         */
         //printf("HLT infinite loop: state->pc = 0x%04x", state->pc);
+        state->halt = 1;
         wait_cycles(7);
-        return QUIT_CODE;
         break;
     }
     case 0x77:  // MOV M,A
@@ -1467,7 +1466,6 @@ int emulate8080(State *state)
 //    case 0xff: printf("RST 7"); break;
     default: unimplementedInstr(*code); break;
     }
-    return 0;
     // clang-format off
 }
 
