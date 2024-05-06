@@ -23,7 +23,7 @@ int test_ANI_D8(State *state, State *expected_state)
     expected_state->conditions.parity = 1;
 
     emulate8080(state);
-    return state_compare(state, expected_state) == 1;
+    return state_compare(state, expected_state);
 }
 
 /* Tests for loading values into registers
@@ -40,15 +40,13 @@ int main(int argc, char *argv[])
     switch (strtol(argv[1], NULL, 16))
     {
         case 0xe6: result = test_ANI_D8(state, expected_state); break;
-        default: return 1; // Test failed due to incorrect test parameter
+        default: result = FAIL; // Test failed due to incorrect test parameter
     }
     // clang-format on
 
     // Clean up the state memory
-    free(state->memory);
-    free(expected_state->memory);
-    free(state);
-    free(expected_state);
+    Free8080(state);
+    Free8080(expected_state);
 
     return result;
 }

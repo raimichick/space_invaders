@@ -34,7 +34,6 @@ int test_MVI_C(State *state, State *expected_state)
     return state_compare(state, expected_state);
 }
 
-
 /* Tests for various add instructions
  * Select a test by passing the opcode value as the first argument
  *
@@ -49,21 +48,14 @@ int main(int argc, char *argv[])
 
     switch (strtol(argv[1], NULL, 16))
     {
-    case 0x06:
-        result = test_MVI_B(state, expected_state);
-        break;
-    case 0x0e:
-        result = test_MVI_C(state, expected_state);
-        break;
-    default:
-        return 1; // Test failed due to incorrect test parameter
+    case 0x06: result = test_MVI_B(state, expected_state); break;
+    case 0x0e: result = test_MVI_C(state, expected_state); break;
+    default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory
-    free(state->memory);
-    free(expected_state->memory);
-    free(state);
-    free(expected_state);
+    Free8080(state);
+    Free8080(expected_state);
 
     return result;
 }
