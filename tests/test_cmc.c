@@ -1,26 +1,19 @@
+#include "../include/opcodes.h"
 #include "../include/shell.h"
 #include "../include/state.h"
 
 #include <math.h>
 #include <stdlib.h>
 
-int test_XRA_A(State *state, State *expected_state)
+int test_CMC(State *state, State *expected_state)
 {
     // Set state
-    state->a = 0xFF;
+    state->memory[0] = CMC;
     state->conditions.carry = 1;
-    state->conditions.aux_carry = 1;
-    state->conditions.sign = 1;
-    state->memory[0] = 0xaf;
 
     // Set expected state
-    expected_state->a = 0x00;
     expected_state->pc = 1;
-    expected_state->conditions.zero = 1;
-    expected_state->conditions.sign = 0;
-    expected_state->conditions.parity = 1;
     expected_state->conditions.carry = 0;
-    expected_state->conditions.aux_carry = 0;
 
     emulate8080(state);
 
@@ -37,8 +30,8 @@ int main(int argc, char *argv[])
 
     switch (strtol(argv[1], NULL, 16))
     {
-    case 0xaf:
-        result = test_XRA_A(state, expected_state);
+    case CMC:
+        result = test_CMC(state, expected_state);
         break;
     default:
         return 1; // Test failed due to incorrect test parameter

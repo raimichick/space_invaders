@@ -1,6 +1,9 @@
 #pragma once
 #include <stdint.h>
 
+#define PASS 0
+#define FAIL 1
+
 typedef struct Conditions
 {
     uint8_t zero : 1;      // aka Z

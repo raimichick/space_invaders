@@ -20,10 +20,10 @@ int test_MOV_M_A(State *state, State *expected_state)
 
     emulate8080(state);
 
-    if (state_compare(state, expected_state) != 0) return 1;
-    if (state->memory[2] != 5) return 1;
+    if (state_compare(state, expected_state) != PASS) return FAIL;
+    if (state->memory[2] != 5) return FAIL;
 
-    return 0;
+    return PASS;
 }
 
 /* Tests for moving a value from a register to memory
@@ -40,11 +40,8 @@ int main(int argc, char *argv[])
 
     switch (strtol(argv[1], NULL, 16))
     {
-    case 0x77:
-        result = test_MOV_M_A(state, expected_state);
-        break;
-    default:
-        return 1; // Test failed due to incorrect test parameter
+    case 0x77: result = test_MOV_M_A(state, expected_state); break;
+    default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory
