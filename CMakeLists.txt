@@ -80,11 +80,6 @@ add_test(NAME pop_b COMMAND test_push_pop 0xc1)
 # Push Tests
 add_test(NAME push_b COMMAND test_push_pop 0xc5)
 
-# ADI D8 Test
-# TODO move this to test_immediates?
-add_executable(test_adi tests/test_adi.c)
-add_test(NAME adi_d8 COMMAND test_adi 0xc6)
-
 # Return Tests
 add_executable(test_return tests/test_return.c)
 add_test(NAME rnz COMMAND test_return 0xc0)
@@ -122,6 +117,7 @@ add_test(NAME test_ADD_E COMMAND test_add 0x83)
 add_test(NAME test_ADD_H COMMAND test_add 0x84)
 add_test(NAME test_ADD_L COMMAND test_add 0x85)
 add_test(NAME test_ADD_M COMMAND test_add 0x86)
+add_test(NAME adi_d8 COMMAND test_add 0xc6)
 add_test(NAME test_ADC_A COMMAND test_add 0x8f)
 add_test(NAME test_ADC_B COMMAND test_add 0x88)
 add_test(NAME test_ADC_C COMMAND test_add 0x89)
