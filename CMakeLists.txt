@@ -74,12 +74,6 @@ add_test(NAME jpe COMMAND test_jump 0xea)
 add_test(NAME jp COMMAND test_jump 0xf2)
 add_test(NAME jm COMMAND test_jump 0xfa)
 
-# Pop Tests
-add_test(NAME pop_b COMMAND test_push_pop 0xc1)
-
-# Push Tests
-add_test(NAME push_b COMMAND test_push_pop 0xc5)
-
 # Return Tests
 add_executable(test_return tests/test_return.c)
 add_test(NAME rnz COMMAND test_return 0xc0)
@@ -131,7 +125,6 @@ add_test(NAME test_DAD_B COMMAND test_add 0x09)
 add_test(NAME test_DAD_D COMMAND test_add 0x19)
 add_test(NAME test_DAD_SP COMMAND test_add 0x39)
 
-
 # Test Subtract Instructions
 add_executable(test_subtract tests/test_subtract.c)
 add_test(NAME test_DCR_A COMMAND test_subtract 0x3d)
@@ -164,7 +157,10 @@ add_test(NAME test_MVI_C COMMAND test_move_immediate 0x0e)
 add_executable(test_rotate tests/test_rotate.c)
 add_test(NAME test_RRC COMMAND test_rotate 0x0f)
 
+# Test Push/Pop Instructions
 add_executable(test_push_pop tests/test_push_pop.c)
+add_test(NAME pop_b COMMAND test_push_pop 0xc1)
+add_test(NAME push_b COMMAND test_push_pop 0xc5)
 add_test(NAME test_POP_D, COMMAND test_push_pop 0xd1)
 add_test(NAME test_PUSH_D, COMMAND test_push_pop 0xd5)
 add_test(NAME test_POP_H, COMMAND test_push_pop 0xe1)
@@ -172,6 +168,7 @@ add_test(NAME test_PUSH_H, COMMAND test_push_pop 0xe5)
 add_test(NAME test_POP_PSW, COMMAND test_push_pop 0xf1)
 add_test(NAME test_PUSH_PSW, COMMAND test_push_pop 0xf5)
 
+# Test Call Instructions
 add_executable(test_call tests/test_call.c)
 add_test(NAME test_CALL, COMMAND test_call 0xcd)
 add_test(NAME test_CNZ, COMMAND test_call 0xc4)
