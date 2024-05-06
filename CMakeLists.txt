@@ -156,7 +156,11 @@ add_test(NAME test_MVI_C COMMAND test_move_immediate 0x0e)
 
 # Test Rotate Instructions
 add_executable(test_rotate tests/test_rotate.c)
+add_test(NAME test_RAL COMMAND test_rotate 0x17)
+add_test(NAME test_RAR COMMAND test_rotate 0x1f)
+add_test(NAME test_RLC COMMAND test_rotate 0x07)
 add_test(NAME test_RRC COMMAND test_rotate 0x0f)
+
 
 # Test Push/Pop Instructions
 add_executable(test_push_pop tests/test_push_pop.c)
