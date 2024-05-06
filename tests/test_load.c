@@ -71,24 +71,15 @@ int main(int argc, char *argv[])
 
     switch (strtol(argv[1], NULL, 16))
     {
-    case 0x01:
-        result = test_LXI_B(state, expected_state);
-        break;
-    case 0x11:
-        result = test_LXI_D(state, expected_state);
-        break;
-    case 0x1a:
-        result = test_LDAX_D(state, expected_state);
-        break;
-    default:
-        return 1; // Test failed due to incorrect test parameter
+    case 0x01: result = test_LXI_B(state, expected_state); break;
+    case 0x11: result = test_LXI_D(state, expected_state); break;
+    case 0x1a: result = test_LDAX_D(state, expected_state); break;
+    default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
     // Clean up the state memory
-    free(state->memory);
-    free(expected_state->memory);
-    free(state);
-    free(expected_state);
+    Free8080(state);
+    Free8080(expected_state);
 
     return result;
 }

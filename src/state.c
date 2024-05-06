@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "../include/state.h"
 
 #define MEM_SIZE 0x10000
+
+#define RED_TXT_COLOR "\033[0;31m"
+#define DEFAULT_TXT_COLOR "\033[0m"
 
 State *Init8080(void)
 {
@@ -48,30 +52,45 @@ State *Init8080(void)
     return state;
 }
 
+void Free8080(State *state)
+{
+    free(state->memory);
+    free(state);
+}
+
 int state_compare(State *state, State *expected_state)
 {
     // Compares each of the registers and conditions between the two states
     // If both states are the same, returns 0, else 1
     // Does not check memory
 
-    if (state->a != expected_state->a) return 1;
-    if (state->b != expected_state->b) return 1;
-    if (state->c != expected_state->c) return 1;
-    if (state->d != expected_state->d) return 1;
-    if (state->e != expected_state->e) return 1;
-    if (state->h != expected_state->h) return 1;
-    if (state->l != expected_state->l) return 1;
-    if (state->sp != expected_state->sp) return 1;
-    if (state->pc != expected_state->pc) return 1;
-    if (state->int_enable != expected_state->int_enable) return 1;
+    const State *s = state;
+    const State *es = expected_state;
+    const Conditions s_cond = state->conditions;
+    const Conditions es_cond = expected_state->conditions;
 
-    if (state->conditions.zero != expected_state->conditions.zero) return 1;
-    if (state->conditions.sign != expected_state->conditions.sign) return 1;
-    if (state->conditions.parity != expected_state->conditions.parity) return 1;
-    if (state->conditions.carry != expected_state->conditions.carry) return 1;
-    if (state->conditions.aux_carry != expected_state->conditions.aux_carry)
-        return 1;
-    if (state->conditions.pad != expected_state->conditions.pad) return 1;
+    printf(RED_TXT_COLOR); // prints after this will be in red;
+    // clang-format off
+    if (s->a  != es->a)     { printf("Err: A\n");   return FAIL; }
+    if (s->b  != es->b)     { printf("Err: B\n");   return FAIL; }
+    if (s->c  != es->c)     { printf("Err: C\n");   return FAIL; }
+    if (s->d  != es->d)     { printf("Err: D\n");   return FAIL; }
+    if (s->e  != es->e)     { printf("Err: E\n");   return FAIL; }
+    if (s->h  != es->h)     { printf("Err: H\n");   return FAIL; }
+    if (s->l  != es->l)     { printf("Err: L\n");   return FAIL; }
+    if (s->sp != es->sp)    { printf("Err: SP\n");  return FAIL; }
+    if (s->pc != es->pc)    { printf("Err: PC\n");  return FAIL; }
 
-    return 0;
+    if (s->int_enable != es->int_enable) { printf("Err: int_enable\n"); return FAIL; }
+
+    if (s_cond.zero      != es_cond.zero)      { printf("Err: Zero\n");      return FAIL; }
+    if (s_cond.sign      != es_cond.sign)      { printf("Err: Sign\n");      return FAIL; }
+    if (s_cond.parity    != es_cond.parity)    { printf("Err: Parity\n");    return FAIL; }
+    if (s_cond.carry     != es_cond.carry)     { printf("Err: Carry\n");     return FAIL; }
+    if (s_cond.aux_carry != es_cond.aux_carry) { printf("Err: Aux_Carry\n"); return FAIL; }
+    if (s_cond.pad       != es_cond.pad)       { printf("Err: Pad\n");       return FAIL; }
+    // clang-format on
+    printf(DEFAULT_TXT_COLOR); // prints after this will be in default color
+
+    return PASS;
 }

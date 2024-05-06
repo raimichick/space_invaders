@@ -1,6 +1,9 @@
 #pragma once
 #include <stdint.h>
 
+#define PASS 0
+#define FAIL 1
+
 typedef struct Conditions
 {
     uint8_t zero : 1;      // aka Z
@@ -29,3 +32,5 @@ typedef struct State
 
 int state_compare(State *state, State *expected_state);
 State *Init8080(void);
+
+void Free8080(State *state);
