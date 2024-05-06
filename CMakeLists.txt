@@ -205,3 +205,7 @@ add_test(NAME test_CMP_A, COMMAND test_compare 0xbf)
 
 add_executable(test_cmc tests/test_cmc.c)
 add_test(NAME test_CMC, COMMAND test_cmc 0x3f)
+
+# Test NOP
+add_executable(test_nop tests/test_nop.c)
+add_test(NAME test_NOP, COMMAND test_nop 0x00)
