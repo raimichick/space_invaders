@@ -305,6 +305,150 @@ int test_SUB_A(State *state, State *expected_state)
     return state_compare(state, expected_state);
 }
 
+int test_SUB_B(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = SUB_B;
+    state->a = 0x3e; // Set A register
+    state->b = 0x3c; // Set B register
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->a = 2; // Expected result of A - B
+    expected_state->b = 0x3c;
+
+    // Set up flags
+    expected_state->conditions.carry = 0;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 0;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.zero = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_SUB_C(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = SUB_C;
+    state->a = 0x3e;
+    state->c = 0x3c;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->a = 2;
+    expected_state->c = 0x3c;
+
+    // Set up flags
+    expected_state->conditions.carry = 0;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 0;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.zero = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_SUB_D(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = SUB_D;
+    state->a = 0x3e;
+    state->d = 0x3c;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->a = 2;
+    expected_state->d = 0x3c;
+
+    // Set up flags
+    expected_state->conditions.carry = 0;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 0;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.zero = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_SUB_E(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = SUB_E;
+    state->a = 0x3e;
+    state->e = 0x3c;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->a = 2;
+    expected_state->e = 0x3c;
+
+    // Set up flags
+    expected_state->conditions.carry = 0;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 0;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.zero = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_SUB_H(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = SUB_H;
+    state->a = 0x3e;
+    state->h = 0x3c;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->a = 2;
+    expected_state->h = 0x3c;
+
+    // Set up flags
+    expected_state->conditions.carry = 0;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 0;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.zero = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+int test_SUB_L(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = SUB_L;
+    state->a = 0x3e;
+    state->l = 0x3c;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->a = 2;
+    expected_state->l = 0x3c;
+
+    // Set up flags
+    expected_state->conditions.carry = 0;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 0;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.zero = 0;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
 /* Tests for various subtract instructions
  * Select a test by passing the opcode value as the first argument
  *
@@ -319,23 +463,69 @@ int main(int argc, char *argv[])
 
     switch (strtol(argv[1], NULL, 16))
     {
-    case DCR_A: result = test_DCR_A(state, expected_state); break;
-    case DCR_B: result = test_DCR_B(state, expected_state); break;
-    case DCR_C: result = test_DCR_C(state, expected_state); break;
-    case DCR_D: result = test_DCR_D(state, expected_state); break;
-    case DCR_E: result = test_DCR_E(state, expected_state); break;
-    case DCR_H: result = test_DCR_H(state, expected_state); break;
-    case DCR_L: result = test_DCR_L(state, expected_state); break;
-    case DCR_M: result = test_DCR_M(state, expected_state); break;
-    case DCX_B: result = test_DCX_B(state, expected_state); break;
-    case DCX_D: result = test_DCX_D(state, expected_state); break;
-    case DCX_H: result = test_DCX_H(state, expected_state); break;
-    case DCX_SP: result = test_DCX_SP(state, expected_state); break;
-    case SUB_A: result = test_SUB_A(state, expected_state); break;
-    case 0xFFFF: result = test_subtract_helper(state, expected_state); break;
-    default: result = FAIL; // Test failed due to incorrect test parameter
+    case DCR_A:
+        result = test_DCR_A(state, expected_state);
+        break;
+    case DCR_B:
+        result = test_DCR_B(state, expected_state);
+        break;
+    case DCR_C:
+        result = test_DCR_C(state, expected_state);
+        break;
+    case DCR_D:
+        result = test_DCR_D(state, expected_state);
+        break;
+    case DCR_E:
+        result = test_DCR_E(state, expected_state);
+        break;
+    case DCR_H:
+        result = test_DCR_H(state, expected_state);
+        break;
+    case DCR_L:
+        result = test_DCR_L(state, expected_state);
+        break;
+    case DCR_M:
+        result = test_DCR_M(state, expected_state);
+        break;
+    case DCX_B:
+        result = test_DCX_B(state, expected_state);
+        break;
+    case DCX_D:
+        result = test_DCX_D(state, expected_state);
+        break;
+    case DCX_H:
+        result = test_DCX_H(state, expected_state);
+        break;
+    case DCX_SP:
+        result = test_DCX_SP(state, expected_state);
+        break;
+    case SUB_A:
+        result = test_SUB_A(state, expected_state);
+        break;
+    case SUB_B:
+        result = test_SUB_B(state, expected_state);
+        break;
+    case SUB_C:
+        result = test_SUB_C(state, expected_state);
+        break;
+    case SUB_D:
+        result = test_SUB_D(state, expected_state);
+        break;
+    case SUB_E:
+        result = test_SUB_E(state, expected_state);
+        break;
+    case SUB_H:
+        result = test_SUB_H(state, expected_state);
+        break;
+    case SUB_L:
+        result = test_SUB_L(state, expected_state);
+        break;
+    case 0xFFFF:
+        result = test_subtract_helper(state, expected_state);
+        break;
+    default:
+        result = 1; // Test failed due to incorrect test parameter
     }
-
     // Clean up the state memory
     Free8080(state);
     Free8080(expected_state);
