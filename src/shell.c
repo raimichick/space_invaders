@@ -1,4 +1,3 @@
-// #include "../include/disassemble8080p.h"
 #include "../include/shell.h"
 #include "../include/state.h"
 
@@ -509,84 +508,349 @@ void emulate8080(State *state)
         wait_cycles(4);
         break;
     }
-//    case 0x40: printf("MOV B,B"); break;
-//    case 0x41: printf("MOV B,C");  break;
-//    case 0x42: printf("MOV B,D");  break;
-//    case 0x43: printf("MOV B,E");  break;
-//    case 0x44: printf("MOV B,H");  break;
-//    case 0x45: printf("MOV B,L");  break;
-//    case 0x46: printf("MOV B,M");  break;
-//    case 0x47: printf("MOV B,A");  break;
-//    case 0x48: printf("MOV C,B");  break;
-//    case 0x49: printf("MOV C,C");  break;
-//    case 0x4a: printf("MOV C,D");  break;
-//    case 0x4b: printf("MOV C,E");  break;
-//    case 0x4c: printf("MOV C,H");  break;
-//    case 0x4d: printf("MOV C,L");  break;
-//    case 0x4e: printf("MOV C,M");  break;
-//    case 0x4f: printf("MOV C,A");  break;
-//    case 0x50: printf("MOV D,B");  break;
-//    case 0x51: printf("MOV D,C");  break;
-//    case 0x52: printf("MOV D,D");  break;
-//    case 0x53: printf("MOV D,E");  break;
-//    case 0x54: printf("MOV D,H");  break;
-//    case 0x55: printf("MOV D,L");  break;
-   case 0x56: // MOV D, M
+    case 0x40:  // MOV B,B
+    {
+        mov_reg_to_reg(state, &state->b, &state->b);
+        wait_cycles(5);
+        break;
+    }
+    case 0x41:  // MOV B,C
+    {
+        mov_reg_to_reg(state, &state->b, &state->c);
+        wait_cycles(5);
+        break;
+    }
+    case 0x42:  // MOV B,D
+    {
+        mov_reg_to_reg(state, &state->b, &state->d);
+        wait_cycles(5);
+        break;
+    }
+    case 0x43:  // MOV B,E
+    {
+        mov_reg_to_reg(state, &state->b, &state->e);
+        wait_cycles(5);
+        break;
+    }
+    case 0x44:  // MOV B,H
+    {
+        mov_reg_to_reg(state, &state->b, &state->h);
+        wait_cycles(5);
+        break;
+    }
+    case 0x45:  // MOV B,L
+    {
+        mov_reg_to_reg(state, &state->b, &state->l);
+        wait_cycles(5);
+        break;
+    }
+    case 0x46:  // MOV B,M
+    {
+        mov_mem_to_reg(state, &state->b);
+        break;
+    }
+    case 0x47:  // MOV B,A
+    {
+        mov_reg_to_reg(state, &state->b, &state->a);
+        wait_cycles(5);
+        break;
+    }
+    case 0x48:  // MOV C,B
+    {
+        mov_reg_to_reg(state, &state->c, &state->b);
+        wait_cycles(5);
+        break;
+    }
+    case 0x49:  // MOV C,C
+    {
+        mov_reg_to_reg(state, &state->c, &state->c);
+        wait_cycles(5);
+        break;
+    }
+    case 0x4a:  // MOV C,D
+    {
+        mov_reg_to_reg(state, &state->c, &state->d);
+        wait_cycles(5);
+        break;
+    }
+    case 0x4b:  // MOV C,E
+    {
+        mov_reg_to_reg(state, &state->c, &state->e);
+        wait_cycles(5);
+        break;
+    }
+    case 0x4c:  // MOV C,H
+    {
+        mov_reg_to_reg(state, &state->c, &state->h);
+        wait_cycles(5);
+        break;
+    }
+    case 0x4d:  // MOV C,L
+    {
+        mov_reg_to_reg(state, &state->c, &state->l);
+        wait_cycles(5);
+        break;
+    }
+    case 0x4e:  // MOV C,M
+    {
+        mov_mem_to_reg(state, &state->c);
+        break;
+    }
+    case 0x4f:  // MOV C,A
+    {
+        mov_reg_to_reg(state, &state->c, &state->a);
+        wait_cycles(5);
+        break;
+    }
+    case 0x50:  // MOV D,B
+    {
+        mov_reg_to_reg(state, &state->d, &state->b);
+        wait_cycles(5);
+        break;
+    }
+    case 0x51:  // MOV D,C
+    {
+        mov_reg_to_reg(state, &state->d, &state->c);
+        wait_cycles(5);
+        break;
+    }
+    case 0x52:  // MOV D,D
+    {
+        mov_reg_to_reg(state, &state->d, &state->d);
+        wait_cycles(5);
+        break;
+    }
+    case 0x53:  // MOV D,E
+    {
+        mov_reg_to_reg(state, &state->d, &state->e);
+        wait_cycles(5);
+        break;
+    }
+    case 0x54:  // MOV D,H
+    {
+        mov_reg_to_reg(state, &state->d, &state->h);
+        wait_cycles(5);
+        break;
+    }
+    case 0x55:  // MOV D,L
+    {
+        mov_reg_to_reg(state, &state->d, &state->l);
+        wait_cycles(5);
+        break;
+    }
+    case 0x56: // MOV D, M
     {
         mov_mem_to_reg(state, &state->d);
         wait_cycles(5);
         break;
     }
-//    case 0x57: printf("MOV D,A");  break;
-//    case 0x58: printf("MOV E,B");  break;
-//    case 0x59: printf("MOV E,C");  break;
-//    case 0x5a: printf("MOV E,D");  break;
-//    case 0x5b: printf("MOV E,E");  break;
-//    case 0x5c: printf("MOV E,H");  break;
-//    case 0x5d: printf("MOV E,L");  break;
-//    case 0x5e: printf("MOV E,M");  break;
-//    case 0x5f: printf("MOV E,A");  break;
-//    case 0x60: printf("MOV H,B");  break;
-//    case 0x61: printf("MOV H,C");  break;
-//    case 0x62: printf("MOV H,D");  break;
-//    case 0x63: printf("MOV H,E");  break;
-//    case 0x64: printf("MOV H,H");  break;
-//    case 0x65: printf("MOV H,L");  break;
-   case 0x66: // MOV H, M
-   {
+    case 0x57:  // MOV D,A
+    {
+        mov_reg_to_reg(state, &state->d, &state->a);
+        wait_cycles(5);
+        break;
+    }
+    case 0x58:  // MOV E,B
+    {
+        mov_reg_to_reg(state, &state->e, &state->b);
+        wait_cycles(5);
+        break;
+    }
+    case 0x59:  // MOV E,C
+    {
+        mov_reg_to_reg(state, &state->e, &state->c);
+        wait_cycles(5);
+        break;
+    }
+    case 0x5a:  // MOV E,D
+    {
+        mov_reg_to_reg(state, &state->e, &state->d);
+        wait_cycles(5);
+        break;
+    }
+    case 0x5b:  // MOV E,E
+    {
+        mov_reg_to_reg(state, &state->e, &state->e);
+        wait_cycles(5);
+        break;
+    }
+    case 0x5c:  // MOV E,H
+    {
+        mov_reg_to_reg(state, &state->e, &state->h);
+        wait_cycles(5);
+        break;
+    }
+    case 0x5d:  // MOV E,L
+    {
+        mov_reg_to_reg(state, &state->e, &state->l);
+        wait_cycles(5);
+        break;
+    }
+    case 0x5e:  // MOV E,M
+    {
+        mov_mem_to_reg(state, &state->e);
+        break;
+    }
+    case 0x5f:  // MOV E,A
+    {
+        mov_reg_to_reg(state, &state->e, &state->a);
+        wait_cycles(5);
+        break;
+    }
+    case 0x60:  // MOV H,B
+    {
+        mov_reg_to_reg(state, &state->h, &state->b);
+        wait_cycles(5);
+        break;
+    }
+    case 0x61:  // MOV H,C
+    {
+        mov_reg_to_reg(state, &state->h, &state->c);
+        wait_cycles(5);
+        break;
+    }
+    case 0x62:  // MOV H,D
+    {
+        mov_reg_to_reg(state, &state->h, &state->d);
+        wait_cycles(5);
+        break;
+    }
+    case 0x63:  // MOV H,E
+    {
+        mov_reg_to_reg(state, &state->h, &state->e);
+        wait_cycles(5);
+        break;
+    }
+    case 0x64:  // MOV H,H
+    {
+        mov_reg_to_reg(state, &state->h, &state->h);
+        wait_cycles(5);
+        break;
+    }
+    case 0x65:  // MOV H,L
+    {
+        mov_reg_to_reg(state, &state->h, &state->l);
+        wait_cycles(5);
+        break;
+    }
+    case 0x66: // MOV H, M
+    {
         mov_mem_to_reg(state, &state->h);
         wait_cycles(5);
         break;
-   }
-//    case 0x67: printf("MOV H,A");  break;
-//    case 0x68: printf("MOV L,B");  break;
-//    case 0x69: printf("MOV L,C");  break;
-//    case 0x6a: printf("MOV L,D");  break;
-//    case 0x6b: printf("MOV L,E");  break;
-//    case 0x6c: printf("MOV L,H");  break;
-//    case 0x6d: printf("MOV L,L");  break;
-//    case 0x6e: printf("MOV L,M");  break;
-   case 0x6f: // MOV L, A
-   {
+    }
+    case 0x67:  // MOV H,A
+    {
+        mov_reg_to_reg(state, &state->h, &state->a);
+        wait_cycles(5);
+        break;
+    }
+    case 0x68:  // MOV L,B
+    {
+        mov_reg_to_reg(state, &state->l, &state->b);
+        wait_cycles(5);
+        break;
+    }
+    case 0x69:  // MOV L,C
+    {
+        mov_reg_to_reg(state, &state->l, &state->c);
+        wait_cycles(5);
+        break;
+    }
+    case 0x6a:  // MOV L,D
+    {
+        mov_reg_to_reg(state, &state->l, &state->d);
+        wait_cycles(5);
+        break;
+    }
+    case 0x6b:  // MOV L,E
+    {
+        mov_reg_to_reg(state, &state->l, &state->e);
+        wait_cycles(5);
+        break;
+    }
+    case 0x6c:  // MOV L,H
+    {
+        mov_reg_to_reg(state, &state->l, &state->h);
+        wait_cycles(5);
+        break;
+    }
+    case 0x6d:  // MOV L,L
+    {
+        mov_reg_to_reg(state, &state->l, &state->l);
+        wait_cycles(5);
+        break;
+    }
+    case 0x6e:  // MOV L,M
+    {
+        mov_mem_to_reg(state, &state->l);
+        break;
+    }
+    case 0x6f: // MOV L, A
+    {
        mov_reg_to_reg(state, &state->l, &state->a);
        wait_cycles(5);
        break;
-   }
-//    case 0x70: printf("MOV M,B");  break;
-//    case 0x71: printf("MOV M,C");  break;
-//    case 0x72: printf("MOV M,D");  break;
-//    case 0x73: printf("MOV M,E");  break;
-//    case 0x74: printf("MOV M,H");  break;
-//    case 0x75: printf("MOV M,L");  break;
-//    case 0x76: printf("HLT");  break;
+    }
+    case 0x70:  // MOV M,B
+    {
+        mov_reg_to_mem(state, &state->b);
+        break;
+    }
+    case 0x71:  // MOV M,C
+    {
+        mov_reg_to_mem(state, &state->c);
+        break;
+    }
+    case 0x72:  // MOV M,D
+    {
+        mov_reg_to_mem(state, &state->d);
+        break;
+    }
+    case 0x73:  // MOV M,E
+    {
+        mov_reg_to_mem(state, &state->e);
+        break;
+    }
+    case 0x74:  // MOV M,H
+    {
+        mov_reg_to_mem(state, &state->h);
+        break;
+    }
+    case 0x75:  // MOV M,L
+    {
+        mov_reg_to_mem(state, &state->l);
+        break;
+    }
+    case 0x76: // HLT
+    {
+        /*
+        Emulator 101:  "I don't think we need to emulate this,
+            although you might want to call your quit code (or exit(0))
+            if you see this instruction."
+        */
+        state->halt = 1;
+        wait_cycles(7);
+        break;
+    }
     case 0x77:  // MOV M,A
     {
         mov_reg_to_mem(state, &state->a);
         break;
     }
-//    case 0x78: printf("MOV A,B");  break;
-//    case 0x79: printf("MOV A,C");  break;
-    case 0x7a: // MOV A,D
+    case 0x78:  // MOV A,B
+    {
+        mov_reg_to_reg(state, &state->a, &state->b);
+        wait_cycles(5);
+        break;
+    }
+    case 0x79:  // MOV A,C
+    {
+        mov_reg_to_reg(state, &state->a, &state->c);
+        wait_cycles(5);
+        break;
+    }
+    case 0x7a:  // MOV A,D
     {
         mov_reg_to_reg(state, &state->a, &state->d);
         break;
@@ -601,13 +865,21 @@ void emulate8080(State *state)
         mov_reg_to_reg(state, &state->a, &state->h);
         break;
     }
-//    case 0x7d: printf("MOV A,L");  break;
+    case 0x7d:  // MOV A,L
+    {
+        mov_reg_to_reg(state, &state->a, &state->l);
+        break;
+    }
     case 0x7e:  // MOV A,M
     {
         mov_mem_to_reg(state, &state->a);
         break;
     }
-//    case 0x7f: printf("MOV A,A");  break;
+    case 0x7f:  // MOV A,A
+    {
+        mov_reg_to_reg(state, &state->a, &state->a);
+        break;
+    }
     case 0x80: // ADD B     A <- A + B
     {
         state->pc += opbytes;
@@ -1067,7 +1339,12 @@ void emulate8080(State *state)
         state->a = temp_accum;
         break;
     }
-//    case 0xc7: printf("RST 0"); break;
+    case 0xc7: // RST 0; Call function at memory 8 * 0  = 0;
+    {
+        call_helper(state, 8 * 0);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xc8:  // RZ; return if zero = 1
     {
         if (state->conditions.zero == 1) return_helper(state);
@@ -1114,7 +1391,12 @@ void emulate8080(State *state)
         wait_cycles(7);
         break;
     }
-//    case 0xcf: printf("RST 1"); break;
+    case 0xcf: // RST 1; Call function at memory 8 * 1  = 8;
+    {
+        call_helper(state, 8 * 1);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xd0:  // RNC; return if carry = 0
     {
         if (state->conditions.carry == 0) return_helper(state);
@@ -1135,12 +1417,17 @@ void emulate8080(State *state)
         else state->pc += opbytes;
         break;
     }
-    case 0xd3: // OUT D8, code[1]; Send the data from A onto the 8bit data bus for transmission to spec'd port
+    case 0xd3: // OUT D8, code[1]; A -> 8b data on port specified by the 8b arg
     {
         opbytes = 2;
         state->pc += opbytes;
-        // TODO emulator 101 recommended skipping over this for now.
-        // TODO IO[code[1]] = state->a;
+        /*
+        Emulator 101: "IN and OUT are instructions that the 8080 hardware
+            used to talk to external hardware. For now, implement these but make
+            them do nothing besides skip over its data byte. (We'll have to
+            revisit this later)".
+        */
+        state->ports[code[1]] = state->a;
         wait_cycles(10); // per Intel 8080 Programmers Manual
         break;
     }
@@ -1168,7 +1455,12 @@ void emulate8080(State *state)
         wait_cycles(7);
         break;
     }
-//    case 0xd7: printf("RST 2"); break;
+    case 0xd7: // RST 2; Call function at memory 8 * 2  = 16;
+    {
+        call_helper(state, 8 * 2);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xd8:  // RC; return if carry = 1
     {
         if (state->conditions.carry == 1) return_helper(state);
@@ -1183,7 +1475,20 @@ void emulate8080(State *state)
         else state->pc += opbytes;
         break;
     }
-//    case 0xdb: printf("IN D8, $%02x", code[1]); opbytes = 2; break;
+    case 0xdb: // IN D8  code[1]; 8b data on port specified by the 8b arg -> A
+    {
+        opbytes = 2;
+        state->pc += opbytes;
+        /*
+        Emulator 101: "IN and OUT are instructions that the 8080 hardware
+            used to talk to external hardware. For now, implement these but make
+            them do nothing besides skip over its data byte. (We'll have to
+            revisit this later)".
+        */
+        state->a = state->ports[code[1]];
+        wait_cycles(10); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xdc: // CC, code[2], code[1]; Call if Carry flag set.
     {
         opbytes = 3;
@@ -1202,7 +1507,12 @@ void emulate8080(State *state)
         wait_cycles(7);
         break;
     }
-//    case 0xdf: printf("RST 3"); break;
+    case 0xdf: // RST 3; Call function at memory 8 * 3  = 24;
+    {
+        call_helper(state, 8 * 3);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xe0:  // RPO; return if parity = 0 (odd)
     {
         if (state->conditions.parity == 0) return_helper(state);
@@ -1266,7 +1576,12 @@ void emulate8080(State *state)
         wait_cycles(7);
         break;
     }
-//    case 0xe7: printf("RST 4"); break;
+    case 0xe7: // RST 4; Call function at memory 8 * 4  = 32;
+    {
+        call_helper(state, 8 * 4);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xe8:  // RPE; return if parity = 1 (even)
     {
         if (state->conditions.parity == 1) return_helper(state);
@@ -1320,7 +1635,12 @@ void emulate8080(State *state)
         state->conditions.parity = get_parity_flag(state->a);
         break;
     }
-//    case 0xef: printf("RST 5"); break;
+    case 0xef: // RST 5; Call function at memory 8 * 5  = 40;
+    {
+        call_helper(state, 8 * 5);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xf0:  // RP; return if zero = 0 (positive)
     {
         if (state->conditions.zero == 0) return_helper(state);
@@ -1348,7 +1668,13 @@ void emulate8080(State *state)
         else state->pc += opbytes;
         break;
     }
-//    case 0xf3: printf("DI"); break;
+    case 0xf3: // DI; Disable interrupts.
+    {
+        state->pc += opbytes;
+        state->interrupt_enabled = 0;
+        wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
+    }
     case 0xf4: // CP code[2], code[1]. CALL if sign flag is not set.
     {
         opbytes = 3;
@@ -1360,7 +1686,7 @@ void emulate8080(State *state)
     }
     case 0xf5: // PUSH PSW; Push Processor Status Word.
     {
-        // TODO update state->conditions struct to be in same order as manual?
+        // TODO update this to use AF as PSW register now that conditions are in order
         state->pc += opbytes;
         state->memory[state->sp - 1] = state->a;
         uint8_t c = (state->conditions.carry << 0);
@@ -1385,7 +1711,12 @@ void emulate8080(State *state)
         state->conditions.parity = get_parity_flag(state->a);
         break;
     }
-//    case 0xf7: printf("RST 6"); break;
+    case 0xf7: // RST 6; Call function at memory 8 * 6  = 48;
+    {
+        call_helper(state, 8 * 6);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     case 0xf8:  // RM; return if zero = 1 (negative)
     {
         if (state->conditions.zero == 1) return_helper(state);
@@ -1406,11 +1737,12 @@ void emulate8080(State *state)
         else state->pc += opbytes;
         break;
     }
-    case 0xfb: // EI; "The interrupt system is enabled following the execution of the next instruction"...
+    case 0xfb: // EI; Enable interrupts.
     {
         state->pc += opbytes;
-        // TODO emulator 101 recommended skipping over this for now.
+        state->interrupt_enabled = 1;
         wait_cycles(4); // per Intel 8080 Programmers Manual.
+        break;
     }
     case 0xfc: // CM code[2], code[1]. CALL if sign flag is set.
     {
@@ -1430,7 +1762,12 @@ void emulate8080(State *state)
         wait_cycles(7); // per Intel 8080 Programmers Manual.
         break;
     }
-//    case 0xff: printf("RST 7"); break;
+    case 0xff: // RST 7; Call function at memory 8 * 7  = 56;
+    {
+        call_helper(state, 8 * 7);
+        wait_cycles(11); // per Intel 8080 Programmers Manual
+        break;
+    }
     default: unimplementedInstr(*code); break;
     }
     // clang-format off
@@ -1698,7 +2035,6 @@ uint8_t subtract_8b(struct State *state, uint8_t minuend, uint8_t subtrahend)
     state->conditions.carry = minuend < subtrahend;
     //state->conditions.aux_carry = !get_aux_carry_flag_from_sum(twos_complement, minuend);
     state->conditions.aux_carry = get_aux_carry_flag_from_sum(minuend, twos_complement);
-    // TODO consider changer param name from "register_value".
     state->conditions.sign = get_sign_flag(res_8b);
     state->conditions.parity = get_parity_flag(res_8b);
     return res_8b;

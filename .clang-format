@@ -6,4 +6,4 @@ BreakBeforeBraces: Allman
 AllowShortIfStatementsOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortLoopsOnASingleLine: false
-ColumnLimit: 80
+ColumnLimit: 100
