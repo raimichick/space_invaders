@@ -132,17 +132,6 @@ add_test(NAME jpe COMMAND test_jump 0xea)
 add_test(NAME jp COMMAND test_jump 0xf2)
 add_test(NAME jm COMMAND test_jump 0xfa)
 
-# Pop Tests
-add_test(NAME pop_b COMMAND test_push_pop 0xc1)
-
-# Push Tests
-add_test(NAME push_b COMMAND test_push_pop 0xc5)
-
-# ADI D8 Test
-# TODO move this to test_immediates?
-add_executable(test_adi tests/test_adi.c)
-add_test(NAME adi_d8 COMMAND test_adi 0xc6)
-
 # Return Tests
 add_executable(test_return tests/test_return.c)
 add_test(NAME rnz COMMAND test_return 0xc0)
@@ -159,13 +148,41 @@ add_test(NAME rm COMMAND test_return 0xf8)
 add_executable(test_load tests/test_load.c)
 add_test(NAME test_LXI_B COMMAND test_load 0x01)
 add_test(NAME test_LXI_D COMMAND test_load 0x11)
+add_test(NAME test_LDAX_B COMMAND test_load 0x0a)
 add_test(NAME test_LDAX_D COMMAND test_load 0x1a)
 
 # Test Add Instructions
 add_executable(test_add tests/test_add.c)
-add_test(NAME test_DAD_B COMMAND test_add 0x09)
+add_test(NAME test_INR_A COMMAND test_add 0x3c)
+add_test(NAME test_INR_B COMMAND test_add 0x04)
+add_test(NAME test_INR_C COMMAND test_add 0x0c)
+add_test(NAME test_INR_D COMMAND test_add 0x14)
+add_test(NAME test_INR_E COMMAND test_add 0x1c)
+add_test(NAME test_INR_H COMMAND test_add 0x24)
+add_test(NAME test_INR_L COMMAND test_add 0x2c)
+add_test(NAME test_INR_M COMMAND test_add 0x34)
 add_test(NAME test_INX_D COMMAND test_add 0x13)
+add_test(NAME test_ADD_A COMMAND test_add 0x87)
+add_test(NAME test_ADD_B COMMAND test_add 0x80)
+add_test(NAME test_ADD_C COMMAND test_add 0x81)
+add_test(NAME test_ADD_D COMMAND test_add 0x82)
+add_test(NAME test_ADD_E COMMAND test_add 0x83)
+add_test(NAME test_ADD_H COMMAND test_add 0x84)
+add_test(NAME test_ADD_L COMMAND test_add 0x85)
+add_test(NAME test_ADD_M COMMAND test_add 0x86)
+add_test(NAME adi_d8 COMMAND test_add 0xc6)
+add_test(NAME test_ADC_A COMMAND test_add 0x8f)
+add_test(NAME test_ADC_B COMMAND test_add 0x88)
+add_test(NAME test_ADC_C COMMAND test_add 0x89)
+add_test(NAME test_ADC_D COMMAND test_add 0x8a)
+add_test(NAME test_ADC_E COMMAND test_add 0x8b)
+add_test(NAME test_ADC_H COMMAND test_add 0x8c)
+add_test(NAME test_ADC_L COMMAND test_add 0x8d)
+add_test(NAME test_ADC_M COMMAND test_add 0x8e)
+add_test(NAME test_ACI COMMAND test_add 0xce)
+add_test(NAME test_DAD_B COMMAND test_add 0x09)
 add_test(NAME test_DAD_D COMMAND test_add 0x19)
+add_test(NAME test_DAD_SP COMMAND test_add 0x39)
 
 # Test Subtract Instructions
 add_executable(test_subtract tests/test_subtract.c)
@@ -197,9 +214,16 @@ add_test(NAME test_MVI_C COMMAND test_move_immediate 0x0e)
 
 # Test Rotate Instructions
 add_executable(test_rotate tests/test_rotate.c)
+add_test(NAME test_RAL COMMAND test_rotate 0x17)
+add_test(NAME test_RAR COMMAND test_rotate 0x1f)
+add_test(NAME test_RLC COMMAND test_rotate 0x07)
 add_test(NAME test_RRC COMMAND test_rotate 0x0f)
 
+
+# Test Push/Pop Instructions
 add_executable(test_push_pop tests/test_push_pop.c)
+add_test(NAME pop_b COMMAND test_push_pop 0xc1)
+add_test(NAME push_b COMMAND test_push_pop 0xc5)
 add_test(NAME test_POP_D, COMMAND test_push_pop 0xd1)
 add_test(NAME test_PUSH_D, COMMAND test_push_pop 0xd5)
 add_test(NAME test_POP_H, COMMAND test_push_pop 0xe1)
@@ -207,6 +231,7 @@ add_test(NAME test_PUSH_H, COMMAND test_push_pop 0xe5)
 add_test(NAME test_POP_PSW, COMMAND test_push_pop 0xf1)
 add_test(NAME test_PUSH_PSW, COMMAND test_push_pop 0xf5)
 
+# Test Call Instructions
 add_executable(test_call tests/test_call.c)
 add_test(NAME test_CALL, COMMAND test_call 0xcd)
 add_test(NAME test_CNZ, COMMAND test_call 0xc4)
@@ -239,6 +264,10 @@ add_test(NAME test_CMP_A, COMMAND test_compare 0xbf)
 add_executable(test_cmc tests/test_cmc.c)
 add_test(NAME test_CMC, COMMAND test_cmc 0x3f)
 
+# Test NOP
+add_executable(test_nop tests/test_nop.c)
+add_test(NAME test_NOP, COMMAND test_nop 0x00)
+
 add_executable(test_io_interrupts tests/test_io_interrupts.c)
 add_test(NAME test_EI, COMMAND test_io_interrupts 0xfb)
 add_test(NAME test_DI, COMMAND test_io_interrupts 0xf3)
@@ -257,3 +286,4 @@ add_test(NAME test_OUT, COMMAND test_io_interrupts 0xd3)
 #add_executable(test_state tests/test_states.c)
 #add_test(NAME test_state_at_10, COMMAND test_state 10)
 #add_test(NAME test_state_at_25, COMMAND test_state 25)
+
