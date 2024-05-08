@@ -24,7 +24,7 @@ int test_MOV_REG_to_MEM(State *s, State *es, int8_t opcode)
 
     // Set state s and expected_state es
     s->memory[0] = opcode;
-    s->memory[0x0101] = 2;
+    s->memory[0x0101] = 0;
     *s_fr = 2;
     s->h = 0x01;
     s->l = 0x01;
