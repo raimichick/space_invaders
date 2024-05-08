@@ -477,6 +477,42 @@ int test_SUB_M(State *state, State *expected_state)
     return state_compare(state, expected_state);
 }
 
+int test_SBB_A(State *state, State *expected_state)
+{
+    // test carry = 0. A - A = 0.
+    state->memory[0] = SBB_A;
+    state->a = 0x3e;
+    state->conditions.carry = 0;
+
+    expected_state->pc = 1;
+    expected_state->a = 0;
+    expected_state->conditions.carry = 0;
+    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 1;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.zero = 1;
+
+    emulate8080(state);
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+
+    // test carry = 1. A - (A + 1) = -1.
+    state->pc = 0; // move back to operation code
+    state->a = 0x3e;
+    state->conditions.carry = 1;
+
+    expected_state->pc = 1;
+    expected_state->a = -1;
+    expected_state->conditions.carry = 1;
+    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.parity = 1;
+    expected_state->conditions.sign = 1;
+    expected_state->conditions.zero = 0;
+
+    emulate8080(state);
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
+}
+
 int test_SBB_B(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
@@ -845,6 +881,7 @@ int main(int argc, char *argv[])
     case SUB_H: result = test_SUB_H(state, expected_state); break;
     case SUB_L: result = test_SUB_L(state, expected_state); break;
     case SUB_M: result = test_SUB_M(state, expected_state); break;
+    case SBB_A: result = test_SBB_A(state, expected_state); break;
     case SBB_B: result = test_SBB_B(state, expected_state); break;
     case SBB_C: result = test_SBB_C(state, expected_state); break;
     case SBB_D: result = test_SBB_D(state, expected_state); break;
@@ -853,7 +890,7 @@ int main(int argc, char *argv[])
     case SBB_L: result = test_SBB_L(state, expected_state); break;
     case SBB_M: result = test_SBB_M(state, expected_state); break;
     case 0xFFFF: result = test_subtract_helper(state, expected_state); break;
-    default: result = 1; // Test failed due to incorrect test parameter
+    default: result = FAIL; // Test failed due to incorrect test parameter
     }
     // Clean up the state memory
     Free8080(state);
