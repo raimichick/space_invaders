@@ -492,26 +492,12 @@ int test_SBB_B(State *state, State *expected_state)
     expected_state->a = 0x06;
     expected_state->b = 0x03;
 
-    // Set up the memory
-    for (int i = 0; i < 0x10000; i++) {
-        expected_state->memory[i] = state->memory[i];
-    }
-
-    // Calculate parity
-    uint8_t result = expected_state->a;
-    int count = 0;
-    for (int i = 0; i < 8; i++) {
-        if (result & (1 << i)) {
-            count++;
-        }
-    }
-    expected_state->conditions.parity = (count % 2 == 0) ? 1 : 0;
-
     // Expected flags
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.carry = 0;
     expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 1;
 
     emulate8080(state);
 
@@ -533,26 +519,12 @@ int test_SBB_C(State *state, State *expected_state)
     expected_state->a = 0x06;
     expected_state->c = 0x03;
 
-    // Set up the memory
-    for (int i = 0; i < 0x10000; i++) {
-        expected_state->memory[i] = state->memory[i];
-    }
-
-    // Calculate parity
-    uint8_t result = expected_state->a;
-    int count = 0;
-    for (int i = 0; i < 8; i++) {
-        if (result & (1 << i)) {
-            count++;
-        }
-    }
-    expected_state->conditions.parity = (count % 2 == 0) ? 1 : 0;
-
     // Expected flags
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.carry = 0;
     expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 1;
 
     emulate8080(state);
 
@@ -574,26 +546,12 @@ int test_SBB_D(State *state, State *expected_state)
     expected_state->a = 0x06;
     expected_state->d = 0x03;
 
-    // Set up the memory
-    for (int i = 0; i < 0x10000; i++) {
-        expected_state->memory[i] = state->memory[i];
-    }
-
-    // Calculate parity
-    uint8_t result = expected_state->a;
-    int count = 0;
-    for (int i = 0; i < 8; i++) {
-        if (result & (1 << i)) {
-            count++;
-        }
-    }
-    expected_state->conditions.parity = (count % 2 == 0) ? 1 : 0;
-
     // Expected flags
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.carry = 0;
     expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 1;
 
     emulate8080(state);
 
@@ -615,26 +573,12 @@ int test_SBB_E(State *state, State *expected_state)
     expected_state->a = 0x06;
     expected_state->e = 0x03;
 
-    // Set up the memory
-    for (int i = 0; i < 0x10000; i++) {
-        expected_state->memory[i] = state->memory[i];
-    }
-
-    // Calculate parity
-    uint8_t result = expected_state->a;
-    int count = 0;
-    for (int i = 0; i < 8; i++) {
-        if (result & (1 << i)) {
-            count++;
-        }
-    }
-    expected_state->conditions.parity = (count % 2 == 0) ? 1 : 0;
-
     // Expected flags
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.carry = 0;
     expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 1;
 
     emulate8080(state);
 
@@ -656,26 +600,12 @@ int test_SBB_H(State *state, State *expected_state)
     expected_state->a = 0x06;
     expected_state->h = 0x03;
 
-    // Set up the memory
-    for (int i = 0; i < 0x10000; i++) {
-        expected_state->memory[i] = state->memory[i];
-    }
-
-    // Calculate parity
-    uint8_t result = expected_state->a;
-    int count = 0;
-    for (int i = 0; i < 8; i++) {
-        if (result & (1 << i)) {
-            count++;
-        }
-    }
-    expected_state->conditions.parity = (count % 2 == 0) ? 1 : 0;
-
     // Expected flags
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.carry = 0;
     expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 1;
 
     emulate8080(state);
 
@@ -697,11 +627,6 @@ int test_SBB_L(State *state, State *expected_state)
     expected_state->a = 0x06;
     expected_state->l = 0x03;
 
-    // Set up the memory
-    for (int i = 0; i < 0x10000; i++) {
-        expected_state->memory[i] = state->memory[i];
-    }
-
     // Calculate parity
     uint8_t result = expected_state->a;
     int count = 0;
@@ -710,13 +635,13 @@ int test_SBB_L(State *state, State *expected_state)
             count++;
         }
     }
-    expected_state->conditions.parity = (count % 2 == 0) ? 1 : 0;
 
     // Expected flags
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.carry = 0;
     expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 1;
 
     emulate8080(state);
 
@@ -742,21 +667,12 @@ int test_SBB_M(State *state, State *expected_state)
     expected_state->l = 0x05;
     expected_state->memory[0x2005] = 0x03;
 
-    // Calculate parity
-    uint8_t result = expected_state->a;
-    int count = 0;
-    for (int i = 0; i < 8; i++) {
-        if (result & (1 << i)) {
-            count++;
-        }
-    }
-    expected_state->conditions.parity = (count % 2 == 0) ? 1 : 0;
-
     // Expected flags
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.carry = 0;
     expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.parity = 1;
 
     emulate8080(state);
 
