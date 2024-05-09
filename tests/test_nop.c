@@ -1,25 +1,17 @@
+#include "../include/opcodes.h"
 #include "../include/shell.h"
 #include "../include/state.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-int test_ADI_D8(State *state, State *expected_state)
+int test_NOP(State *state, State *expected_state)
 {
-    // Set state
-    // Example from page 27 of the 8080 Programmers Manual
-    state->memory[0] = 0xc6;
-    state->memory[1] = 66;
-    state->a = 20;
-    state->conditions.zero = 1;
-    state->conditions.sign = 1;
-    state->conditions.aux_carry = 1;
-    state->conditions.carry = 1;
+    // Load the instruction and set up the memory
+    state->memory[0] = NOP;
 
-    // Set expected state
-    expected_state->a = 86;
-    expected_state->pc = 2;
-    expected_state->conditions.parity = 1;
+    // Set up the expected register states
+    expected_state->pc = 1;
 
     emulate8080(state);
 
@@ -36,7 +28,7 @@ int main(int argc, char *argv[])
 
     switch (strtol(argv[1], NULL, 16))
     {
-    case 0xc6: result = test_ADI_D8(state, expected_state); break;
+    case NOP: result = test_NOP(state, expected_state); break;
     default: result = FAIL; // Test failed due to incorrect test parameter
     }
 

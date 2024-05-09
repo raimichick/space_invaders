@@ -26,10 +26,12 @@ int main()
 
     fclose(game_file);
 
-    // Run ROM
-    while (state->halt != 1 && state->pc < game_size)
+    // Print disassembly
+    while (state->pc < game_size)
     {
-        emulate8080(state);
+        int opbytes = disassemble8080p(state->memory, state->pc);
+
+        state->pc += opbytes;
     }
 
     Free8080(state);
