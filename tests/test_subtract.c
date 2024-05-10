@@ -889,6 +889,27 @@ int test_SBI(State *state, State *expected_state)
     return PASS;
 }
 
+int test_SUI(State *state, State *expected_state)
+{
+    state->memory[0] = SUI;
+    state->memory[1] = 0x01;
+    state->a = 0x00;
+    state->conditions.carry = 1;
+
+    expected_state->pc = 2;
+    expected_state->a = 0xff;
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.sign = 1;
+    expected_state->conditions.carry = 1;
+    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.parity = 1;
+
+    emulate8080(state);
+
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
+}
+
 int main(int argc, char *argv[])
 {
     // Set up a states to test with
@@ -928,7 +949,7 @@ int main(int argc, char *argv[])
     case SBB_L: result = test_SBB_L(state, expected_state); break;
     case SBB_M: result = test_SBB_M(state, expected_state); break;
     case SBI: result = test_SBI(state, expected_state); break;
-    // case SUI: result = test_SUI(state, expected_state); break;
+    case SUI: result = test_SUI(state, expected_state); break;
     case 0xFFFF: result = test_subtract_helper(state, expected_state); break;
     default: result = FAIL; // Test failed due to incorrect test parameter
     }

@@ -1450,11 +1450,11 @@ void emulate8080(State *state)
         wait_cycles(11); // per Intel 8080 Programmers Manual
         break;
     }
-    case 0xd6: // SUI D8   Z, S, P, CY, AC A <- A - byte
+    case 0xd6: // SUI D8; code[1];  Z, S, P, CY, AC A <- A - byte
     {
-        uint8_t immediate = state->memory[state->pc + 1];
         state->pc += 2;
-        subtract_8b(state, state->a, immediate);
+        uint8_t immediate = code[1];
+        state->a = subtract_8b(state, state->a, immediate);
         wait_cycles(7);
         break;
     }
@@ -1502,7 +1502,7 @@ void emulate8080(State *state)
         break;
     }
 //    case 0xdd: printf("-"); break;
-    case 0xde: // SBI D8   Z, S, P, CY, AC	A <- A - byte - CY
+    case 0xde: // SBI D8; code[1];   Z, S, P, CY, AC	A <- A - byte - CY
     {
         state->pc += 2;
         uint8_t immediate = code[1];
