@@ -66,6 +66,48 @@ int test_STA(State *state, State *expected_state)
     return PASS;
 }
 
+int test_STAX_B(State *state, State *expected_state)
+{
+    state->memory[0] = STAX_B;
+    state->a = 0x11;
+    state->b = 0x3f;
+    state->c = 0x16;
+    state->memory[0x3f16] = 0xf6;
+
+    expected_state->pc = 1;
+    expected_state->a = 0x11;
+    expected_state->b = 0x3f;
+    expected_state->c = 0x16;
+    expected_state->memory[0x3f16] = 0x11;
+
+    emulate8080(state);
+
+    if (state->memory[0x3f16] != expected_state->memory[0x3f16]) return FAIL;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
+}
+
+int test_STAX_D(State *state, State *expected_state)
+{
+    state->memory[0] = STAX_D;
+    state->a = 0x11;
+    state->d = 0x3f;
+    state->e = 0x16;
+    state->memory[0x3f16] = 0xf6;
+
+    expected_state->pc = 1;
+    expected_state->a = 0x11;
+    expected_state->d = 0x3f;
+    expected_state->e = 0x16;
+    expected_state->memory[0x3f16] = 0x11;
+
+    emulate8080(state);
+
+    if (state->memory[0x3f16] != expected_state->memory[0x3f16]) return FAIL;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
+}
+
 int main(int argc, char *argv[])
 {
     // Set up a states to test with
@@ -79,6 +121,8 @@ int main(int argc, char *argv[])
     case SHLD: result = test_SHLD(state, expected_state); break;
     case SPHL: result = test_SPHL(state, expected_state); break;
     case STA: result = test_STA(state, expected_state); break;
+    case STAX_B: result = test_STAX_B(state, expected_state); break;
+    case STAX_D: result = test_STAX_D(state, expected_state); break;
     default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
