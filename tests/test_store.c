@@ -47,6 +47,25 @@ int test_SPHL(State *state, State *expected_state)
     return PASS;
 }
 
+int test_STA(State *state, State *expected_state)
+{
+    state->memory[0] = STA; // STA 0x05B3
+    state->memory[1] = 0xB3;
+    state->memory[2] = 0x05;
+    state->a = 0x11;
+    state->memory[0x05B3] = 0xf6;
+
+    expected_state->pc = 3;
+    expected_state->a = 0x11;
+    expected_state->memory[0x05B3] = 0x11;
+
+    emulate8080(state);
+
+    if (state->memory[0x05B3] != expected_state->memory[0x05B3]) return FAIL;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
+}
+
 int main(int argc, char *argv[])
 {
     // Set up a states to test with
@@ -59,6 +78,7 @@ int main(int argc, char *argv[])
     {
     case SHLD: result = test_SHLD(state, expected_state); break;
     case SPHL: result = test_SPHL(state, expected_state); break;
+    case STA: result = test_STA(state, expected_state); break;
     default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
