@@ -290,6 +290,8 @@ add_test(NAME test_DAA, COMMAND test_decimal_adjust 0x27)
 # Test NOP
 add_executable(test_nop tests/test_nop.c)
 add_test(NAME test_NOP, COMMAND test_nop 0x00)
+add_test(NAME test_RIM, COMMAND test_nop 0x20)
+add_test(NAME test_SIM, COMMAND test_nop 0x30)
 
 add_executable(test_io_interrupts tests/test_io_interrupts.c)
 add_test(NAME test_EI, COMMAND test_io_interrupts 0xfb)
