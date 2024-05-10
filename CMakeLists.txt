@@ -150,6 +150,7 @@ add_test(NAME test_LXI_B COMMAND test_load 0x01)
 add_test(NAME test_LXI_D COMMAND test_load 0x11)
 add_test(NAME test_LDAX_B COMMAND test_load 0x0a)
 add_test(NAME test_LDAX_D COMMAND test_load 0x1a)
+add_test(NAME test_LDA COMMAND test_load 0x3a)
 
 # Test Add Instructions
 add_executable(test_add tests/test_add.c)
