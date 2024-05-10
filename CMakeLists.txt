@@ -155,6 +155,7 @@ add_test(NAME test_LHLD COMMAND test_load 0x2a)
 
 add_executable(test_store tests/test_store.c)
 add_test(NAME test_SHLD COMMAND test_store 0x22)
+add_test(NAME test_SPHL COMMAND test_store 0xf9)
 
 # Test Add Instructions
 add_executable(test_add tests/test_add.c)

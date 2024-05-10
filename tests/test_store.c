@@ -29,6 +29,24 @@ int test_SHLD(State *state, State *expected_state)
     return PASS;
 }
 
+int test_SPHL(State *state, State *expected_state)
+{
+    state->memory[0] = SPHL;
+    state->h = 0x50;
+    state->l = 0x6c;
+    state->sp = 0xAAAA;
+
+    expected_state->pc = 1;
+    expected_state->h = 0x50;
+    expected_state->l = 0x6c;
+    expected_state->sp = 0x506c;
+
+    emulate8080(state);
+
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
+}
+
 int main(int argc, char *argv[])
 {
     // Set up a states to test with
@@ -40,6 +58,7 @@ int main(int argc, char *argv[])
     switch (strtol(argv[1], NULL, 16))
     {
     case SHLD: result = test_SHLD(state, expected_state); break;
+    case SPHL: result = test_SPHL(state, expected_state); break;
     default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
