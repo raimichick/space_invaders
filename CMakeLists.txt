@@ -183,6 +183,7 @@ add_test(NAME test_ADC_M COMMAND test_add 0x8e)
 add_test(NAME test_ACI COMMAND test_add 0xce)
 add_test(NAME test_DAD_B COMMAND test_add 0x09)
 add_test(NAME test_DAD_D COMMAND test_add 0x19)
+add_test(NAME test_DAD_H COMMAND test_add 0x29)
 add_test(NAME test_DAD_SP COMMAND test_add 0x39)
 
 # Test Subtract Instructions
