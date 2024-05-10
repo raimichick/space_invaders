@@ -224,6 +224,8 @@ add_test(NAME test_SBB_E COMMAND test_subtract 0x9b)
 add_test(NAME test_SBB_H COMMAND test_subtract 0x9c)
 add_test(NAME test_SBB_L COMMAND test_subtract 0x9d)
 add_test(NAME test_SBB_M COMMAND test_subtract 0x9e)
+add_test(NAME test_SBI COMMAND test_subtract 0xde)
+#add_test(NAME test_SUI COMMAND test_subtract 0xd6)
 add_test(NAME test_subtract_helper COMMAND test_subtract 0xFFFF)
 
 # Test Move Immediate Instructions

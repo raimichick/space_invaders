@@ -1504,9 +1504,9 @@ void emulate8080(State *state)
 //    case 0xdd: printf("-"); break;
     case 0xde: // SBI D8   Z, S, P, CY, AC	A <- A - byte - CY
     {
-        uint8_t immediate = state->memory[state->pc + 1];
         state->pc += 2;
-        subtract_8b(state, state->a, immediate + state->conditions.carry);
+        uint8_t immediate = code[1];
+        state->a = subtract_8b(state, state->a, immediate + state->conditions.carry);
         wait_cycles(7);
         break;
     }
