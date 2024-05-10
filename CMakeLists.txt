@@ -153,6 +153,9 @@ add_test(NAME test_LDAX_D COMMAND test_load 0x1a)
 add_test(NAME test_LDA COMMAND test_load 0x3a)
 add_test(NAME test_LHLD COMMAND test_load 0x2a)
 
+add_executable(test_store tests/test_store.c)
+add_test(NAME test_SHLD COMMAND test_store 0x22)
+
 # Test Add Instructions
 add_executable(test_add tests/test_add.c)
 add_test(NAME test_INR_A COMMAND test_add 0x3c)
