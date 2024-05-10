@@ -316,17 +316,20 @@ void emulate8080(State *state)
     case 0x27: // DAA   Z, S, P, CY, AC
     {
     state->pc += opbytes;
+
     uint8_t lower_nib = state->a & 0x0F;
     if (lower_nib > 9 || state->conditions.aux_carry == 1) {
         state->a += 6;
         state->conditions.aux_carry = 1;
     }
     else state->conditions.aux_carry = 0;
+
     uint8_t higher_nib = (state->a >> 4) & 0x0F;
     if (higher_nib > 9 || state->conditions.carry == 1) {
         state->a += 0x60;
         state->conditions.carry = 1;
     }
+
     state->conditions.zero = get_zero_flag(state->a);
     state->conditions.sign = get_sign_flag(state->a);
     state->conditions.parity = get_parity_flag(state->a);

@@ -274,6 +274,9 @@ add_test(NAME test_CMP_A, COMMAND test_compare 0xbf)
 add_executable(test_cmc tests/test_cmc.c)
 add_test(NAME test_CMC, COMMAND test_cmc 0x3f)
 
+add_executable(test_decimal_adjust tests/test_decimal_adjust.c)
+add_test(NAME test_DAA, COMMAND test_decimal_adjust 0x27)
+
 # Test NOP
 add_executable(test_nop tests/test_nop.c)
 add_test(NAME test_NOP, COMMAND test_nop 0x00)
