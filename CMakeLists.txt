@@ -293,6 +293,9 @@ add_test(NAME test_NOP, COMMAND test_nop 0x00)
 add_test(NAME test_RIM, COMMAND test_nop 0x20)
 add_test(NAME test_SIM, COMMAND test_nop 0x30)
 
+add_executable(test_stc tests/test_stc.c)
+add_test(NAME test_STC, COMMAND test_stc 0x37)
+
 add_executable(test_io_interrupts tests/test_io_interrupts.c)
 add_test(NAME test_EI, COMMAND test_io_interrupts 0xfb)
 add_test(NAME test_DI, COMMAND test_io_interrupts 0xf3)
