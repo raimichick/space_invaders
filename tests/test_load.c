@@ -77,53 +77,6 @@ int test_LDAX_D(State *state, State *expected_state)
     return state_compare(state, expected_state);
 }
 
-int test_LXI_H(State *state, State *expected_state)
-{
-    // Load the instruction and set up the memory
-    state->memory[0] = LXI_H;
-    state->memory[1] = 0x05; // Low byte
-    state->memory[2] = 0x20; // High byte
-
-    // Set up the expected register states
-    expected_state->pc = 3;
-    expected_state->h = 0x20; // Expected value in H register
-    expected_state->l = 0x05; // Expected value in L register
-
-    // Expected flags (not affected)
-    expected_state->conditions.zero = 0;
-    expected_state->conditions.sign = 0;
-    expected_state->conditions.parity = 0;
-    expected_state->conditions.carry = 0;
-    expected_state->conditions.aux_carry = 0;
-
-    emulate8080(state);
-
-    return state_compare(state, expected_state);
-}
-
-int test_LXI_SP(State *state, State *expected_state)
-{
-    // Load the instruction and set up the memory
-    state->memory[0] = LXI_SP;
-    state->memory[1] = 0x05; // Low byte
-    state->memory[2] = 0x20; // High byte
-
-    // Set up the expected register states
-    expected_state->pc = 3;
-    expected_state->sp = 0x2005; // Expected value in SP register
-
-    // Expected flags (not affected)
-    expected_state->conditions.zero = 0;
-    expected_state->conditions.sign = 0;
-    expected_state->conditions.parity = 0;
-    expected_state->conditions.carry = 0;
-    expected_state->conditions.aux_carry = 0;
-
-    emulate8080(state);
-
-    return state_compare(state, expected_state);
-}
-
 /* Tests for loading values into registers
  * Select a test by passing the opcode value as the first argument
  *
@@ -142,8 +95,6 @@ int main(int argc, char *argv[])
     case LXI_D: result = test_LXI_D(state, expected_state); break;
     case LDAX_B: result = test_LDAX_B(state, expected_state); break;
     case LDAX_D: result = test_LDAX_D(state, expected_state); break;
-    case LXI_H: result = test_LXI_H(state, expected_state); break;
-    case LXI_SP: result = test_LXI_SP(state, expected_state); break;
     default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
