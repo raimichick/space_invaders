@@ -148,6 +148,8 @@ add_test(NAME rm COMMAND test_return 0xf8)
 add_executable(test_load tests/test_load.c)
 add_test(NAME test_LXI_B COMMAND test_load 0x01)
 add_test(NAME test_LXI_D COMMAND test_load 0x11)
+add_test(NAME test_LXI_H COMMAND test_load 0x21)
+add_test(NAME test_LXI_SP COMMAND test_load 0x31)
 add_test(NAME test_LDAX_B COMMAND test_load 0x0a)
 add_test(NAME test_LDAX_D COMMAND test_load 0x1a)
 

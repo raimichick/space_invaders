@@ -34,6 +34,7 @@ int test_MVI_C(State *state, State *expected_state)
     return state_compare(state, expected_state);
 }
 
+
 /* Tests for various add instructions
  * Select a test by passing the opcode value as the first argument
  *
