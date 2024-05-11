@@ -77,10 +77,49 @@ int test_LDAX_D(State *state, State *expected_state)
     return state_compare(state, expected_state);
 }
 
-/* Tests for loading values into registers
- * Select a test by passing the opcode value as the first argument
- *
- */
+int test_LDA(State *state, State *expected_state)
+{
+    state->memory[0] = LDA;
+    state->a = 0;
+    state->memory[1] = 0x34;
+    state->memory[2] = 0x12;
+    state->memory[0x1234] = 0xf6;
+
+    expected_state->pc = 3;
+    expected_state->a = 0xf6;
+    expected_state->memory[0x1234] = 0xf6;
+
+    emulate8080(state);
+
+    if (state->memory[0x1234] != expected_state->memory[0x1234]) return FAIL;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
+}
+
+int test_LHLD(State *state, State *expected_state)
+{
+    state->memory[0] = LHLD;
+    state->l = 0;
+    state->h = 0;
+    state->memory[1] = 0x5b;
+    state->memory[2] = 0x02;
+    state->memory[0x025b] = 0xff;
+    state->memory[0x025c] = 0x03;
+
+    expected_state->pc = 3;
+    expected_state->l = 0xff;
+    expected_state->h = 0x03;
+    expected_state->memory[0x025b] = 0xff;
+    expected_state->memory[0x025c] = 0x03;
+
+    emulate8080(state);
+
+    if (state->memory[0x025b] != expected_state->memory[0x025b]) return FAIL;
+    if (state->memory[0x025c] != expected_state->memory[0x025c]) return FAIL;
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
+}
+
 int main(int argc, char *argv[])
 {
     // Set up a states to test with
@@ -95,6 +134,8 @@ int main(int argc, char *argv[])
     case LXI_D: result = test_LXI_D(state, expected_state); break;
     case LDAX_B: result = test_LDAX_B(state, expected_state); break;
     case LDAX_D: result = test_LDAX_D(state, expected_state); break;
+    case LDA: result = test_LDA(state, expected_state); break;
+    case LHLD: result = test_LHLD(state, expected_state); break;
     default: result = FAIL; // Test failed due to incorrect test parameter
     }
 

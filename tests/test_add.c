@@ -455,6 +455,24 @@ int test_DAD_D(State *state, State *expected_state)
     return state_compare(state, expected_state);
 }
 
+int test_DAD_H(State *state, State *expected_state)
+{
+    // Load the instruction and set up the memory
+    state->memory[0] = DAD_H;
+    state->h = 0x89;
+    state->l = 0xab;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->h = 0x13;
+    expected_state->l = 0x56;
+    expected_state->conditions.carry = 1;
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
 int test_DAD_SP(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
@@ -685,6 +703,7 @@ int main(int argc, char *argv[])
     case ACI: result = test_ACI(state, expected_state); break;
     case DAD_B: result = test_DAD_B(state, expected_state); break;
     case DAD_D: result = test_DAD_D(state, expected_state); break;
+    case DAD_H: result = test_DAD_H(state, expected_state); break;
     case DAD_SP: result = test_DAD_SP(state, expected_state); break;
     case INR_A: result = test_INR_A(state, expected_state); break;
     case INR_B: result = test_INR_B(state, expected_state); break;

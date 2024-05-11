@@ -18,6 +18,22 @@ int test_NOP(State *state, State *expected_state)
     return state_compare(state, expected_state);
 }
 
+int test_RIM(State *state, State *expected_state)
+{
+    state->memory[0] = RIM;
+    expected_state->pc = 1;
+    emulate8080(state);
+    return state_compare(state, expected_state);
+}
+
+int test_SIM(State *state, State *expected_state)
+{
+    state->memory[0] = SIM;
+    expected_state->pc = 1;
+    emulate8080(state);
+    return state_compare(state, expected_state);
+}
+
 int main(int argc, char *argv[])
 {
     // Set up a states to test with
@@ -29,6 +45,8 @@ int main(int argc, char *argv[])
     switch (strtol(argv[1], NULL, 16))
     {
     case NOP: result = test_NOP(state, expected_state); break;
+    case RIM: result = test_RIM(state, expected_state); break;
+    case SIM: result = test_SIM(state, expected_state); break;
     default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
