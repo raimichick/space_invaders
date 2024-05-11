@@ -42,8 +42,7 @@ void emulate8080(State *state)
         state->pc += opbytes;
         uint16_t temp_BC = combine_bytes_to_word(state->b, state->c);
         temp_BC += 1;
-        state->b = temp_BC >> 8;
-        state->c = temp_BC;
+        split_word_to_bytes(temp_BC, &state->b, &state->c);
         wait_cycles(5);
         break;
     }
@@ -286,8 +285,7 @@ void emulate8080(State *state)
     state->pc += opbytes;
     uint16_t temp_LH = combine_bytes_to_word(state->h, state->l);
     temp_LH += 1;
-    state->l = temp_LH & 0xFF;
-    state->h = (temp_LH >> 8) & 0xFF;
+    split_word_to_bytes(temp_LH, &state->h, &state->l);
     wait_cycles(5);
     break;
     }
