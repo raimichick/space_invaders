@@ -220,6 +220,12 @@ add_test(NAME test_subtract_helper COMMAND test_subtract 0xFFFF)
 add_executable(test_move_immediate tests/test_move_immediate.c)
 add_test(NAME test_MVI_B COMMAND test_move_immediate 0x06)
 add_test(NAME test_MVI_C COMMAND test_move_immediate 0x0e)
+add_test(NAME test_MVI_D COMMAND test_move_immediate 0x16)
+add_test(NAME test_MVI_E COMMAND test_move_immediate 0x1e)
+add_test(NAME test_MVI_H COMMAND test_move_immediate 0x26)
+add_test(NAME test_MVI_L COMMAND test_move_immediate 0x2e)
+add_test(NAME test_MVI_M COMMAND test_move_immediate 0x36)
+add_test(NAME test_MVI_A COMMAND test_move_immediate 0x3e)
 
 # Test Rotate Instructions
 add_executable(test_rotate tests/test_rotate.c)
@@ -295,4 +301,3 @@ add_test(NAME test_OUT, COMMAND test_io_interrupts 0xd3)
 #add_executable(test_state tests/test_states.c)
 #add_test(NAME test_state_at_10, COMMAND test_state 10)
 #add_test(NAME test_state_at_25, COMMAND test_state 25)
-
