@@ -152,6 +152,15 @@ add_test(NAME test_LXI_H COMMAND test_load 0x21)
 add_test(NAME test_LXI_SP COMMAND test_load 0x31)
 add_test(NAME test_LDAX_B COMMAND test_load 0x0a)
 add_test(NAME test_LDAX_D COMMAND test_load 0x1a)
+add_test(NAME test_LDA COMMAND test_load 0x3a)
+add_test(NAME test_LHLD COMMAND test_load 0x2a)
+
+add_executable(test_store tests/test_store.c)
+add_test(NAME test_SHLD COMMAND test_store 0x22)
+add_test(NAME test_SPHL COMMAND test_store 0xf9)
+add_test(NAME test_STA COMMAND test_store 0x32)
+add_test(NAME test_STAX_B COMMAND test_store 0x02)
+add_test(NAME test_STAX_D COMMAND test_store 0x12)
 
 # Test Add Instructions
 add_executable(test_add tests/test_add.c)
@@ -187,6 +196,7 @@ add_test(NAME test_ADC_M COMMAND test_add 0x8e)
 add_test(NAME test_ACI COMMAND test_add 0xce)
 add_test(NAME test_DAD_B COMMAND test_add 0x09)
 add_test(NAME test_DAD_D COMMAND test_add 0x19)
+add_test(NAME test_DAD_H COMMAND test_add 0x29)
 add_test(NAME test_DAD_SP COMMAND test_add 0x39)
 
 # Test Subtract Instructions
@@ -219,12 +229,20 @@ add_test(NAME test_SBB_E COMMAND test_subtract 0x9b)
 add_test(NAME test_SBB_H COMMAND test_subtract 0x9c)
 add_test(NAME test_SBB_L COMMAND test_subtract 0x9d)
 add_test(NAME test_SBB_M COMMAND test_subtract 0x9e)
+add_test(NAME test_SBI COMMAND test_subtract 0xde)
+add_test(NAME test_SUI COMMAND test_subtract 0xd6)
 add_test(NAME test_subtract_helper COMMAND test_subtract 0xFFFF)
 
 # Test Move Immediate Instructions
 add_executable(test_move_immediate tests/test_move_immediate.c)
 add_test(NAME test_MVI_B COMMAND test_move_immediate 0x06)
 add_test(NAME test_MVI_C COMMAND test_move_immediate 0x0e)
+add_test(NAME test_MVI_D COMMAND test_move_immediate 0x16)
+add_test(NAME test_MVI_E COMMAND test_move_immediate 0x1e)
+add_test(NAME test_MVI_H COMMAND test_move_immediate 0x26)
+add_test(NAME test_MVI_L COMMAND test_move_immediate 0x2e)
+add_test(NAME test_MVI_M COMMAND test_move_immediate 0x36)
+add_test(NAME test_MVI_A COMMAND test_move_immediate 0x3e)
 
 # Test Rotate Instructions
 add_executable(test_rotate tests/test_rotate.c)
@@ -275,12 +293,21 @@ add_test(NAME test_CMP_L, COMMAND test_compare 0xbd)
 add_test(NAME test_CMP_M, COMMAND test_compare 0xbe)
 add_test(NAME test_CMP_A, COMMAND test_compare 0xbf)
 
-add_executable(test_cmc tests/test_cmc.c)
-add_test(NAME test_CMC, COMMAND test_cmc 0x3f)
+add_executable(test_complement tests/test_complement.c)
+add_test(NAME test_CMC, COMMAND test_complement 0x3f)
+add_test(NAME test_CMA, COMMAND test_complement 0x2f)
+
+add_executable(test_decimal_adjust tests/test_decimal_adjust.c)
+add_test(NAME test_DAA, COMMAND test_decimal_adjust 0x27)
 
 # Test NOP
 add_executable(test_nop tests/test_nop.c)
 add_test(NAME test_NOP, COMMAND test_nop 0x00)
+add_test(NAME test_RIM, COMMAND test_nop 0x20)
+add_test(NAME test_SIM, COMMAND test_nop 0x30)
+
+add_executable(test_stc tests/test_stc.c)
+add_test(NAME test_STC, COMMAND test_stc 0x37)
 
 add_executable(test_io_interrupts tests/test_io_interrupts.c)
 add_test(NAME test_EI, COMMAND test_io_interrupts 0xfb)
@@ -300,4 +327,3 @@ add_test(NAME test_OUT, COMMAND test_io_interrupts 0xd3)
 #add_executable(test_state tests/test_states.c)
 #add_test(NAME test_state_at_10, COMMAND test_state 10)
 #add_test(NAME test_state_at_25, COMMAND test_state 25)
-

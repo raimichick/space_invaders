@@ -236,7 +236,6 @@ void emulate8080(State *state)
         wait_cycles(5);
         break;
     }
-//    case 0x1e: printf("MVI E,D8, $%02x", code[1]); opbytes = 2; break;
     case 0x1e: // MVI E, D8 E <- code[1]
     {
 	opbytes = 2;
@@ -314,17 +313,20 @@ void emulate8080(State *state)
     case 0x27: // DAA   Z, S, P, CY, AC
     {
     state->pc += opbytes;
+
     uint8_t lower_nib = state->a & 0x0F;
     if (lower_nib > 9 || state->conditions.aux_carry == 1) {
         state->a += 6;
         state->conditions.aux_carry = 1;
     }
     else state->conditions.aux_carry = 0;
+
     uint8_t higher_nib = (state->a >> 4) & 0x0F;
     if (higher_nib > 9 || state->conditions.carry == 1) {
         state->a += 0x60;
         state->conditions.carry = 1;
     }
+
     state->conditions.zero = get_zero_flag(state->a);
     state->conditions.sign = get_sign_flag(state->a);
     state->conditions.parity = get_parity_flag(state->a);
@@ -409,7 +411,7 @@ void emulate8080(State *state)
         opbytes = 3;
         state->pc += opbytes;
         uint16_t temp_adr = combine_bytes_to_word(code[2], code[1]);
-	state->a = state->memory[temp_adr];
+	state->memory[temp_adr] = state->a;
         wait_cycles(13);
         break;
     }
@@ -1445,11 +1447,11 @@ void emulate8080(State *state)
         wait_cycles(11); // per Intel 8080 Programmers Manual
         break;
     }
-    case 0xd6: // SUI D8   Z, S, P, CY, AC A <- A - byte
+    case 0xd6: // SUI D8; code[1];  Z, S, P, CY, AC A <- A - byte
     {
-        uint8_t immediate = state->memory[state->pc + 1];
         state->pc += 2;
-        subtract_8b(state, state->a, immediate);
+        uint8_t immediate = code[1];
+        state->a = subtract_8b(state, state->a, immediate);
         wait_cycles(7);
         break;
     }
@@ -1497,11 +1499,11 @@ void emulate8080(State *state)
         break;
     }
 //    case 0xdd: printf("-"); break;
-    case 0xde: // SBI D8   Z, S, P, CY, AC	A <- A - byte - CY
+    case 0xde: // SBI D8; code[1];   Z, S, P, CY, AC	A <- A - byte - CY
     {
-        uint8_t immediate = state->memory[state->pc + 1];
         state->pc += 2;
-        subtract_8b(state, state->a, immediate + state->conditions.carry);
+        uint8_t immediate = code[1];
+        state->a = subtract_8b(state, state->a, immediate + state->conditions.carry);
         wait_cycles(7);
         break;
     }
