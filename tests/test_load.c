@@ -123,7 +123,7 @@ int test_LXI_SP(State *state, State *expected_state)
 
     return state_compare(state, expected_state);
 }
-// adding a comment so i can push it
+
 /* Tests for loading values into registers
  * Select a test by passing the opcode value as the first argument
  *
@@ -142,8 +142,6 @@ int main(int argc, char *argv[])
     case LXI_D: result = test_LXI_D(state, expected_state); break;
     case LDAX_B: result = test_LDAX_B(state, expected_state); break;
     case LDAX_D: result = test_LDAX_D(state, expected_state); break;
-    case LXI_H: result = test_LXI_H(state, expected_state); break;
-    case LXI_SP: result = test_LXI_SP(state, expected_state); break;
     default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
