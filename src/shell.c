@@ -283,13 +283,13 @@ void emulate8080(State *state)
     }
     case 0x23: // INX H  LH <- LH + 1
     {
-        state->pc += opbytes;
-        uint16_t temp_LH = combine_bytes_to_word(state->h, state->l);
-        temp_LH += 1;
-        state->l = temp_LH >> 8;
-        state->h = temp_LH;
-        wait_cycles(5);
-        break;
+    state->pc += opbytes;
+    uint16_t temp_LH = combine_bytes_to_word(state->h, state->l);
+    temp_LH += 1;
+    state->l = temp_LH & 0xFF;
+    state->h = (temp_LH >> 8) & 0xFF;
+    wait_cycles(5);
+    break;
     }
     case 0x24: // INR H     H <- H+1
     {

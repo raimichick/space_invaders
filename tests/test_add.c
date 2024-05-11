@@ -668,22 +668,22 @@ int test_INX_B(State *state, State *expected_state)
     return state_compare(state, expected_state);
 }
 
-//int test_INX_H(State *state, State *expected_state)
-//{
+int test_INX_H(State *state, State *expected_state)
+{
     // Load the instruction and set up the registers
-    //state->memory[0] = INX_H;
-    //state->h = 0x05;
-    //state->l = 0x20;
+    state->memory[0] = INX_H;
+    state->h = 0x05;
+    state->l = 0x20;
 
     // Set up the expected register states
-    //expected_state->pc = 1;
-    //expected_state->h = 0x05;               // H register should remain the same
-    //expected_state->l = 0x21;               // L register should be incremented by 1
+    expected_state->pc = 1;
+    expected_state->h = 0x05;               // H register should remain the same
+    expected_state->l = 0x21;               // L register should be incremented by 1
 
-    //emulate8080(state);
+    emulate8080(state);
 
-    //return state_compare(state, expected_state);
-//}
+    return state_compare(state, expected_state);
+}
 
 int test_INX_SP(State *state, State *expected_state)
 {
@@ -747,7 +747,7 @@ int main(int argc, char *argv[])
     case INR_M: result = test_INR_M(state, expected_state); break;
     case INX_B: result = test_INX_B(state, expected_state); break;
     case INX_D: result = test_INX_D(state, expected_state); break;
-    //case INX_H: result = test_INX_H(state, expected_state); break;
+    case INX_H: result = test_INX_H(state, expected_state); break;
     case INX_SP: result = test_INX_SP(state, expected_state); break;
     default: result = FAIL; // Test failed due to incorrect test parameter
     }
