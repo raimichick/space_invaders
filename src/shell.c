@@ -237,7 +237,6 @@ void emulate8080(State *state)
         wait_cycles(5);
         break;
     }
-//    case 0x1e: printf("MVI E,D8, $%02x", code[1]); opbytes = 2; break;
     case 0x1e: // MVI E, D8 E <- code[1]
     {
 	opbytes = 2;
