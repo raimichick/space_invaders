@@ -651,6 +651,57 @@ int test_INX_D(State *state, State *expected_state)
     return state_compare(state, expected_state);
 }
 
+int test_INX_B(State *state, State *expected_state)
+{
+    // Load the instruction and set up the registers
+    state->memory[0] = INX_B;
+    state->b = 0x05;
+    state->c = 0x20;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->b = 0x05;               // B register should remain the same
+    expected_state->c = 0x21;               // C register should be incremented by 1
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
+//int test_INX_H(State *state, State *expected_state)
+//{
+    // Load the instruction and set up the registers
+    //state->memory[0] = INX_H;
+    //state->h = 0x05;
+    //state->l = 0x20;
+
+    // Set up the expected register states
+    //expected_state->pc = 1;
+    //expected_state->h = 0x05;               // H register should remain the same
+    //expected_state->l = 0x21;               // L register should be incremented by 1
+
+    //emulate8080(state);
+
+    //return state_compare(state, expected_state);
+//}
+
+int test_INX_SP(State *state, State *expected_state)
+{
+    // Load the instruction
+    state->memory[0] = INX_SP;
+
+    // Set up the initial SP value
+    state->sp = 0x1000;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->sp = 0x1001; // Expected SP after incrementing
+
+    emulate8080(state);
+
+    return state_compare(state, expected_state);
+}
+
 /* Tests for various add instructions
  * Select a test by passing the opcode value as the first argument
  *
@@ -694,7 +745,10 @@ int main(int argc, char *argv[])
     case INR_H: result = test_INR_H(state, expected_state); break;
     case INR_L: result = test_INR_L(state, expected_state); break;
     case INR_M: result = test_INR_M(state, expected_state); break;
+    case INX_B: result = test_INX_B(state, expected_state); break;
     case INX_D: result = test_INX_D(state, expected_state); break;
+    //case INX_H: result = test_INX_H(state, expected_state); break;
+    case INX_SP: result = test_INX_SP(state, expected_state); break;
     default: result = FAIL; // Test failed due to incorrect test parameter
     }
 
