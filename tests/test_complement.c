@@ -51,7 +51,7 @@ int test_CMA(State *state, State *expected_state)
     emulate8080(state);
     if (state_compare(state, expected_state) == FAIL) return FAIL;
 
-    // all ones to all zeros.
+    // alternative zeros and ones
     state->pc = 0;
     state->a = 0b10101010;
 
