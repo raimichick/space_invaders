@@ -167,9 +167,9 @@ int test_RP(State *state, State *expected_state)
     state->memory[state->sp - 1] = 0x01;
     state->sp -= 2;
 
-    state->conditions.zero = 1; // block first return operation
+    state->conditions.sign = 1; // block first return operation
     emulate8080(state);
-    state->conditions.zero = 0; // allow second return operation
+    state->conditions.sign = 0; // allow second return operation
     emulate8080(state);
 
     // Set expected state
@@ -189,15 +189,15 @@ int test_RM(State *state, State *expected_state)
     state->memory[state->sp - 1] = 0x01;
     state->sp -= 2;
 
-    state->conditions.zero = 0; // block first return operation
+    state->conditions.sign = 0; // block first return operation
     emulate8080(state);
-    state->conditions.zero = 1; // allow second return operation
+    state->conditions.sign = 1; // allow second return operation
     emulate8080(state);
 
     // Set expected state
     expected_state->pc = 0x0102;
     expected_state->sp = 0x1384;
-    expected_state->conditions.zero = 1;
+    expected_state->conditions.sign = 1;
 
     return state_compare(state, expected_state);
 }

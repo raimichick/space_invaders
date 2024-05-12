@@ -1641,9 +1641,9 @@ void emulate8080(State *state)
         wait_cycles(11); // per Intel 8080 Programmers Manual
         break;
     }
-    case 0xf0:  // RP; return if zero = 0 (positive)
+    case 0xf0:  // RP; return if sign = 0 (positive)
     {
-        if (state->conditions.zero == 0) return_helper(state);
+        if (state->conditions.sign == 0) return_helper(state);
         else state->pc += opbytes;
         break;
     }
@@ -1717,9 +1717,9 @@ void emulate8080(State *state)
         wait_cycles(11); // per Intel 8080 Programmers Manual
         break;
     }
-    case 0xf8:  // RM; return if zero = 1 (negative)
+    case 0xf8:  // RM; return if sign = 1 (negative)
     {
-        if (state->conditions.zero == 1) return_helper(state);
+        if (state->conditions.sign == 1) return_helper(state);
         else state->pc += opbytes;
         break;
     }
