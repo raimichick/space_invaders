@@ -1651,11 +1651,7 @@ void emulate8080(State *state)
     {
         state->pc += opbytes;
         uint8_t sp_val8 = state->memory[state->sp];
-        state->conditions.carry     = (sp_val8 >> 0) & 0x01;
-        state->conditions.parity    = (sp_val8 >> 2) & 0x01;
-        state->conditions.aux_carry = (sp_val8 >> 4) & 0x01;
-        state->conditions.zero      = (sp_val8 >> 6) & 0x01;
-        state->conditions.sign      = (sp_val8 >> 7) & 0x01;
+        set_conditions(state, sp_val8);
         state->a = state->memory[state->sp + 1];
         state->sp += 2;
         wait_cycles(10); // per Intel 8080 Programmers Manual.
@@ -1686,16 +1682,12 @@ void emulate8080(State *state)
     }
     case 0xf5: // PUSH PSW; Push Processor Status Word.
     {
-        // TODO update this to use AF as PSW register now that conditions are in order
         state->pc += opbytes;
         state->memory[state->sp - 1] = state->a;
-        uint8_t c = (state->conditions.carry << 0);
-        uint8_t p = (state->conditions.parity << 2);
-        uint8_t ac = (state->conditions.aux_carry << 4);
-        uint8_t z = (state->conditions.zero << 6);
-        uint8_t s = (state->conditions.sign << 7);
-        uint8_t flags = s | z | ac | p | c;
-        state->memory[state->sp - 2] = flags;
+
+        uint8_t flag_byte = get_conditions_byte(state);
+        state->memory[state->sp - 2] = flag_byte | 0b00000010; // the pad3 position is always 1 in memory.
+
         state->sp -= 2;
         wait_cycles(11); // per Intel 8080 Programmers Manual.
         break;
