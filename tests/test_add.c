@@ -678,8 +678,8 @@ int test_INX_B(State *state, State *expected_state)
 
     // Set up the expected register states
     expected_state->pc = 1;
-    expected_state->b = 0x05;               // B register should remain the same
-    expected_state->c = 0x21;               // C register should be incremented by 1
+    expected_state->b = 0x05; // B register should remain the same
+    expected_state->c = 0x21; // C register should be incremented by 1
 
     emulate8080(state);
 
@@ -695,8 +695,8 @@ int test_INX_H(State *state, State *expected_state)
 
     // Set up the expected register states
     expected_state->pc = 1;
-    expected_state->h = 0x05;               // H register should remain the same
-    expected_state->l = 0x21;               // L register should be incremented by 1
+    expected_state->h = 0x05; // H register should remain the same
+    expected_state->l = 0x21; // L register should be incremented by 1
 
     emulate8080(state);
 
