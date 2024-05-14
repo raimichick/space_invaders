@@ -37,8 +37,7 @@ int test_MOV_REG_to_MEM(State *s, State *es, int8_t opcode)
     emulate8080(s);
 
     // Validate output
-    if (opcode == MOV_ML ||
-        opcode == MOV_MH) // L and H cases will pass a different value
+    if (opcode == MOV_ML || opcode == MOV_MH) // L and H cases will pass a different value
     {
         if (s->memory[0x0101] != 0x01)
         {

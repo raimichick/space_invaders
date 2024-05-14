@@ -1,3 +1,4 @@
+#include "../include/opcodes.h"
 #include "../include/shell.h"
 #include "../include/state.h"
 
@@ -8,7 +9,7 @@ int test_POP_B(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
     // Example from pg 4 of the 8080 Programmers Manual.
-    state->memory[0] = 0xc1; // POP B opcode
+    state->memory[0] = POP_B;
     state->b = 0xff;
     state->c = 0xff;
     state->sp = 0x1508;
@@ -41,7 +42,7 @@ int test_PUSH_B(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
     // Example from pg 4 of the 8080 Programmers Manual.
-    state->memory[0] = 0xc5; // PUSH D opcode
+    state->memory[0] = PUSH_B;
     state->b = 0x6a;
     state->c = 0x30;
     state->sp = 0x13a6;
@@ -74,7 +75,7 @@ int test_POP_D(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
     // Example from pg 4 of the 8080 Programmers Manual.
-    state->memory[0] = 0xd1; // POP D opcode
+    state->memory[0] = POP_D;
     state->d = 0xff;
     state->e = 0xff;
     state->sp = 0x1508;
@@ -107,7 +108,7 @@ int test_PUSH_D(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
     // Example from pg 4 of the 8080 Programmers Manual.
-    state->memory[0] = 0xd5; // PUSH D opcode
+    state->memory[0] = PUSH_D;
     state->d = 0x6a;
     state->e = 0x30;
     state->sp = 0x13a6;
@@ -140,7 +141,7 @@ int test_POP_H(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
     // Example from pg 4 of the 8080 Programmers Manual.
-    state->memory[0] = 0xe1; // POP H opcode
+    state->memory[0] = POP_H;
     state->h = 0xff;
     state->l = 0xff;
     state->sp = 0x1508;
@@ -173,7 +174,7 @@ int test_PUSH_H(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
     // Example from pg 4 of the 8080 Programmers Manual.
-    state->memory[0] = 0xe5; // PUSH H opcode
+    state->memory[0] = PUSH_H;
     state->h = 0x6a;
     state->l = 0x30;
     state->sp = 0x13a6;
@@ -206,7 +207,7 @@ int test_POP_PSW(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
     // Example from pg 23 of the 8080 Programmers Manual.
-    state->memory[0] = 0xf1; // POP PSW opcode
+    state->memory[0] = POP_PSW;
     state->a = 0x00;
     state->sp = 0x2c00;
     state->memory[0x2c00] = 0xc3;
@@ -218,10 +219,14 @@ int test_POP_PSW(State *state, State *expected_state)
     expected_state->sp = 0x2c02;
     expected_state->memory[0x2c00] = 0xc3;
     expected_state->memory[0x2c01] = 0xff;
+    // below is equivalent to 0xc3
     expected_state->conditions.sign = 1;
     expected_state->conditions.zero = 1;
+    expected_state->conditions.pad5 = 0; // always 0, per manual
     expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.pad3 = 0; // always 0, per manual
     expected_state->conditions.parity = 0;
+    expected_state->conditions.pad1 = 1; // always 1, per manual
     expected_state->conditions.carry = 1;
 
     emulate8080(state);
@@ -236,32 +241,36 @@ int test_PUSH_PSW(State *state, State *expected_state)
 {
     // Load the instruction and set up the memory
     // Example from pg 23 of the 8080 Programmers Manual.
-    state->memory[0] = 0xf5; // PUSH PSW opcode
+    state->memory[0] = PUSH_PSW;
     state->memory[0x5028] = 0x00;
     state->memory[0x5029] = 0x00;
     state->a = 0x1f;
     state->sp = 0x502a;
-    state->conditions.carry = 1;
-    state->conditions.zero = 1;
-    state->conditions.parity = 1;
     state->conditions.sign = 0;
+    state->conditions.zero = 1;
+    state->conditions.pad5 = 0;
     state->conditions.aux_carry = 0;
+    state->conditions.pad3 = 0;
+    state->conditions.parity = 1;
+    state->conditions.pad1 = 0;
+    state->conditions.carry = 1;
 
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->a = 0x1f;
     expected_state->sp = 0x5028;
-    expected_state->memory[0x5028] =
-        0x45; // with cur struct layout and implementation, the pad bits are set
-              // to zero so the correct hex is 45.
+    expected_state->memory[0x5028] = 0x47; // pad1 is set to 1 in memory on PUSH PSW.
     expected_state->memory[0x5029] = 0x1f;
-    // expected_state->memory[0x5028] = 0x47; // equivalent to the flag
-    // settings, tho makes assumptions about the pad bits
-    expected_state->conditions.carry = 1;
-    expected_state->conditions.zero = 1;
-    expected_state->conditions.parity = 1;
+    expected_state->memory[0x5028] = 0x47; // equivalent to the flag's below but with pad1 = 1.
+
     expected_state->conditions.sign = 0;
+    expected_state->conditions.zero = 1;
+    expected_state->conditions.pad5 = 0; // always 0, per manual
     expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.pad3 = 0; // always 0, per manual
+    expected_state->conditions.parity = 1;
+    expected_state->conditions.pad1 = 0; // set as 1 in memory, but not updated in the flag.
+    expected_state->conditions.carry = 1;
 
     emulate8080(state);
     if (state_compare(state, expected_state) == FAIL) return FAIL;
@@ -282,14 +291,14 @@ int main(int argc, char *argv[])
     // clang-format off
     switch (strtol(argv[1], NULL, 16))
     {
-        case 0xc1: result = test_POP_B(state, expected_state); break;
-        case 0xc5: result = test_PUSH_B(state, expected_state); break;
-        case 0xd1: result = test_POP_D(state, expected_state); break;
-        case 0xd5: result = test_PUSH_D(state, expected_state); break;
-        case 0xe1: result = test_POP_H(state, expected_state); break;
-        case 0xe5: result = test_PUSH_H(state, expected_state); break;
-        case 0xf1: result = test_POP_PSW(state, expected_state); break;
-        case 0xf5: result = test_PUSH_PSW(state, expected_state); break;
+        case POP_B: result = test_POP_B(state, expected_state); break;
+        case PUSH_B: result = test_PUSH_B(state, expected_state); break;
+        case POP_D: result = test_POP_D(state, expected_state); break;
+        case PUSH_D: result = test_PUSH_D(state, expected_state); break;
+        case POP_H: result = test_POP_H(state, expected_state); break;
+        case PUSH_H: result = test_PUSH_H(state, expected_state); break;
+        case POP_PSW: result = test_POP_PSW(state, expected_state); break;
+        case PUSH_PSW: result = test_PUSH_PSW(state, expected_state); break;
         default: result = FAIL; // Test failed due to incorrect test parameter
     }
     // clang-format on
