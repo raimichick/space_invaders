@@ -7,17 +7,15 @@
 
 /* VARIABLES */
 static SDL_AudioDeviceID _audioDeviceId = 0;
-static Uint8 *_audioBuffer = NULL;
-static Uint32 _audioLength = 0;
+static SDL_AudioSpec _audioSpec;
+static SoundSample _samples[10];
 
-SoundSample load_sample(char path[], int channels, int freq, int length_ms, SDL_AudioFormat format)
+SoundSample load_sample(char path[], int length_ms)
 {
     SoundSample sample;
-    sample.path = path;
-    sample.channels = channels;
-    sample.frequency = freq;
     sample.length_ms = length_ms;
-    sample.format = format;
+
+    SDL_LoadWAV(path, &_audioSpec, &sample.buffer, &sample.len_buffer);
 
     return sample;
 }
@@ -33,57 +31,121 @@ int initialize_sdl()
     return 0;
 }
 
-int initialize_audio(SoundSample *sample)
+int initialize_audio()
 {
-    SDL_AudioSpec audioSpec;
 
-    audioSpec.channels = sample->channels;
-    audioSpec.freq = sample->frequency;
-    audioSpec.format = sample->format;
-    audioSpec.callback = audio_callback;
+    _audioSpec.channels = 1;
+    _audioSpec.freq = 44100;
+    _audioSpec.format = AUDIO_S16;
 
-    _audioDeviceId = SDL_OpenAudioDevice(NULL, 0, &audioSpec, NULL, 0);
-    if (_audioDeviceId == INVALID_AUDIO_DEVICE)
+    _samples[0] = load_sample("../assets/0_spaceship.wav", 171);
+    _samples[1] = load_sample("../assets/1_shoot.wav", 347);
+    _samples[2] = load_sample("../assets/2_base_hit.wav", 1327);
+    _samples[3] = load_sample("../assets/3_invader_hit.wav", 459);
+    _samples[4] = load_sample("../assets/4_walk1.wav", 73);
+    _samples[5] = load_sample("../assets/5_walk2.wav", 66);
+    _samples[6] = load_sample("../assets/6_walk3.wav", 69);
+    _samples[7] = load_sample("../assets/7_walk4.wav", 74);
+    _samples[8] = load_sample("../assets/8_spaceship_hit.wav", 2208);
+    _samples[9] = load_sample("../assets/9_extra_life.wav", 1896);
+
+    _audioDeviceId = SDL_OpenAudioDevice(NULL, 0, &_audioSpec, NULL, 0);
+    if (_audioDeviceId == 0)
     {
-        return -2; /* Could not open Device */
-    }
-
-    if (SDL_LoadWAV(sample->path, &audioSpec, &_audioBuffer, &_audioLength) == NULL)
-    {
-        return -3; /* File Not Found */
+        fprintf(stderr, "Error: Failed to initialize Audio Device");
+        return 1; /* Could not open Device */
     }
 
     return 0;
 }
 
-void play_audio(int length_ms)
+void play_audio(int i)
 {
-    SDL_PauseAudioDevice(_audioDeviceId, PLAY_AUDIO);
-    SDL_Delay(length_ms);
-    SDL_PauseAudioDevice(_audioDeviceId, STOP_AUDIO);
+    SDL_QueueAudio(_audioDeviceId, _samples[i].buffer, _samples[i].len_buffer);
+    SDL_PauseAudioDevice(_audioDeviceId, 0);
+    SDL_Delay(_samples[i].length_ms);
+    SDL_PauseAudioDevice(_audioDeviceId, 1);
 }
 
-void audio_callback(void *userData, Uint8 *stream, int length)
+void emulateSound(State *state)
 {
-    if (_audioLength == 0)
+    // Sound 0 - Spaceship
+    if ((state->ports[3] & 0b00000001) != 0)
     {
-        return;
-    }
-    if (length > (int)_audioLength)
-    {
-        length = _audioLength;
+        state->ports[3] = state->ports[3] & 0b11111110;
+        play_audio(0);
     }
 
-    memset(stream, 0, length); /* Silence everything */
-    SDL_MixAudioFormat(stream, _audioBuffer, SDL_AUDIO_FORMAT, length, SDL_MIX_MAXVOLUME);
+    // Sound 1 - Shoot
+    if ((state->ports[3] & 0b00000010) != 0)
+    {
+        state->ports[3] = state->ports[3] & 0b11111101;
+        play_audio(1);
+    }
 
-    _audioBuffer += length;
-    _audioLength -= length;
+    // Sound 2 - Base Hit
+    if ((state->ports[3] & 0b00000100) != 0)
+    {
+        state->ports[3] = state->ports[3] & 0b11111011;
+        play_audio(2);
+    }
+
+    // Sound 3 - Invader Hit
+    if ((state->ports[3] & 0b00001000) != 0)
+    {
+        state->ports[3] = state->ports[3] & 0b11110111;
+        play_audio(3);
+    }
+
+    // Sound 4 - Walk 1
+    if ((state->ports[5] & 0b00000001) != 0)
+    {
+        state->ports[5] = state->ports[5] & 0b11111110;
+        play_audio(4);
+    }
+
+    // Sound 5 - Walk 2
+    if ((state->ports[5] & 0b00000010) != 0)
+    {
+        state->ports[5] = state->ports[5] & 0b11111101;
+        play_audio(5);
+    }
+
+    // Sound 6 - Walk 3
+    if ((state->ports[5] & 0b00000100) != 0)
+    {
+        state->ports[5] = state->ports[5] & 0b11111011;
+        play_audio(6);
+    }
+
+    // Sound 7 - Walk 4
+    if ((state->ports[5] & 0b00001000) != 0)
+    {
+        state->ports[5] = state->ports[3] & 0b11110111;
+        play_audio(7);
+    }
+
+    // Sound 8 - Spaceship Hit
+    if ((state->ports[5] & 0b00010000) != 0)
+    {
+        state->ports[5] = state->ports[5] & 0b11101111;
+        play_audio(8);
+    }
+
+    // Sound 9 - Extra Life
+    if ((state->ports[3] & 0b00010000) != 0)
+    {
+        state->ports[3] = state->ports[3] & 0b11101111;
+        play_audio(9);
+    }
 }
 
 void clean_up()
 {
     SDL_CloseAudioDevice(_audioDeviceId);
-    SDL_FreeWAV(_audioBuffer);
+    for (int i = 0; i < 10; i++)
+    {
+        SDL_FreeWAV(_samples[i].buffer);
+    }
     SDL_Quit();
 }
