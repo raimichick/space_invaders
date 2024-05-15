@@ -1,7 +1,7 @@
 #include "../include/sound.h"
 #include "../src/sound.c"
 
-int main()
+int main(int argc, char *argv[])
 {
     int errorCode = initialize_sdl();
     if (errorCode)

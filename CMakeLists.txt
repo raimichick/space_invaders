@@ -14,12 +14,10 @@ include_directories(${SDL2_INCLUDE_DIR})
 add_library(8080 src/shell.c src/state.c src/disassemble8080p.c)
 
 # Any executable after this will automatically link the 8080 library
-link_libraries(8080)
+link_libraries(8080 ${SDL2_LIBRARY})
 
 add_executable(space_invaders_8080 src/main.c)
 
-# Link SDL2
-target_link_libraries(space_invaders_8080 ${SDL2_LIBRARY})
 
 enable_testing()
 

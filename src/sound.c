@@ -1,7 +1,9 @@
 #include "../include/sound.h"
 #include "../include/state.h"
 #include "SDL.h"
+#include "SDL_audio.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 

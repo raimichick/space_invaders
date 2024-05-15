@@ -35,11 +35,17 @@ int main(int argc, char *argv[])
                                           SDL_WINDOWPOS_CENTERED, 680, 480, 0);
     SDL_Surface *window_surface = SDL_GetWindowSurface(window);
     SDL_UpdateWindowSurface(window);
-    SDL_Delay(5000);
 
     // Run ROM
+    int endgame = 0;
     while (state->halt != 1 && state->pc < game_size)
     {
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT) endgame = 1;
+        }
+        if (endgame == 1) break;
         emulate8080(state);
     }
 
