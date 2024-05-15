@@ -30,6 +30,13 @@ int main(int argc, char *argv[])
 
     fclose(game_file);
 
+    // Test window
+    SDL_Window *window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_CENTERED,
+                                          SDL_WINDOWPOS_CENTERED, 680, 480, 0);
+    SDL_Surface *window_surface = SDL_GetWindowSurface(window);
+    SDL_UpdateWindowSurface(window);
+    SDL_Delay(5000);
+
     // Run ROM
     while (state->halt != 1 && state->pc < game_size)
     {
