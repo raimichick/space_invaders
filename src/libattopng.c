@@ -1,3 +1,5 @@
+// clang-format off
+// taken from https://github.com/misc0110/libattopng
 #include "../include/libattopng.h"
 #include <stdlib.h>
 #include <string.h>

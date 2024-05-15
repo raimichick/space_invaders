@@ -1,3 +1,5 @@
+// clang-format off
+// taken from https://github.com/misc0110/libattopng
 /**
  * @file libattopng.h
  * @brief A minimal C library to write uncompressed PNG files.
