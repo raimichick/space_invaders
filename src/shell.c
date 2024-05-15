@@ -42,8 +42,7 @@ void emulate8080(State *state)
         state->pc += opbytes;
         uint16_t temp_BC = combine_bytes_to_word(state->b, state->c);
         temp_BC += 1;
-        state->b = temp_BC >> 8;
-        state->c = temp_BC;
+        split_word_to_bytes(temp_BC, &state->b, &state->c);
         wait_cycles(5);
         break;
     }
@@ -237,7 +236,6 @@ void emulate8080(State *state)
         wait_cycles(5);
         break;
     }
-//    case 0x1e: printf("MVI E,D8, $%02x", code[1]); opbytes = 2; break;
     case 0x1e: // MVI E, D8 E <- code[1]
     {
 	opbytes = 2;
@@ -283,13 +281,12 @@ void emulate8080(State *state)
     }
     case 0x23: // INX H  LH <- LH + 1
     {
-        state->pc += opbytes;
-        uint16_t temp_LH = combine_bytes_to_word(state->h, state->l);
-        temp_LH += 1;
-        state->l = temp_LH >> 8;
-        state->h = temp_LH;
-        wait_cycles(5);
-        break;
+    state->pc += opbytes;
+    uint16_t temp_LH = combine_bytes_to_word(state->h, state->l);
+    temp_LH += 1;
+    split_word_to_bytes(temp_LH, &state->h, &state->l);
+    wait_cycles(5);
+    break;
     }
     case 0x24: // INR H     H <- H+1
     {
@@ -316,17 +313,20 @@ void emulate8080(State *state)
     case 0x27: // DAA   Z, S, P, CY, AC
     {
     state->pc += opbytes;
+
     uint8_t lower_nib = state->a & 0x0F;
     if (lower_nib > 9 || state->conditions.aux_carry == 1) {
         state->a += 6;
         state->conditions.aux_carry = 1;
     }
     else state->conditions.aux_carry = 0;
+
     uint8_t higher_nib = (state->a >> 4) & 0x0F;
     if (higher_nib > 9 || state->conditions.carry == 1) {
         state->a += 0x60;
         state->conditions.carry = 1;
     }
+
     state->conditions.zero = get_zero_flag(state->a);
     state->conditions.sign = get_sign_flag(state->a);
     state->conditions.parity = get_parity_flag(state->a);
@@ -411,7 +411,7 @@ void emulate8080(State *state)
         opbytes = 3;
         state->pc += opbytes;
         uint16_t temp_adr = combine_bytes_to_word(code[2], code[1]);
-	state->a = state->memory[temp_adr];
+	state->memory[temp_adr] = state->a;
         wait_cycles(13);
         break;
     }
@@ -1447,11 +1447,11 @@ void emulate8080(State *state)
         wait_cycles(11); // per Intel 8080 Programmers Manual
         break;
     }
-    case 0xd6: // SUI D8   Z, S, P, CY, AC A <- A - byte
+    case 0xd6: // SUI D8; code[1];  Z, S, P, CY, AC A <- A - byte
     {
-        uint8_t immediate = state->memory[state->pc + 1];
         state->pc += 2;
-        subtract_8b(state, state->a, immediate);
+        uint8_t immediate = code[1];
+        state->a = subtract_8b(state, state->a, immediate);
         wait_cycles(7);
         break;
     }
@@ -1499,11 +1499,11 @@ void emulate8080(State *state)
         break;
     }
 //    case 0xdd: printf("-"); break;
-    case 0xde: // SBI D8   Z, S, P, CY, AC	A <- A - byte - CY
+    case 0xde: // SBI D8; code[1];   Z, S, P, CY, AC	A <- A - byte - CY
     {
-        uint8_t immediate = state->memory[state->pc + 1];
         state->pc += 2;
-        subtract_8b(state, state->a, immediate + state->conditions.carry);
+        uint8_t immediate = code[1];
+        state->a = subtract_8b(state, state->a, immediate + state->conditions.carry);
         wait_cycles(7);
         break;
     }
@@ -1641,9 +1641,9 @@ void emulate8080(State *state)
         wait_cycles(11); // per Intel 8080 Programmers Manual
         break;
     }
-    case 0xf0:  // RP; return if zero = 0 (positive)
+    case 0xf0:  // RP; return if sign = 0 (positive)
     {
-        if (state->conditions.zero == 0) return_helper(state);
+        if (state->conditions.sign == 0) return_helper(state);
         else state->pc += opbytes;
         break;
     }
@@ -1651,11 +1651,7 @@ void emulate8080(State *state)
     {
         state->pc += opbytes;
         uint8_t sp_val8 = state->memory[state->sp];
-        state->conditions.carry     = (sp_val8 >> 0) & 0x01;
-        state->conditions.parity    = (sp_val8 >> 2) & 0x01;
-        state->conditions.aux_carry = (sp_val8 >> 4) & 0x01;
-        state->conditions.zero      = (sp_val8 >> 6) & 0x01;
-        state->conditions.sign      = (sp_val8 >> 7) & 0x01;
+        set_conditions(state, sp_val8);
         state->a = state->memory[state->sp + 1];
         state->sp += 2;
         wait_cycles(10); // per Intel 8080 Programmers Manual.
@@ -1686,16 +1682,12 @@ void emulate8080(State *state)
     }
     case 0xf5: // PUSH PSW; Push Processor Status Word.
     {
-        // TODO update this to use AF as PSW register now that conditions are in order
         state->pc += opbytes;
         state->memory[state->sp - 1] = state->a;
-        uint8_t c = (state->conditions.carry << 0);
-        uint8_t p = (state->conditions.parity << 2);
-        uint8_t ac = (state->conditions.aux_carry << 4);
-        uint8_t z = (state->conditions.zero << 6);
-        uint8_t s = (state->conditions.sign << 7);
-        uint8_t flags = s | z | ac | p | c;
-        state->memory[state->sp - 2] = flags;
+
+        uint8_t flag_byte = get_conditions_byte(state);
+        state->memory[state->sp - 2] = flag_byte | 0b00000010; // the pad3 position is always 1 in memory.
+
         state->sp -= 2;
         wait_cycles(11); // per Intel 8080 Programmers Manual.
         break;
@@ -1717,9 +1709,9 @@ void emulate8080(State *state)
         wait_cycles(11); // per Intel 8080 Programmers Manual
         break;
     }
-    case 0xf8:  // RM; return if zero = 1 (negative)
+    case 0xf8:  // RM; return if sign = 1 (negative)
     {
-        if (state->conditions.zero == 1) return_helper(state);
+        if (state->conditions.sign == 1) return_helper(state);
         else state->pc += opbytes;
         break;
     }
@@ -1959,7 +1951,9 @@ uint8_t increment_8b(State *state, uint8_t value_to_increment)
 uint8_t decrement_8b(struct State *state, uint8_t value_to_decrement)
 {
     uint8_t result = value_to_decrement - 1;
-    state->conditions.aux_carry = get_aux_carry_flag_from_sum(value_to_decrement, 0xFF);
+    //state->conditions.aux_carry = get_aux_carry_flag_from_sum(value_to_decrement, 0xFF);
+    uint8_t lo_nibble = value_to_decrement & 0xf;
+    state->conditions.aux_carry = lo_nibble == 0x0;
     state->conditions.zero = get_zero_flag(result);
     state->conditions.sign = get_sign_flag(result);
     state->conditions.parity = get_parity_flag(result);

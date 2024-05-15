@@ -37,8 +37,7 @@ int test_HLT(State *state, State *expected_state)
     expected_state->pc = 0x40;
     expected_state->halt = 1;
 
-    for (size_t i = 0; state->halt == 0 && i < 10; i++)
-        emulate8080(state);
+    for (size_t i = 0; state->halt == 0 && i < 10; i++) emulate8080(state);
 
     return state_compare(state, expected_state);
 }

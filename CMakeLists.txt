@@ -2,17 +2,24 @@ cmake_minimum_required(VERSION 3.28)
 project(space_invaders_8080 C)
 set(CMAKE_C_STANDARD 11)
 
-# Set up SDL2 library
+# SDL2 folder structure and path
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
+set(SDL2_PATH "SDL2-2.30.3\\x86_64-w64-mingw32")
+
+# Include SDL2
 find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS})
+include_directories(${SDL2_INCLUDE_DIR})
 
 # Create a library with all of the 8080 source code
 add_library(8080 src/shell.c src/state.c src/disassemble8080p.c)
 
 # Any executable after this will automatically link the 8080 library
-link_libraries(8080 ${SDL2_LIBRARIES})
+link_libraries(8080)
 
 add_executable(space_invaders_8080 src/main.c)
+
+# Link SDL2
+target_link_libraries(space_invaders_8080 ${SDL2_LIBRARY})
 
 enable_testing()
 
@@ -152,8 +159,19 @@ add_test(NAME rm COMMAND test_return 0xf8)
 add_executable(test_load tests/test_load.c)
 add_test(NAME test_LXI_B COMMAND test_load 0x01)
 add_test(NAME test_LXI_D COMMAND test_load 0x11)
+add_test(NAME test_LXI_H COMMAND test_load 0x21)
+add_test(NAME test_LXI_SP COMMAND test_load 0x31)
 add_test(NAME test_LDAX_B COMMAND test_load 0x0a)
 add_test(NAME test_LDAX_D COMMAND test_load 0x1a)
+add_test(NAME test_LDA COMMAND test_load 0x3a)
+add_test(NAME test_LHLD COMMAND test_load 0x2a)
+
+add_executable(test_store tests/test_store.c)
+add_test(NAME test_SHLD COMMAND test_store 0x22)
+add_test(NAME test_SPHL COMMAND test_store 0xf9)
+add_test(NAME test_STA COMMAND test_store 0x32)
+add_test(NAME test_STAX_B COMMAND test_store 0x02)
+add_test(NAME test_STAX_D COMMAND test_store 0x12)
 
 # Test Add Instructions
 add_executable(test_add tests/test_add.c)
@@ -165,7 +183,10 @@ add_test(NAME test_INR_E COMMAND test_add 0x1c)
 add_test(NAME test_INR_H COMMAND test_add 0x24)
 add_test(NAME test_INR_L COMMAND test_add 0x2c)
 add_test(NAME test_INR_M COMMAND test_add 0x34)
+add_test(NAME test_INX_B COMMAND test_add 0x03)
 add_test(NAME test_INX_D COMMAND test_add 0x13)
+add_test(NAME test_INX_H COMMAND test_add 0x23)
+add_test(NAME test_INX_SP COMMAND test_add 0x33)
 add_test(NAME test_ADD_A COMMAND test_add 0x87)
 add_test(NAME test_ADD_B COMMAND test_add 0x80)
 add_test(NAME test_ADD_C COMMAND test_add 0x81)
@@ -186,6 +207,7 @@ add_test(NAME test_ADC_M COMMAND test_add 0x8e)
 add_test(NAME test_ACI COMMAND test_add 0xce)
 add_test(NAME test_DAD_B COMMAND test_add 0x09)
 add_test(NAME test_DAD_D COMMAND test_add 0x19)
+add_test(NAME test_DAD_H COMMAND test_add 0x29)
 add_test(NAME test_DAD_SP COMMAND test_add 0x39)
 
 # Test Subtract Instructions
@@ -218,12 +240,20 @@ add_test(NAME test_SBB_E COMMAND test_subtract 0x9b)
 add_test(NAME test_SBB_H COMMAND test_subtract 0x9c)
 add_test(NAME test_SBB_L COMMAND test_subtract 0x9d)
 add_test(NAME test_SBB_M COMMAND test_subtract 0x9e)
+add_test(NAME test_SBI COMMAND test_subtract 0xde)
+add_test(NAME test_SUI COMMAND test_subtract 0xd6)
 add_test(NAME test_subtract_helper COMMAND test_subtract 0xFFFF)
 
 # Test Move Immediate Instructions
 add_executable(test_move_immediate tests/test_move_immediate.c)
 add_test(NAME test_MVI_B COMMAND test_move_immediate 0x06)
 add_test(NAME test_MVI_C COMMAND test_move_immediate 0x0e)
+add_test(NAME test_MVI_D COMMAND test_move_immediate 0x16)
+add_test(NAME test_MVI_E COMMAND test_move_immediate 0x1e)
+add_test(NAME test_MVI_H COMMAND test_move_immediate 0x26)
+add_test(NAME test_MVI_L COMMAND test_move_immediate 0x2e)
+add_test(NAME test_MVI_M COMMAND test_move_immediate 0x36)
+add_test(NAME test_MVI_A COMMAND test_move_immediate 0x3e)
 
 # Test Rotate Instructions
 add_executable(test_rotate tests/test_rotate.c)
@@ -274,12 +304,21 @@ add_test(NAME test_CMP_L, COMMAND test_compare 0xbd)
 add_test(NAME test_CMP_M, COMMAND test_compare 0xbe)
 add_test(NAME test_CMP_A, COMMAND test_compare 0xbf)
 
-add_executable(test_cmc tests/test_cmc.c)
-add_test(NAME test_CMC, COMMAND test_cmc 0x3f)
+add_executable(test_complement tests/test_complement.c)
+add_test(NAME test_CMC, COMMAND test_complement 0x3f)
+add_test(NAME test_CMA, COMMAND test_complement 0x2f)
+
+add_executable(test_decimal_adjust tests/test_decimal_adjust.c)
+add_test(NAME test_DAA, COMMAND test_decimal_adjust 0x27)
 
 # Test NOP
 add_executable(test_nop tests/test_nop.c)
 add_test(NAME test_NOP, COMMAND test_nop 0x00)
+add_test(NAME test_RIM, COMMAND test_nop 0x20)
+add_test(NAME test_SIM, COMMAND test_nop 0x30)
+
+add_executable(test_stc tests/test_stc.c)
+add_test(NAME test_STC, COMMAND test_stc 0x37)
 
 add_executable(test_io_interrupts tests/test_io_interrupts.c)
 add_test(NAME test_EI, COMMAND test_io_interrupts 0xfb)
@@ -296,9 +335,21 @@ add_test(NAME test_RST_7, COMMAND test_io_interrupts 0xff)
 add_test(NAME test_IN, COMMAND test_io_interrupts 0xdb)
 add_test(NAME test_OUT, COMMAND test_io_interrupts 0xd3)
 
-#add_executable(test_state tests/test_states.c)
+add_executable(test_diagnostics_asm tests/test_diagnostics_asm.c)
+add_test(NAME diagnostic_asm, COMMAND test_diagnostics_asm)
+
+add_executable(test_state tests/test_states.c)
 #add_test(NAME test_state_at_10, COMMAND test_state 10)
+#add_test(NAME test_state_at_15, COMMAND test_state 15)
 #add_test(NAME test_state_at_25, COMMAND test_state 25)
+#add_test(NAME test_state_at_100, COMMAND test_state 100)
+#add_test(NAME test_state_at_1k, COMMAND test_state 1000)
+#add_test(NAME test_state_at_10k, COMMAND test_state 10000)
+#add_test(NAME test_state_at_25k, COMMAND test_state 25000)
+#add_test(NAME test_state_at_37_5k, COMMAND test_state 37500)
+#add_test(NAME test_state_at_50k, COMMAND test_state 50000)
+#add_test(NAME test_state_at_100k, COMMAND test_state 100000)
+
 
 add_executable(test_sound tests/test_sound.c)
 add_test(NAME test_sound1, COMMAND test_sound)

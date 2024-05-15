@@ -1,12 +1,16 @@
 #include "../include/disassemble8080p.h"
 #include "../include/shell.h"
 #include "../include/state.h"
+#include <SDL.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 
-int main()
+int main(int argc, char *argv[])
 {
+    // Initialize SDL2
+    SDL_Init(SDL_INIT_EVERYTHING);
+
     // Open the game file
     FILE *game_file = fopen("../include/invaders_combined", "rb");
     if (game_file == NULL)
@@ -26,6 +30,13 @@ int main()
 
     fclose(game_file);
 
+    // Test window
+    SDL_Window *window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_CENTERED,
+                                          SDL_WINDOWPOS_CENTERED, 680, 480, 0);
+    SDL_Surface *window_surface = SDL_GetWindowSurface(window);
+    SDL_UpdateWindowSurface(window);
+    SDL_Delay(5000);
+
     // Run ROM
     while (state->halt != 1 && state->pc < game_size)
     {
@@ -33,4 +44,6 @@ int main()
     }
 
     Free8080(state);
+    SDL_Quit(); // Close SDL
+    return 0;
 }

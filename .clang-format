@@ -5,5 +5,15 @@ UseTab: Never
 BreakBeforeBraces: Allman
 AllowShortIfStatementsOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
-AllowShortLoopsOnASingleLine: false
+#AllowShortBlocksOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
 ColumnLimit: 100
+#AlignConsecutiveAssignments: true
+#AlignConsecutiveBitFields: true
+#AlignConsecutiveShortCaseStatements:
+#  Enabled: true
+#  AcrossEmptyLines: false
+#  AcrossComments: true
+#  AlignCaseColons: false
+#AlignConsecutiveDeclarations: true
+#AlignConsecutiveMacros: true

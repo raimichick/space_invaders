@@ -54,7 +54,7 @@ int test_DCR_A(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->a = 0xaa;
-    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.aux_carry = 0;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 1;
     expected_state->conditions.parity = 1;
@@ -74,7 +74,7 @@ int test_DCR_B(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->b = 0x00;
-    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.aux_carry = 0;
     expected_state->conditions.zero = 1;
     expected_state->conditions.sign = 0;
     expected_state->conditions.parity = 1;
@@ -86,7 +86,7 @@ int test_DCR_B(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 2;
     expected_state->b = 0xff;
-    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.aux_carry = 1;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 1;
     expected_state->conditions.parity = 1;
@@ -105,7 +105,7 @@ int test_DCR_C(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->c = 0xfe;
-    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.aux_carry = 0;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 1;
     expected_state->conditions.parity = 0;
@@ -124,7 +124,7 @@ int test_DCR_D(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->d = 0x7f;
-    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.aux_carry = 1;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.parity = 0;
@@ -143,7 +143,7 @@ int test_DCR_E(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->e = 0x61;
-    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.aux_carry = 0;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.parity = 0;
@@ -162,7 +162,7 @@ int test_DCR_H(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->h = 0x98;
-    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.aux_carry = 0;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 1;
     expected_state->conditions.parity = 0;
@@ -181,7 +181,7 @@ int test_DCR_L(State *state, State *expected_state)
     // Set up the expected register states
     expected_state->pc = 1;
     expected_state->l = 0x01;
-    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.aux_carry = 0;
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.parity = 0;
@@ -204,7 +204,30 @@ int test_DCR_M(State *state, State *expected_state)
     expected_state->h = 0x12;
     expected_state->l = 0x34;
     expected_state->memory[0x1234] = 0x55;
-    expected_state->conditions.aux_carry = 1;
+    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.sign = 0;
+    expected_state->conditions.parity = 1;
+
+    emulate8080(state);
+
+    if (state_compare(state, expected_state) == 1) return FAIL;
+    if (state->memory[0x1234] != expected_state->memory[0x1234]) return FAIL;
+
+    // Load the instruction and set up the memory
+    // Example from the book
+    state->memory[0] = DCR_M;
+    state->pc = 0;
+    state->memory[0x3A7C] = 0x40;
+    state->h = 0x3A;
+    state->l = 0x7C;
+
+    // Set up the expected register states
+    expected_state->pc = 1;
+    expected_state->h = 0x3A;
+    expected_state->l = 0x7C;
+    expected_state->memory[0x3A7C] = 0x3F;
+    expected_state->conditions.aux_carry = 1; // flags not shown in book...
     expected_state->conditions.zero = 0;
     expected_state->conditions.sign = 0;
     expected_state->conditions.parity = 1;
@@ -847,10 +870,69 @@ int test_SBB_M(State *state, State *expected_state)
     return PASS;
 }
 
-/* Tests for various subtract instructions
- * Select a test by passing the opcode value as the first argument
- *
- */
+int test_SBI(State *state, State *expected_state)
+{
+    // Test when carry = 0.
+    state->memory[0] = SBI;
+    state->memory[1] = 0x01;
+    state->a = 0x00;
+    state->conditions.carry = 0;
+
+    expected_state->pc = 2;
+    expected_state->a = 0xff;
+
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.sign = 1;
+    expected_state->conditions.carry = 1;
+    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.parity = 1;
+
+    emulate8080(state);
+
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+
+    // Test when carry = 1.
+    state->pc = 0;
+    state->memory[0] = SBI;
+    state->memory[1] = 0x01;
+    state->a = 0x00;
+    state->conditions.carry = 1;
+
+    expected_state->pc = 2;
+    expected_state->a = 0xfe;
+
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.sign = 1;
+    expected_state->conditions.carry = 1;
+    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.parity = 0;
+
+    emulate8080(state);
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
+}
+
+int test_SUI(State *state, State *expected_state)
+{
+    state->memory[0] = SUI;
+    state->memory[1] = 0x01;
+    state->a = 0x00;
+    state->conditions.carry = 1;
+
+    expected_state->pc = 2;
+    expected_state->a = 0xff;
+    expected_state->conditions.zero = 0;
+    expected_state->conditions.sign = 1;
+    expected_state->conditions.carry = 1;
+    expected_state->conditions.aux_carry = 0;
+    expected_state->conditions.parity = 1;
+
+    emulate8080(state);
+
+    if (state_compare(state, expected_state) == FAIL) return FAIL;
+    return PASS;
+}
+
 int main(int argc, char *argv[])
 {
     // Set up a states to test with
@@ -889,6 +971,8 @@ int main(int argc, char *argv[])
     case SBB_H: result = test_SBB_H(state, expected_state); break;
     case SBB_L: result = test_SBB_L(state, expected_state); break;
     case SBB_M: result = test_SBB_M(state, expected_state); break;
+    case SBI: result = test_SBI(state, expected_state); break;
+    case SUI: result = test_SUI(state, expected_state); break;
     case 0xFFFF: result = test_subtract_helper(state, expected_state); break;
     default: result = FAIL; // Test failed due to incorrect test parameter
     }
