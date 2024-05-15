@@ -21,11 +21,11 @@ void spinvaders_vram_matrix_to_png(State *state, int lbl_prefix)
         for (int c = 0; c < COL_COUNT; c++)
         {
             uint16_t data_pos = (r * COL_COUNT) + c;
-            uint8_t  data     = state->memory[0x2400 + data_pos];
+            uint8_t data = state->memory[0x2400 + data_pos];
             for (int bit_num = 0; bit_num < 8; bit_num++)
             {
                 uint8_t data_bit = data & (0x01 << bit_num); // account for little endian
-                data_bit         = (data_bit == 0) ? 0 : 0xff;
+                data_bit = (data_bit == 0) ? 0 : 0xff;
                 libattopng_set_pixel(png, c * 8 + bit_num, r, data_bit);
             }
             // printf("%02x", state->memory[0x2400 + data_pos]);
