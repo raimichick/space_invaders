@@ -1973,12 +1973,12 @@ uint8_t decrement_8b(struct State *state, uint8_t value_to_decrement)
 
 void wait_cycles(float clock_cycles)
 {
-    // TODO: confirm this is working.
+    // TODO: nanosleep fails on windows GH test.
     struct timespec ts;
     const float us = clock_cycles * 0.5; // 1 / 2Mhz = 0.5 microseconds
     ts.tv_sec = 0;
     ts.tv_nsec = us * 1000; // remainder in nanoseconds
-    nanosleep(&ts, NULL);
+    // nanosleep(&ts, NULL);
 }
 
 uint8_t get_sign_flag(uint8_t register_value)
