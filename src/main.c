@@ -1,12 +1,16 @@
 #include "../include/disassemble8080p.h"
 #include "../include/shell.h"
 #include "../include/state.h"
+#include <SDL.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 
-int main()
+int main(int argc, char *argv[])
 {
+    // Initialize SDL2
+    SDL_Init(SDL_INIT_EVERYTHING);
+
     // Open the game file
     FILE *game_file = fopen("../include/invaders_combined", "rb");
     if (game_file == NULL)
@@ -33,4 +37,6 @@ int main()
     }
 
     Free8080(state);
+    SDL_Quit(); // Close SDL
+    return 0;
 }
