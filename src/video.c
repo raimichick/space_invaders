@@ -33,7 +33,7 @@ void spinvaders_vram_matrix_to_png(State *state, int lbl_prefix)
     }
     char base_name[] = "test_space_inv.png";
     char file_name[50];
-    sprintf(file_name, "../%d-%s", lbl_prefix, base_name);
+    sprintf(file_name, "../pngs/%d-%s", lbl_prefix, base_name);
 
     libattopng_save(png, file_name);
     libattopng_destroy(png);
