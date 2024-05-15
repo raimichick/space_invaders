@@ -1,3 +1,5 @@
+/*Week of Mother's Day - researching controls on emuator101, studying the 8080 manual, reading the article on Computer Archaeology*/
+
 #include <SDL2/SDL.h>
 #include <stdio.h>
 
