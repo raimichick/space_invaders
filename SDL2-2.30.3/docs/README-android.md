@@ -67,15 +67,17 @@ utility to generate it.
 Finally, a word of caution: re running androidbuild.sh wipes any changes you may have
 done in the build directory for the app!
 
-
-
 For more complex projects, follow these instructions:
 
-1. Get the source code for SDL and copy the 'android-project' directory located at SDL/android-project to a suitable location. Also make sure to rename it to your project name (In these examples: YOURPROJECT).
+1. Get the source code for SDL and copy the 'android-project' directory located at SDL/android-project to a suitable
+   location. Also make sure to rename it to your project name (In these examples: YOURPROJECT).
 
-   (The 'android-project' directory can basically be seen as a sort of starting point for the android-port of your project. It contains the glue code between the Android Java 'frontend' and the SDL code 'backend'. It also contains some standard behaviour, like how events should be handled, which you will be able to change.)
+   (The 'android-project' directory can basically be seen as a sort of starting point for the android-port of your
+   project. It contains the glue code between the Android Java 'frontend' and the SDL code 'backend'. It also contains
+   some standard behaviour, like how events should be handled, which you will be able to change.)
 
-2. Move or [symlink](https://en.wikipedia.org/wiki/Symbolic_link) the SDL directory into the "YOURPROJECT/app/jni" directory
+2. Move or [symlink](https://en.wikipedia.org/wiki/Symbolic_link) the SDL directory into the "YOURPROJECT/app/jni"
+   directory
 
 (This is needed as the source of SDL has to be compiled by the Android compiler)
 
@@ -85,8 +87,8 @@ For more complex projects, follow these instructions:
 
 4a. If you want to use Android Studio, simply open your 'YOURPROJECT' directory and start building.
 
-4b. If you want to build manually, run './gradlew installDebug' in the project directory. This compiles the .java, creates an .apk with the native code embedded, and installs it on any connected Android device
-
+4b. If you want to build manually, run './gradlew installDebug' in the project directory. This compiles the .java,
+creates an .apk with the native code embedded, and installs it on any connected Android device
 
 If you already have a project that uses CMake, the instructions change somewhat:
 
@@ -101,7 +103,8 @@ If you already have a project that uses CMake, the instructions change somewhat:
 
 If you wish to use Android Studio, you can skip the last step.
 
-4. Run './gradlew installDebug' or './gradlew installRelease' in the project directory. It will build and install your .apk on any
+4. Run './gradlew installDebug' or './gradlew installRelease' in the project directory. It will build and install your
+   .apk on any
    connected Android device
 
 Here's an explanation of the files in the Android project, so you can customize them:
@@ -123,7 +126,6 @@ Here's an explanation of the files in the Android project, so you can customize 
         src/main/res/mipmap-*	- directories holding icons for different phone hardware
         src/main/res/values/strings.xml	- strings used in your application, including the application name
         src/main/java/org/libsdl/app/SDLActivity.java - the Java class handling the initialization and binding to SDL. Be very careful changing this, as the SDL library relies on this implementation. You should instead subclass this for your application.
-
 
 Customizing your application name
 ================================================================================
@@ -172,6 +174,7 @@ them using the standard functions in SDL_rwops.h.
 
 There are also a few Android specific functions that allow you to get other
 useful paths for saving and loading data:
+
 * SDL_AndroidGetInternalStoragePath()
 * SDL_AndroidGetExternalStorageState()
 * SDL_AndroidGetExternalStoragePath()
@@ -210,16 +213,17 @@ a specific message (SDL_RENDER_DEVICE_RESET) and restore your textures
 manually or quit the app.
 
 You should not use the SDL renderer API while the app going in background:
-- SDL_APP_WILLENTERBACKGROUND:
-    after you read this message, GL context gets backed-up and you should not
-    use the SDL renderer API.
 
-    When this event is received, you have to set the render target to NULL, if you're using it.
-    (eg call SDL_SetRenderTarget(renderer, NULL))
+- SDL_APP_WILLENTERBACKGROUND:
+  after you read this message, GL context gets backed-up and you should not
+  use the SDL renderer API.
+
+  When this event is received, you have to set the render target to NULL, if you're using it.
+  (eg call SDL_SetRenderTarget(renderer, NULL))
 
 - SDL_APP_DIDENTERFOREGROUND:
-   GL context is restored, and the SDL renderer API is available (unless you
-   receive SDL_RENDER_DEVICE_RESET).
+  GL context is restored, and the SDL renderer API is available (unless you
+  receive SDL_RENDER_DEVICE_RESET).
 
 Mouse / Touch events
 ================================================================================
@@ -227,6 +231,7 @@ Mouse / Touch events
 In some case, SDL generates synthetic mouse (resp. touch) events for touch
 (resp. mouse) devices.
 To enable/disable this behavior, see SDL_hints.h:
+
 - SDL_HINT_TOUCH_MOUSE_EVENTS
 - SDL_HINT_MOUSE_TOUCH_EVENTS
 
@@ -235,9 +240,9 @@ Misc
 
 For some device, it appears to works better setting explicitly GL attributes
 before creating a window:
-  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
-  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
+SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
+SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
 
 Threads and the Java VM
 ================================================================================
@@ -252,7 +257,6 @@ means and they make calls to SDL functions, make sure that you call
 Android_JNI_SetupThread() before doing anything else otherwise SDL will attach
 your thread automatically anyway (when you make an SDL call), but it'll never
 detach it.
-
 
 If you ever want to use JNI in a native thread (created by "SDL_CreateThread()"),
 it won't be able to find your java class and method because of the java class loader
@@ -273,7 +277,7 @@ folder and adding the following line:
     APP_STL := c++_shared
 
 For more information go here:
-	https://developer.android.com/ndk/guides/cpp-support
+https://developer.android.com/ndk/guides/cpp-support
 
 
 Using the emulator
@@ -328,7 +332,7 @@ You can see the complete command line that ndk-build is using by passing V=1 on 
     ndk-build V=1
 
 If your application crashes in native code, you can use ndk-stack to get a symbolic stack trace:
-	https://developer.android.com/ndk/guides/ndk-stack
+https://developer.android.com/ndk/guides/ndk-stack
 
 If you want to go through the process manually, you can use addr2line to convert the
 addresses in the stack trace to lines in your code.
@@ -365,7 +369,6 @@ If you need to build without optimization turned on, you can create a file calle
 "Application.mk" in the jni directory, with the following line in it:
 
     APP_OPTIM := debug
-
 
 Memory debugging
 ================================================================================
@@ -417,7 +420,6 @@ When you're done instrumenting with valgrind, you can disable the wrapper:
 
     adb shell setprop wrap.org.libsdl.app ""
 
-
 Graphics debugging
 ================================================================================
 
@@ -464,11 +466,11 @@ Ending your application
 Two legitimate ways:
 
 - return from your main() function. Java side will automatically terminate the
-Activity by calling Activity.finish().
+  Activity by calling Activity.finish().
 
 - Android OS can decide to terminate your application by calling onDestroy()
-(see Activity life cycle). Your application will receive a SDL_QUIT event you
-can handle to save things and quit.
+  (see Activity life cycle). Your application will receive a SDL_QUIT event you
+  can handle to save things and quit.
 
 Don't call exit() as it stops the activity badly.
 
@@ -479,5 +481,5 @@ Known issues
 ================================================================================
 
 - The number of buttons reported for each joystick is hardcoded to be 36, which
-is the current maximum number of buttons Android can report.
+  is the current maximum number of buttons Android can report.
 

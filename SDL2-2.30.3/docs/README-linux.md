@@ -35,6 +35,7 @@ Fedora 35, all available features enabled:
     libsamplerate-devel pipewire-jack-audio-connection-kit-devel \
 
 NOTES:
+
 - This includes all the audio targets except arts and esd, because Ubuntu
   (and/or Debian) pulled their packages, but in theory SDL still supports them.
   The sndio audio target is also unavailable on Fedora.
@@ -45,7 +46,6 @@ NOTES:
 - DirectFB isn't included because the configure script (currently) fails to find
   it at all. You can do "sudo apt-get install libdirectfb-dev" and fix the
   configure script to include DirectFB support. Send patches.  :)
-
 
 Joystick does not work
 --------------------------------------------------------------------------------

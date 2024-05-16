@@ -32,7 +32,6 @@ This allows for blocking calls on all the relevant systems (OpenGL ES, filesyste
 hiding the asynchronous nature of the browser behind the scenes...which is not the
 same as making it disappear!
 
-
 ================================================================================
 Running tests
 ================================================================================
@@ -67,6 +66,7 @@ SDL_RWops work transparently with nacl_io. Two functions control the mount point
     int umount(const char *target);
 
     For convenience, SDL will by default mount an httpfs tree at / before calling
+
 the app's main function. Such setting can be overridden by calling:
 
     umount("/");
@@ -98,6 +98,7 @@ And add to manifest.json :
 ================================================================================
 TODO - Known Issues
 ================================================================================
+
 * Testing of all systems with a real application (something other than SDL's tests)
 * Key events don't seem to work properly
 

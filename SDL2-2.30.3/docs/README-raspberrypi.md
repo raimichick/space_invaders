@@ -14,7 +14,6 @@ Features
 * Input (mouse/keyboard/joystick) via EVDEV
 * Hotplugging of input devices via UDEV
 
-
 Raspbian Build Dependencies
 ---------------------------
 
@@ -152,7 +151,6 @@ To configure the locale, which controls which keys are interpreted as letters,
 this determining the CAPS LOCK behavior:
 
     sudo dpkg-reconfigure locales
-
 
 OpenGL problems
 ---------------

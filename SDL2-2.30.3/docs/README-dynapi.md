@@ -76,6 +76,7 @@ is desired, the statically linked version will provide its own jump table,
 and everyone is happy.
 
 So now:
+
 - Developers can statically link SDL, and users can still replace it.
   (We'd still rather you ship a shared library, though!)
 - Developers can ship an SDL with their game, Valve can override it for, say,
@@ -87,7 +88,6 @@ So now:
   to keep abandoned games running on newer platforms.
 - Everyone develops with SDL exactly as they have been doing all along.
   Same headers, same ABI. Just get the latest version to enable this magic.
-
 
 A little more about SDL_InitDynamicAPI():
 

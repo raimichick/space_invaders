@@ -5,7 +5,6 @@ where `X Y Z` are the major version, minor version, and patch level. So
 `2 28 1` means "change the version to 2.28.1". This script does much of the
 mechanical work.
 
-
 ## New feature release
 
 * Update `WhatsNew.txt`

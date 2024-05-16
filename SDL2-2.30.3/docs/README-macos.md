@@ -30,7 +30,6 @@ make
 sudo make install
 ```
 
-
 You can also build SDL as a Universal library (a single binary for both
 64-bit Intel and ARM architectures), by using the build-scripts/clang-fat.sh
 script.
@@ -44,7 +43,7 @@ sudo make install
 ```
 
 This script builds SDL with 10.9 ABI compatibility on 64-bit Intel and 11.0
-ABI compatibility on ARM64 architectures.  For best compatibility you
+ABI compatibility on ARM64 architectures. For best compatibility you
 should compile your application the same way.
 
 Please note that building SDL requires at least Xcode 6 and the 10.9 SDK.
@@ -55,7 +54,6 @@ of SDL 2.24.0.
 To use the library once it's built, you essential have two possibilities:
 use the traditional autoconf/automake/make method, or use Xcode.
 
-
 # Caveats for using SDL with Mac OS X
 
 If you register your own NSApplicationDelegate (using [NSApp setDelegate:]),
@@ -64,7 +62,6 @@ SDL_Quit if it receives a termination request, it will terminate like a
 normal app, and it will not send a SDL_DROPFILE when you request to open a
 file with the app. To solve these issues, put the following code in your
 NSApplicationDelegate implementation:
-
 
 ```objc
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
@@ -166,12 +163,10 @@ there are some more things you should do before shipping your product...
    when you click on the .app, or if you look at the "Get Info" window.
    More information about Info.plist files can be found on Apple's homepage.
 
-
 As a final remark, let me add that I use some of the techniques (and some
 variations of them) in [Exult](https://github.com/exult/exult) and
 [ScummVM](https://github.com/scummvm/scummvm); both are available in source on
 the net, so feel free to take a peek at them for inspiration!
-
 
 # Using the Simple DirectMedia Layer with Xcode
 
@@ -267,7 +262,6 @@ that launched the program was using, or if launched by double-clicking in
 the finger, it will be "/", the _root of the filesystem_. Plan accordingly!
 You can use SDL_GetBasePath() to find where the program is running from and
 chdir() there directly.
-
 
 ## You have a Cocoa App!
 

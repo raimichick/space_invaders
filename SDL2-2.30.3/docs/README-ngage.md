@@ -29,13 +29,13 @@ Acknowledgements
 ----------------
 
 Thanks to Hannu Viitala, Kimmo Kinnunen and Markus Mertama for the
-valuable insight into Symbian programming.  Without the SDL 1.2 port
+valuable insight into Symbian programming. Without the SDL 1.2 port
 which was specially developed for CDoom (Doom for the Nokia 9210), this
 adaptation would not have been possible.
 
 I would like to thank my friends
 [Razvan](https://twitter.com/bewarerazvan) and [Dan
-Whelan](https://danwhelan.ie/), for their continuous support.  Without
+Whelan](https://danwhelan.ie/), for their continuous support. Without
 you and the [N-Gage community](https://discord.gg/dbUzqJ26vs), I would
 have lost my patience long ago.
 

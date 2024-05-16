@@ -10,7 +10,6 @@ Studio solution.
 
 Details are here: https://github.com/libsdl-org/SDL/issues/5186
 
-
 ## OpenGL ES 2.x support
 
 SDL has support for OpenGL ES 2.x under Windows via two alternative

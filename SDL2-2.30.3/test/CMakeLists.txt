@@ -11,125 +11,125 @@ set(SDL_TESTS_NEEDS_RESOURCES)
 
 macro(add_sdl_test_executable TARGET)
     cmake_parse_arguments(AST "NONINTERACTIVE;NEEDS_RESOURCES" "" "" ${ARGN})
-    if(ANDROID)
+    if (ANDROID)
         add_library(${TARGET} SHARED ${AST_UNPARSED_ARGUMENTS})
-    else()
+    else ()
         add_executable(${TARGET} ${AST_UNPARSED_ARGUMENTS})
-    endif()
+    endif ()
 
     list(APPEND SDL_TEST_EXECUTABLES ${TARGET})
-    if(AST_NONINTERACTIVE)
+    if (AST_NONINTERACTIVE)
         list(APPEND SDL_TESTS_NONINTERACTIVE ${TARGET})
-    endif()
-    if(AST_NEEDS_RESOURCES)
+    endif ()
+    if (AST_NEEDS_RESOURCES)
         list(APPEND SDL_TESTS_NEEDS_RESOURCES ${TARGET})
-    endif()
+    endif ()
 
-    if(HAVE_GCC_WDOCUMENTATION)
+    if (HAVE_GCC_WDOCUMENTATION)
         target_compile_options(${TARGET} PRIVATE "-Wdocumentation")
-        if(HAVE_GCC_WERROR_DOCUMENTATION)
+        if (HAVE_GCC_WERROR_DOCUMENTATION)
             target_compile_options(${TARGET} PRIVATE "-Werror=documentation")
-        endif()
-    endif()
+        endif ()
+    endif ()
 
-    if(HAVE_GCC_WDOCUMENTATION_UNKNOWN_COMMAND)
-        if(SDL_WERROR)
-            if(HAVE_GCC_WERROR_DOCUMENTATION_UNKNOWN_COMMAND)
+    if (HAVE_GCC_WDOCUMENTATION_UNKNOWN_COMMAND)
+        if (SDL_WERROR)
+            if (HAVE_GCC_WERROR_DOCUMENTATION_UNKNOWN_COMMAND)
                 target_compile_options(${TARGET} PRIVATE "-Werror=documentation-unknown-command")
-            endif()
-        endif()
+            endif ()
+        endif ()
         target_compile_options(${TARGET} PRIVATE "-Wdocumentation-unknown-command")
-    endif()
+    endif ()
 
-    if(HAVE_GCC_COMMENT_BLOCK_COMMANDS)
+    if (HAVE_GCC_COMMENT_BLOCK_COMMANDS)
         target_compile_options(${TARGET} PRIVATE "-fcomment-block-commands=threadsafety")
         target_compile_options(${TARGET} PRIVATE "-fcomment-block-commands=deprecated")
-    else()
-        if(HAVE_CLANG_COMMENT_BLOCK_COMMANDS)
+    else ()
+        if (HAVE_CLANG_COMMENT_BLOCK_COMMANDS)
             target_compile_options(${TARGET} PRIVATE "/clang:-fcomment-block-commands=threadsafety")
             target_compile_options(${TARGET} PRIVATE "/clang:-fcomment-block-commands=deprecated")
-        endif()
-    endif()
+        endif ()
+    endif ()
 
-    if(USE_GCC OR USE_CLANG)
+    if (USE_GCC OR USE_CLANG)
         check_c_compiler_flag(-fno-fast-math HAVE_GCC_FNO_FAST_MATH)
-        if(HAVE_GCC_FNO_FAST_MATH)
+        if (HAVE_GCC_FNO_FAST_MATH)
             target_compile_options(${TARGET} PRIVATE -fno-fast-math)
-        endif()
-    endif()
+        endif ()
+    endif ()
 endmacro()
 
-if(NOT TARGET SDL2::SDL2-static)
+if (NOT TARGET SDL2::SDL2-static)
     find_package(SDL2 2.0.23 REQUIRED COMPONENTS SDL2-static SDL2test)
-endif()
+endif ()
 
 enable_testing()
 
-if(SDL_INSTALL_TESTS)
+if (SDL_INSTALL_TESTS)
     include(GNUInstallDirs)
-endif()
+endif ()
 
-if(N3DS)
+if (N3DS)
     link_libraries(SDL2::SDL2main)
-endif()
+endif ()
 
-if(PSP)
+if (PSP)
     link_libraries(
-        SDL2::SDL2main
-        SDL2::SDL2test
-        SDL2::SDL2-static
-        GL
-        pspvram
-        pspvfpu
-        pspdisplay
-        pspgu
-        pspge
-        pspaudio
-        pspctrl
-        psphprm
-        psppower
+            SDL2::SDL2main
+            SDL2::SDL2test
+            SDL2::SDL2-static
+            GL
+            pspvram
+            pspvfpu
+            pspdisplay
+            pspgu
+            pspge
+            pspaudio
+            pspctrl
+            psphprm
+            psppower
     )
-elseif(PS2)
+elseif (PS2)
     link_libraries(
-        SDL2main
-        SDL2_test
-        SDL2-static
-        patches
-        gskit
-        dmakit
-        ps2_drivers
+            SDL2main
+            SDL2_test
+            SDL2-static
+            patches
+            gskit
+            dmakit
+            ps2_drivers
     )
-else()
+else ()
     link_libraries(SDL2::SDL2test SDL2::SDL2-static)
-endif()
+endif ()
 
-if(WINDOWS)
+if (WINDOWS)
     # mingw32 must come before SDL2main to link successfully
-    if(MINGW OR CYGWIN)
+    if (MINGW OR CYGWIN)
         link_libraries(mingw32)
-    endif()
+    endif ()
 
     # CET support was added in VS 16.7
-    if(MSVC_VERSION GREATER 1926 AND CMAKE_GENERATOR_PLATFORM MATCHES "Win32|x64")
+    if (MSVC_VERSION GREATER 1926 AND CMAKE_GENERATOR_PLATFORM MATCHES "Win32|x64")
         link_libraries(-CETCOMPAT)
-    endif()
+    endif ()
 
     # FIXME: Parent directory CMakeLists.txt only sets these for mingw/cygwin,
     # but we need them for VS as well.
     link_libraries(SDL2main)
     add_definitions(-Dmain=SDL_main)
-endif()
+endif ()
 
 # CMake incorrectly detects opengl32.lib being present on MSVC ARM64
-if(NOT MSVC OR NOT CMAKE_GENERATOR_PLATFORM STREQUAL "ARM64")
+if (NOT MSVC OR NOT CMAKE_GENERATOR_PLATFORM STREQUAL "ARM64")
     # Prefer GLVND, if present
     set(OpenGL_GL_PREFERENCE GLVND)
     find_package(OpenGL)
-endif()
+endif ()
 
 if (OPENGL_FOUND)
     add_definitions(-DHAVE_OPENGL)
-endif()
+endif ()
 
 add_sdl_test_executable(checkkeys checkkeys.c)
 add_sdl_test_executable(checkkeysthreads checkkeysthreads.c)
@@ -153,9 +153,9 @@ add_sdl_test_executable(testdrawchessboard testdrawchessboard.c)
 add_sdl_test_executable(testdropfile testdropfile.c)
 add_sdl_test_executable(testerror NONINTERACTIVE testerror.c)
 
-if(LINUX)
+if (LINUX)
     add_sdl_test_executable(testevdev NONINTERACTIVE testevdev.c)
-endif()
+endif ()
 
 add_sdl_test_executable(testfile testfile.c)
 add_sdl_test_executable(testgamecontroller NEEDS_RESOURCES testgamecontroller.c testutils.c)
@@ -178,36 +178,36 @@ add_sdl_test_executable(testlocale NONINTERACTIVE testlocale.c)
 add_sdl_test_executable(testlock testlock.c)
 add_sdl_test_executable(testmouse testmouse.c)
 
-if(APPLE)
+if (APPLE)
     add_sdl_test_executable(testnative NEEDS_RESOURCES
-        testnative.c
-        testnativecocoa.m
-        testnativex11.c
-        testutils.c
+            testnative.c
+            testnativecocoa.m
+            testnativex11.c
+            testutils.c
     )
 
     cmake_push_check_state(RESET)
     check_c_compiler_flag(-Wno-error=deprecated-declarations HAVE_WNO_ERROR_DEPRECATED_DECLARATIONS)
     cmake_pop_check_state()
-    if(HAVE_WNO_ERROR_DEPRECATED_DECLARATIONS)
+    if (HAVE_WNO_ERROR_DEPRECATED_DECLARATIONS)
         set_property(SOURCE "testnativecocoa.m" APPEND_STRING PROPERTY COMPILE_FLAGS " -Wno-error=deprecated-declarations")
-    endif()
-elseif(WINDOWS)
+    endif ()
+elseif (WINDOWS)
     add_sdl_test_executable(testnative NEEDS_RESOURCES testnative.c testnativew32.c testutils.c)
-elseif(HAVE_X11)
+elseif (HAVE_X11)
     add_sdl_test_executable(testnative NEEDS_RESOURCES testnative.c testnativex11.c testutils.c)
     target_link_libraries(testnative X11)
-elseif(OS2)
+elseif (OS2)
     add_sdl_test_executable(testnative NEEDS_RESOURCES testnative.c testnativeos2.c testutils.c)
-endif()
+endif ()
 
 add_sdl_test_executable(testoverlay2 NEEDS_RESOURCES testoverlay2.c testyuv_cvt.c testutils.c)
 add_sdl_test_executable(testplatform NONINTERACTIVE testplatform.c)
 add_sdl_test_executable(testpower NONINTERACTIVE testpower.c)
 add_sdl_test_executable(testfilesystem NONINTERACTIVE testfilesystem.c)
-if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+if (WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
     add_sdl_test_executable(testfilesystem_pre NONINTERACTIVE testfilesystem_pre.c)
-endif()
+endif ()
 add_sdl_test_executable(testrendertarget NEEDS_RESOURCES testrendertarget.c testutils.c)
 add_sdl_test_executable(testscale NEEDS_RESOURCES testscale.c testutils.c)
 add_sdl_test_executable(testsem testsem.c)
@@ -237,287 +237,287 @@ add_sdl_test_executable(testoffscreen testoffscreen.c)
 cmake_push_check_state(RESET)
 
 check_c_compiler_flag(-Wformat-overflow HAVE_WFORMAT_OVERFLOW)
-if(HAVE_WFORMAT_OVERFLOW)
+if (HAVE_WFORMAT_OVERFLOW)
     target_compile_definitions(testautomation PRIVATE HAVE_WFORMAT_OVERFLOW)
-endif()
+endif ()
 
 check_c_compiler_flag(-Wformat HAVE_WFORMAT)
-if(HAVE_WFORMAT)
+if (HAVE_WFORMAT)
     target_compile_definitions(testautomation PRIVATE HAVE_WFORMAT)
-endif()
+endif ()
 
 check_c_compiler_flag(-Wformat-extra-args HAVE_WFORMAT_EXTRA_ARGS)
-if(HAVE_WFORMAT_EXTRA_ARGS)
+if (HAVE_WFORMAT_EXTRA_ARGS)
     target_compile_definitions(testautomation PRIVATE HAVE_WFORMAT_EXTRA_ARGS)
-endif()
+endif ()
 
 cmake_pop_check_state()
 
-if(SDL_DUMMYAUDIO)
+if (SDL_DUMMYAUDIO)
     list(APPEND SDL_TESTS_NONINTERACTIVE
-        testaudioinfo
-        testsurround
+            testaudioinfo
+            testsurround
     )
-endif()
+endif ()
 
-if(SDL_DUMMYVIDEO)
+if (SDL_DUMMYVIDEO)
     list(APPEND SDL_TESTS_NONINTERACTIVE
-        testkeys
-        testbounds
-        testdisplayinfo
+            testkeys
+            testbounds
+            testdisplayinfo
     )
-endif()
+endif ()
 
-if(OPENGL_FOUND)
-    if(TARGET OpenGL::GL)
+if (OPENGL_FOUND)
+    if (TARGET OpenGL::GL)
         target_link_libraries(testshader OpenGL::GL)
         target_link_libraries(testgl2 OpenGL::GL)
-    else()
-        if(EMSCRIPTEN AND OPENGL_gl_LIBRARY STREQUAL "nul")
+    else ()
+        if (EMSCRIPTEN AND OPENGL_gl_LIBRARY STREQUAL "nul")
             set(OPENGL_gl_LIBRARY GL)
-        endif()
+        endif ()
         # emscripten's FindOpenGL.cmake does not create OpenGL::GL
         target_link_libraries(testshader ${OPENGL_gl_LIBRARY})
         target_link_libraries(testgl2 ${OPENGL_gl_LIBRARY})
-    endif()
-endif()
-if(EMSCRIPTEN)
+    endif ()
+endif ()
+if (EMSCRIPTEN)
     target_link_libraries(testshader -sLEGACY_GL_EMULATION)
-endif()
+endif ()
 
 file(GLOB RESOURCE_FILES *.bmp *.wav *.hex moose.dat utf8.txt)
 file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-if(PSP)
+if (PSP)
     # Build EBOOT files if building for PSP
     set(BUILD_EBOOT
-        ${SDL_TESTS_NEEDS_RESOURCES}
-        testatomic
-        testaudiocapture
-        testaudioinfo
-        testbounds
-        testdisplayinfo
-        testdraw2
-        testdrawchessboard
-        testerror
-        testfile
-        testfilesystem
-        testgeometry
-        testgl2
-        testhittesting
-        testiconv
-        testintersections
-        testjoystick
-        testlock
-        testmessage
-        testoverlay2
-        testplatform
-        testpower
-        testqsort
-        testsem
-        teststreaming
-        testsurround
-        testthread
-        testtimer
-        testver
-        testviewport
-        testwm2
-        torturethread
+            ${SDL_TESTS_NEEDS_RESOURCES}
+            testatomic
+            testaudiocapture
+            testaudioinfo
+            testbounds
+            testdisplayinfo
+            testdraw2
+            testdrawchessboard
+            testerror
+            testfile
+            testfilesystem
+            testgeometry
+            testgl2
+            testhittesting
+            testiconv
+            testintersections
+            testjoystick
+            testlock
+            testmessage
+            testoverlay2
+            testplatform
+            testpower
+            testqsort
+            testsem
+            teststreaming
+            testsurround
+            testthread
+            testtimer
+            testver
+            testviewport
+            testwm2
+            torturethread
     )
-    foreach(APP IN LISTS BUILD_EBOOT)
+    foreach (APP IN LISTS BUILD_EBOOT)
         create_pbp_file(
-            TARGET          ${APP}
-            TITLE           SDL-${APP}
-            ICON_PATH       NULL
-            BACKGROUND_PATH NULL
-            PREVIEW_PATH    NULL
+                TARGET ${APP}
+                TITLE SDL-${APP}
+                ICON_PATH NULL
+                BACKGROUND_PATH NULL
+                PREVIEW_PATH NULL
         )
         add_custom_command(
-            TARGET ${APP} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory
-            $<TARGET_FILE_DIR:${ARG_TARGET}>/sdl-${APP}
-        )
-        add_custom_command(
-            TARGET ${APP} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E rename
-            $<TARGET_FILE_DIR:${ARG_TARGET}>/EBOOT.PBP
-            $<TARGET_FILE_DIR:${ARG_TARGET}>/sdl-${APP}/EBOOT.PBP
-        )
-        if(${BUILD_PRX})
-            add_custom_command(
                 TARGET ${APP} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy
-                $<TARGET_FILE_DIR:${ARG_TARGET}>/${APP}
-                $<TARGET_FILE_DIR:${ARG_TARGET}>/sdl-${APP}/${APP}
-            )
-            add_custom_command(
+                COMMAND ${CMAKE_COMMAND} -E make_directory
+                $<TARGET_FILE_DIR:${ARG_TARGET}>/sdl-${APP}
+        )
+        add_custom_command(
                 TARGET ${APP} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E rename
-                $<TARGET_FILE_DIR:${ARG_TARGET}>/${APP}.prx
-                $<TARGET_FILE_DIR:${ARG_TARGET}>/sdl-${APP}/${APP}.prx
-            )
-        endif()
-        add_custom_command(
-            TARGET ${APP} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E remove
-            $<TARGET_FILE_DIR:${ARG_TARGET}>/PARAM.SFO
+                $<TARGET_FILE_DIR:${ARG_TARGET}>/EBOOT.PBP
+                $<TARGET_FILE_DIR:${ARG_TARGET}>/sdl-${APP}/EBOOT.PBP
         )
-    endforeach()
-endif()
+        if (${BUILD_PRX})
+            add_custom_command(
+                    TARGET ${APP} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy
+                    $<TARGET_FILE_DIR:${ARG_TARGET}>/${APP}
+                    $<TARGET_FILE_DIR:${ARG_TARGET}>/sdl-${APP}/${APP}
+            )
+            add_custom_command(
+                    TARGET ${APP} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E rename
+                    $<TARGET_FILE_DIR:${ARG_TARGET}>/${APP}.prx
+                    $<TARGET_FILE_DIR:${ARG_TARGET}>/sdl-${APP}/${APP}.prx
+            )
+        endif ()
+        add_custom_command(
+                TARGET ${APP} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E remove
+                $<TARGET_FILE_DIR:${ARG_TARGET}>/PARAM.SFO
+        )
+    endforeach ()
+endif ()
 
-if(N3DS)
+if (N3DS)
     set(ROMFS_DIR "${CMAKE_CURRENT_BINARY_DIR}/romfs")
     file(COPY ${RESOURCE_FILES} DESTINATION "${ROMFS_DIR}")
 
-    foreach(APP IN LISTS SDL_TEST_EXECUTABLES)
+    foreach (APP IN LISTS SDL_TEST_EXECUTABLES)
         get_target_property(TARGET_BINARY_DIR ${APP} BINARY_DIR)
         set(SMDH_FILE "${TARGET_BINARY_DIR}/${APP}.smdh")
         ctr_generate_smdh("${SMDH_FILE}"
-            NAME "SDL-${APP}"
-            DESCRIPTION "SDL2 Test suite"
-            AUTHOR "SDL2 Contributors"
-            ICON "${CMAKE_CURRENT_SOURCE_DIR}/n3ds/logo48x48.png"
+                NAME "SDL-${APP}"
+                DESCRIPTION "SDL2 Test suite"
+                AUTHOR "SDL2 Contributors"
+                ICON "${CMAKE_CURRENT_SOURCE_DIR}/n3ds/logo48x48.png"
         )
         ctr_create_3dsx(
-            ${APP}
-            ROMFS "${ROMFS_DIR}"
-            SMDH "${SMDH_FILE}"
+                ${APP}
+                ROMFS "${ROMFS_DIR}"
+                SMDH "${SMDH_FILE}"
         )
-    endforeach()
-endif()
+    endforeach ()
+endif ()
 
-if(RISCOS)
+if (RISCOS)
     set(SDL_TEST_EXECUTABLES_AIF)
-    foreach(APP IN LISTS SDL_TEST_EXECUTABLES)
+    foreach (APP IN LISTS SDL_TEST_EXECUTABLES)
         target_link_options(${APP} PRIVATE -static)
         add_custom_command(
-            OUTPUT ${APP},ff8
-            COMMAND elf2aif ${APP} ${APP},ff8
-            DEPENDS ${APP}
+                OUTPUT ${APP},ff8
+                COMMAND elf2aif ${APP} ${APP},ff8
+                DEPENDS ${APP}
         )
         add_custom_target(${APP}-aif ALL DEPENDS ${APP},ff8)
         list(APPEND SDL_TEST_EXECUTABLES_AIF ${CMAKE_CURRENT_BINARY_DIR}/${APP},ff8)
-    endforeach()
-endif()
+    endforeach ()
+endif ()
 
-if(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
     set(test_bin_dir "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-    if(NOT IS_ABSOLUTE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+    if (NOT IS_ABSOLUTE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
         set(test_bin_dir "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-    endif()
-else()
+    endif ()
+else ()
     set(test_bin_dir "${CMAKE_CURRENT_BINARY_DIR}")
-endif()
-if(NOT CMAKE_VERSION VERSION_LESS 3.20)
+endif ()
+if (NOT CMAKE_VERSION VERSION_LESS 3.20)
     get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
     set(test_bin_dir "${test_bin_dir}$<$<BOOL:${is_multi_config}>:/$<CONFIG>>")
-endif()
+endif ()
 
 set(RESOURCE_FILES_BINDIR)
-foreach(resource_file IN LISTS RESOURCE_FILES)
+foreach (resource_file IN LISTS RESOURCE_FILES)
     get_filename_component(res_file_name ${resource_file} NAME)
     set(resource_file_bindir "${test_bin_dir}/${res_file_name}")
     add_custom_command(OUTPUT "${resource_file_bindir}"
-        COMMAND "${CMAKE_COMMAND}" -E copy "${resource_file}" "${resource_file_bindir}"
-        DEPENDS "${resource_file}"
+            COMMAND "${CMAKE_COMMAND}" -E copy "${resource_file}" "${resource_file_bindir}"
+            DEPENDS "${resource_file}"
     )
     list(APPEND RESOURCE_FILES_BINDIR "${resource_file_bindir}")
-endforeach()
+endforeach ()
 add_custom_target(copy-sdl-test-resources
-    DEPENDS "${RESOURCE_FILES_BINDIR}"
+        DEPENDS "${RESOURCE_FILES_BINDIR}"
 )
 
-foreach(APP IN LISTS SDL_TESTS_NEEDS_RESOURCES)
-    if(PSP OR PS2)
-        foreach(RESOURCE_FILE ${RESOURCE_FILES})
+foreach (APP IN LISTS SDL_TESTS_NEEDS_RESOURCES)
+    if (PSP OR PS2)
+        foreach (RESOURCE_FILE ${RESOURCE_FILES})
             add_custom_command(TARGET ${APP} POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different ${RESOURCE_FILE} $<TARGET_FILE_DIR:${APP}>/sdl-${APP})
-        endforeach()
-    else()
+        endforeach ()
+    else ()
         add_dependencies(${APP} copy-sdl-test-resources)
-    endif()
-    if(APPLE)
+    endif ()
+    if (APPLE)
         # Make sure resource files get installed into macOS/iOS .app bundles.
         target_sources(${APP} PRIVATE "${RESOURCE_FILES}")
         set_target_properties(${APP} PROPERTIES RESOURCE "${RESOURCE_FILES}")
-    endif()
-endforeach()
+    endif ()
+endforeach ()
 
 # Set Apple App ID / Bundle ID.  This is needed to launch apps on some Apple
 # platforms (iOS, for example).
-if(APPLE)
-    if(${CMAKE_VERSION} VERSION_LESS "3.7.0")
+if (APPLE)
+    if (${CMAKE_VERSION} VERSION_LESS "3.7.0")
         # CMake's 'BUILDSYSTEM_TARGETS' property is only available in
         # CMake 3.7 and above.
         message(WARNING "Unable to set Bundle ID for Apple .app builds due to old CMake (pre 3.7).")
-    else()
+    else ()
         get_property(TARGETS DIRECTORY ${CMAKE_CURRENT_LIST_DIR} PROPERTY BUILDSYSTEM_TARGETS)
-        foreach(CURRENT_TARGET IN LISTS TARGETS)
+        foreach (CURRENT_TARGET IN LISTS TARGETS)
             get_property(TARGET_TYPE TARGET ${CURRENT_TARGET} PROPERTY TYPE)
-            if(TARGET_TYPE STREQUAL "EXECUTABLE")
+            if (TARGET_TYPE STREQUAL "EXECUTABLE")
                 set_target_properties("${CURRENT_TARGET}" PROPERTIES
-                    MACOSX_BUNDLE_GUI_IDENTIFIER "org.libsdl.${CURRENT_TARGET}"
-                    MACOSX_BUNDLE_BUNDLE_VERSION "${SDL_VERSION}"
-                    MACOSX_BUNDLE_SHORT_VERSION_STRING "${SDL_VERSION}"
+                        MACOSX_BUNDLE_GUI_IDENTIFIER "org.libsdl.${CURRENT_TARGET}"
+                        MACOSX_BUNDLE_BUNDLE_VERSION "${SDL_VERSION}"
+                        MACOSX_BUNDLE_SHORT_VERSION_STRING "${SDL_VERSION}"
                 )
-            endif()
-        endforeach()
-    endif()
-endif()
+            endif ()
+        endforeach ()
+    endif ()
+endif ()
 
 set(TESTS_ENVIRONMENT
-    SDL_AUDIODRIVER=dummy
-    SDL_VIDEODRIVER=dummy
+        SDL_AUDIODRIVER=dummy
+        SDL_VIDEODRIVER=dummy
 )
 
-foreach(TESTCASE ${SDL_TESTS_NONINTERACTIVE})
+foreach (TESTCASE ${SDL_TESTS_NONINTERACTIVE})
     add_test(
-        NAME ${TESTCASE}
-        COMMAND ${TESTCASE}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            NAME ${TESTCASE}
+            COMMAND ${TESTCASE}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
     set_tests_properties(${TESTCASE}
-        PROPERTIES
+            PROPERTIES
             ENVIRONMENT "${TESTS_ENVIRONMENT}"
             TIMEOUT 10
     )
-    if(SDL_INSTALL_TESTS)
+    if (SDL_INSTALL_TESTS)
         set(exe ${TESTCASE})
         set(installedtestsdir "${CMAKE_INSTALL_FULL_LIBEXECDIR}/installed-tests/SDL2")
         configure_file(template.test.in "${exe}.test" @ONLY)
         install(
-            FILES "${CMAKE_CURRENT_BINARY_DIR}/${exe}.test"
-            DESTINATION ${CMAKE_INSTALL_DATADIR}/installed-tests/SDL2
+                FILES "${CMAKE_CURRENT_BINARY_DIR}/${exe}.test"
+                DESTINATION ${CMAKE_INSTALL_DATADIR}/installed-tests/SDL2
         )
-    endif()
-endforeach()
+    endif ()
+endforeach ()
 
 set_tests_properties(testautomation PROPERTIES TIMEOUT 120)
 set_tests_properties(testthread PROPERTIES TIMEOUT 40)
 set_tests_properties(testtimer PROPERTIES TIMEOUT 60)
-if(TARGET testfilesystem_pre)
+if (TARGET testfilesystem_pre)
     set_property(TEST testfilesystem_pre PROPERTY TIMEOUT 60)
     set_property(TEST testfilesystem APPEND PROPERTY DEPENDS testfilesystem_pre)
-endif()
+endif ()
 
-if(SDL_INSTALL_TESTS)
-    if(RISCOS)
+if (SDL_INSTALL_TESTS)
+    if (RISCOS)
         install(
-            FILES ${SDL_TEST_EXECUTABLES_AIF}
-            DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/SDL2
+                FILES ${SDL_TEST_EXECUTABLES_AIF}
+                DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/SDL2
         )
-    else()
+    else ()
         install(
-            TARGETS ${SDL_TEST_EXECUTABLES}
-            DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/SDL2
+                TARGETS ${SDL_TEST_EXECUTABLES}
+                DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/SDL2
         )
-    endif()
-    if(MSVC)
-        foreach(test ${SDL_TEST_EXECUTABLES})
+    endif ()
+    if (MSVC)
+        foreach (test ${SDL_TEST_EXECUTABLES})
             SDL_install_pdb(${test} "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/SDL2")
-        endforeach()
-    endif()
+        endforeach ()
+    endif ()
     install(
-        FILES ${RESOURCE_FILES}
-        DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/SDL2
+            FILES ${RESOURCE_FILES}
+            DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/SDL2
     )
-endif()
+endif ()

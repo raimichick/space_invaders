@@ -24,6 +24,7 @@ The CMake build system is supported on the following platforms:
 ## Building SDL
 
 Assuming the source for SDL is located at `~/sdl`
+
 ```sh
 cd ~
 mkdir build
@@ -42,6 +43,7 @@ cmake --install .        # '--install' requires CMake 3.15, or newer
 ## Including SDL in your project
 
 SDL can be included in your project in 2 major ways:
+
 - using a system SDL library, provided by your (*nix) distribution or a package manager
 - using a vendored SDL library: this is SDL copied or symlinked in a subfolder.
 
@@ -79,7 +81,8 @@ target_link_libraries(mygame PRIVATE SDL2::SDL2)
 
 ### A system SDL library
 
-For CMake to find SDL, it must be installed in [a default location CMake is looking for](https://cmake.org/cmake/help/latest/command/find_package.html#config-mode-search-procedure).
+For CMake to find SDL, it must be installed
+in [a default location CMake is looking for](https://cmake.org/cmake/help/latest/command/find_package.html#config-mode-search-procedure).
 
 The following components are available, to be used as an argument of `find_package`.
 
@@ -98,7 +101,7 @@ This only requires a copy of SDL in a subdirectory.
 
 ### iOS/tvOS
 
-CMake 3.14+ natively includes support for iOS and tvOS.  SDL binaries may be built
+CMake 3.14+ natively includes support for iOS and tvOS. SDL binaries may be built
 using Xcode or Make, possibly among other build-systems.
 
 When using a recent version of CMake (3.14+), it should be possible to:
@@ -111,9 +114,8 @@ To use, set the following CMake variables when running CMake's configuration sta
 
 - `CMAKE_SYSTEM_NAME=<OS>`   (either `iOS` or `tvOS`)
 - `CMAKE_OSX_SYSROOT=<SDK>`  (examples: `iphoneos`, `iphonesimulator`, `iphoneos12.4`, `/full/path/to/iPhoneOS.sdk`,
-                              `appletvos`, `appletvsimulator`, `appletvos12.4`, `/full/path/to/AppleTVOS.sdk`, etc.)
+  `appletvos`, `appletvsimulator`, `appletvos12.4`, `/full/path/to/AppleTVOS.sdk`, etc.)
 - `CMAKE_OSX_ARCHITECTURES=<semicolon-separated list of CPU architectures>` (example: "arm64;armv7s;x86_64")
-
 
 #### Examples
 
@@ -158,6 +160,5 @@ To use, set the following CMake variables when running CMake's configuration sta
     ```cmake
     cmake ~/sdl -DCMAKE_SYSTEM_NAME=tvOS -DCMAKE_OSX_SYSROOT=appletvos -DCMAKE_OSX_ARCHITECTURES=arm64`
     ```
-
 
 [^SDL_TARGET_EXCEPTION]: `SDL2::SDL2` can be an ALIAS to a static `SDL2::SDL2-static` target for multiple reasons.

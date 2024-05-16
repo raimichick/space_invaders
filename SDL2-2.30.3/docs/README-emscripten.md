@@ -18,14 +18,12 @@ reasonable base configurations:
 All this to say we're at the point where you don't have to make a lot of
 concessions to get even a fairly complex SDL-based game up and running.
 
-
 ## RTFM
 
 This document is a quick rundown of some high-level details. The
 documentation at [emscripten.org](https://emscripten.org/) is vast
 and extremely detailed for a wide variety of topics, and you should at
 least skim through it at some point.
-
 
 ## Porting your app to Emscripten
 
@@ -113,7 +111,6 @@ There's a lot of little details that are beyond the scope of this
 document, but that's the biggest intial set of hurdles to porting
 your app to the web.
 
-
 ## Do you need threads?
 
 If you plan to use threads, they work on all major browsers now. HOWEVER,
@@ -136,7 +133,6 @@ but is built on pthreads, so it shares the same little incompatibilities
 that are documented there, such as where you can use a mutex, and when
 a thread will start running, etc.
 
-
 IMPORTANT: You have to decide to either build something that uses
 threads or something that doesn't; you can't have one build
 that works everywhere. This is an Emscripten (or maybe WebAssembly?
@@ -150,7 +146,6 @@ or your program will fail to start at all.
 If building with threads, `__EMSCRIPTEN_PTHREADS__` will be defined
 for checking with the C preprocessor, so you can build something
 different depending on what sort of build you're compiling.
-
 
 ## Audio
 
@@ -195,7 +190,6 @@ all to make it happen.
 Please see the discussion at https://github.com/libsdl-org/SDL/issues/6385
 for some Javascript code to steal for this approach.
 
-
 ## Rendering
 
 If you use SDL's 2D render API, it will use GLES2 internally, which
@@ -205,7 +199,6 @@ directly by creating a GL context and drawing into it.
 Calling SDL_RenderPresent (or SDL_GL_SwapWindow) will not actually
 present anything on the screen until your return from your mainloop
 function.
-
 
 ## Building SDL/emscripten
 
@@ -224,12 +217,10 @@ revision control, so often this is much easier for app developers.
 1.2 instead; if you need SDL 1.2, this might be fine, but we generally
 recommend you don't use SDL 1.2 in modern times.
 
-
 If you want to build SDL, though...
 
 SDL currently requires at least Emscripten 3.1.35 to build. Newer versions
 are likely to work, as well.
-
 
 Build:
 
@@ -302,7 +293,6 @@ to more memory. If using pthreads, you'll need the `-sMAXIMUM_MEMORY=1gb`
 or the app will fail to start on iOS browsers, but this might be a bug that
 goes away in the future.
 
-
 ## Data files
 
 Your game probably has data files. Here's how to access them.
@@ -345,7 +335,6 @@ all has to live in memory at runtime.
 [Emscripten's documentation on the matter](https://emscripten.org/docs/porting/files/packaging_files.html)
 gives other options and details, and is worth a read.
 
-
 ## Debugging
 
 Debugging web apps is a mixed bag. You should compile and link with
@@ -363,7 +352,6 @@ and improving all the time.
 SDL_Log() (or even plain old printf) will write to the Javascript console,
 and honestly I find printf-style debugging to be easier than setting up a build
 for proper debugging, so use whatever tools work best for you.
-
 
 ## Questions?
 
