@@ -186,7 +186,6 @@ int main(int argc, char *argv[])
     SDL_Event event;
     while (state->halt != 1 && state->pc < game_size)
     {
-
         handle_interrupts_and_emulate(state, window, surface);
         while (SDL_PollEvent(&event))
         {
@@ -196,6 +195,7 @@ int main(int argc, char *argv[])
     }
 
     Free8080(state);
+    SDL_FreeSurface(surface);
     SDL_DestroyWindow(window);
     SDL_Quit(); // Close SDL
     return 0;
