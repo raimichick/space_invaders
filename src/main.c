@@ -116,11 +116,12 @@ State *load_game_state(const char *file)
 
 void handle_interrupts_and_emulate(State *state, SDL_Window *window, SDL_Surface* surface)
 {
-    // char message[100];
-    // print_rom_section_desc(state->pc, message);
-    // if (strcmp(message, "") != 0)
-    //     SDL_Log("%d: %s\n", emulate_count++, message);
-    state->memory[0x20c1] = 1;
+    char message[100];
+    print_rom_section_desc(state->pc, message);
+    emulate_count++;
+    if (strcmp(message, "") != 0)
+        SDL_Log("%d: %s\n", emulate_count, message);
+    //state->memory[0x20c1] = 1; // turn demo on.
     uint8_t *opcode = &state->memory[state->pc];
     switch (*opcode)
     {
@@ -143,7 +144,6 @@ void handle_interrupts_and_emulate(State *state, SDL_Window *window, SDL_Surface
             emulate8080(state);
             if (time(NULL) - last_interrupt > 1.f / 120.f ) // 1/120 second has elapsed
             {
-                SDL_Log("In Video");
                 if (state->interrupt_enabled)
                 {
                     printf("** Interrupt Called**\n");
@@ -157,6 +157,7 @@ void handle_interrupts_and_emulate(State *state, SDL_Window *window, SDL_Surface
                         generate_interrupt(state, 2); // interrupt 2. from emulators 101.
                         scanline96 = 0;
                         // draw screen here.
+                        SDL_Log("Draw_Screen");
                         spinvaders_vram_matrix_to_surface(state, surface);
                         SDL_UpdateWindowSurface(window);
                     }
