@@ -60,6 +60,7 @@ void spinvaders_vram_matrix_to_surface(State *state, SDL_Surface *surface)
                 // uint8_t pxl = data_bit * 255;
                 // uint8_t pxl = 255;
                 SDL_Rect rect = {col_pxl++, r, 1, 1};
+                // TODO Add conditions for red / green / white filters.
                 SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, pxl, pxl));
             }
             // printf("%02x", state->memory[0x2400 + data_pos]);
