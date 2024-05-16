@@ -23,15 +23,28 @@ void machine_in(State *state, uint8_t port)
     // clang-format off
     switch (port)
     {
-    case 0: { SDL_Log("ERR NEED TO HANDLE IN 0\n"); break; }
+    case 0:
+    {
+        SDL_Log("ERR NEED TO HANDLE IN 0\n");
+        state->a = 0x70;
+      // bit 0 DIP4 (Seems to be self-test-request read at power up)
+      // bit 1 Always 1
+      // bit 2 Always 1
+      // bit 3 Always 1
+      // bit 4 Fire
+      // bit 5 Left
+      // bit 6 Right
+      // bit 7 ? tied to demux port 7 ?
+        break;
+    }
     case 1:
     {
         SDL_Log("ERR NEED TO HANDLE IN 1\n");
-        state->a = 0x00;
+        state->a = 0x08;
         // BIT 0   coin (0 when active)
         // 1   P2 start button
         // 2   P1 start button
-        // 3   ?
+        // 3   ? (// always 1? per archeology).
         // 4   P1 shoot button
         // 5   P1 joystick left
         // 6   P1 joystick right
@@ -41,7 +54,7 @@ void machine_in(State *state, uint8_t port)
 
     case 2: {
         SDL_Log("ERR NEED TO HANDLE IN 2\n");
-        state->a = 0x02;
+        state->a = 0x00;
         // BIT 0,1 dipswitch number of lives (0:3,1:4,2:5,3:6)
         // 2   tilt 'button'
         // 3   dipswitch bonus life at 1:1000,0:1500
@@ -76,13 +89,39 @@ void machine_out(State *state, uint8_t port)
         shift_offset = state->a & 0x7;
         break;
 
-    case 3: { SDL_Log("ERR NEED TO HANDLE OUT 3 SOUND\n"); break; }
+    case 3:
+    {
+        SDL_Log("ERR NEED TO HANDLE OUT 3 SOUND\n");
+        // bit 0=UFO (repeats)        SX0 0.raw
+        // bit 1=Shot                 SX1 1.raw
+        // bit 2=Flash (player die)   SX2 2.raw
+        // bit 3=Invader die          SX3 3.raw
+        // bit 4=Extended play        SX4
+        // bit 5= AMP enable          SX5
+        // bit 6= NC (not wired)
+        // bit 7= NC (not wired)
+        // Port 4: (discrete sounds)
+        // bit 0-7 shift data (LSB on 1st write, MSB on 2nd)
+        break;
+    }
     case 4:
         //SDL_Log("****OUT 4 GOOD***");
         shift0 = shift1;
         shift1 = state->a;
         break;
-    case 5: { SDL_Log("ERR NEED TO HANDLE OUT 5 SOUND\n"); break; }
+    case 5:
+    {
+        SDL_Log("ERR NEED TO HANDLE OUT 5 SOUND\n");
+        // bit 0=Fleet movement 1     SX6 4.raw
+        // bit 1=Fleet movement 2     SX7 5.raw
+        // bit 2=Fleet movement 3     SX8 6.raw
+        // bit 3=Fleet movement 4     SX9 7.raw
+        // bit 4=UFO Hit              SX10 8.raw
+        // bit 5= NC (Cocktail mode control ... to flip screen)
+        // bit 6= NC (not wired)
+        // bit 7= NC (not wired)
+        break;
+    }
     case 6: { SDL_Log("IGNORE: OUT 6 is debug port?. gets written to when writing text to screen\n"); break; }
     case 7: { SDL_Log("ERR NEED TO HANDLE OUT 7\n"); break; }
     default: break;

@@ -193,6 +193,7 @@ void print_rom_section_desc(uint16_t pc, char *message)
     case 0x1ABA:  { strcpy(message, "MessageB1or2"); break; }
     case 0x1ACF:  { strcpy(message, "Message1Only"); break; }
     case 0x1AE4:  { strcpy(message, "MessageScore"); break; }
+    case 0x0082:  { strcpy(message, "Restore registers and out"); break; }
     default: { strcpy(message, ""); }
     }
 }
