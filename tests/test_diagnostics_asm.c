@@ -11,11 +11,15 @@ int emulate_count = 0;
 int main()
 {
     // FILE *game_file = fopen("../include/invaders_combined", "rb");
-    FILE *file = fopen("../include/diagnostics_asm", "rb");
+    FILE *file = fopen("../tests/diagnostics_asm", "rb");
     if (file == NULL)
     {
-        perror("Error: Could not open invaders_combined");
-        exit(1);
+        file = fopen("../diagnostics_asm", "rb");
+        if (file == NULL)
+        {
+            perror("Error: Could not open diagnostics_asm");
+            exit(1);
+        }
     }
 
     State *state = Init8080();
@@ -62,21 +66,11 @@ int main()
         emulate_count += 1;
     }
     printf("\n\n\n\n");
-    if (state->halt == 1)
-    {
-        printf("STOPPED DUE TO HALT");
-        return FAIL;
-    }
-    if (state->pc == CPUER)
-    {
-        printf("CPU ERRORED OUT!");
-        return FAIL;
-    }
-    if (state->pc == CPUOK)
-    {
-        printf("CPU IS OK!");
-        return PASS;
-    }
+    int result = FAIL;
+    if (state->halt == 1) { printf("STOPPED DUE TO HALT"); result = FAIL; }
+    if (state->pc == CPUER) { printf("CPU ERRORED OUT!"); result = FAIL; }
+    if (state->pc == CPUOK) { printf("CPU IS OK!"); result = PASS; }
 
     Free8080(state);
+    return result;
 }
