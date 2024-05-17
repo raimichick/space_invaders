@@ -23,6 +23,6 @@ add_executable(space_invaders_8080 src/main.c)
 enable_testing()
 
 add_subdirectory(tests)
-
-add_executable(test_sound tests/test_sound.c)
-add_test(NAME test_sound1, COMMAND test_sound)
+#
+#add_executable(test_sound tests/test_sound.c)
+#add_test(NAME test_sound1, COMMAND test_sound)
