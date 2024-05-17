@@ -222,10 +222,10 @@ int main(int argc, char *argv[])
 
     // Run ROM
     int endgame = 0;
-    SDL_Event event;
     while (state->halt != 1 && state->pc < game_size)
     {
         handle_interrupts_and_emulate(state, window, surface);
+        SDL_Event event;
         while (SDL_PollEvent(&event))
         {
             if (event.type == SDL_QUIT) endgame = 1;
