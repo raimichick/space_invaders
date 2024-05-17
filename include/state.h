@@ -8,7 +8,7 @@
 
 #define MEM_SIZE 0x10000
 
-float cycles_elapsed;
+extern float cycles_elapsed;
 
 typedef struct Conditions
 {
