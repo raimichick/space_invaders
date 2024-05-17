@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.28)
 project(space_invaders_8080 C)
 set(CMAKE_C_STANDARD 11)
 
-# Create a library with all of the 8080 source code
-add_library(8080 ../src/shell.c ../src/state.c ../src/disassemble8080p.c)
-link_libraries(8080)
-
-enable_testing()
+## Create a library with all of the 8080 source code
+#add_library(8080 ../src/shell.c ../src/state.c ../src/disassemble8080p.c)
+#link_libraries(8080)
+#
+#enable_testing()
 
 # MOV REG to REG Tests - create a unique name, use the opcode as the first argument for the executable (COMMAND function_name arg1)
 add_executable(mov_reg_to_reg test_mov_reg_to_reg.c)

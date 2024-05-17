@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 project(space_invaders_8080 C)
 set(CMAKE_C_STANDARD 11)
 
+
 # SDL2 folder structure and path
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 set(SDL2_PATH "SDL2-2.30.3\\x86_64-w64-mingw32")
@@ -20,6 +21,8 @@ add_executable(space_invaders_8080 src/main.c)
 
 
 enable_testing()
+
+add_subdirectory(tests)
 
 add_executable(test_sound tests/test_sound.c)
 add_test(NAME test_sound1, COMMAND test_sound)
