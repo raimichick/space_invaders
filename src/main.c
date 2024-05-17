@@ -4,8 +4,8 @@
 #include "../include/state.h"
 #include "../include/video.h"
 #include "rom_sections.c"
-#include <SDL.h>
 
+#include <SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -85,7 +85,7 @@ void machine_out(State *state, uint8_t port)
     case 0: { SDL_Log("ERR NEED TO HANDLE OUT 0\n"); break; }
     case 1: { SDL_Log("ERR NEED TO HANDLE OUT 1\n"); break; }
     case 2:
-        printf("****OUT 2 GOOD***");
+        SDL_Log("****OUT 2 GOOD***");
         shift_offset = state->a & 0x7;
         break;
 
@@ -161,50 +161,50 @@ void handle_interrupts_and_emulate(State *state, SDL_Window *window, SDL_Surface
     if (strcmp(message, "") != 0)
         SDL_Log("%d: %s\n", emulate_count, message);
     //state->memory[0x20c1] = 1; // turn demo on.
+
     uint8_t *opcode = &state->memory[state->pc];
     switch (*opcode)
     {
-        case IN: // machine specific handling for IN
+    case IN: // machine specific handling for IN
+    {
+        uint8_t port = opcode[1];
+        machine_in(state, port);
+        state->pc += 2;
+        wait_cycles(10);
+        break;
+    }
+    case OUT: // machine specific handling forOUT
+    {
+        uint8_t port = opcode[1];
+        machine_out(state, port);
+        state->pc += 2;
+        wait_cycles(10);
+        break;
+    }
+    default:
+    {
+        emulate8080(state);
+        if (state->interrupt_enabled & time(NULL) - last_interrupt > 1.f / 120.f ) // 1/120 second has elapsed
         {
-            uint8_t port = opcode[1];
-            machine_in(state, port);
-            state->pc += 2;
-            break;
-        }
-        case OUT: // machine specific handling forOUT
-        {
-            uint8_t port = opcode[1];
-            machine_out(state, port);
-            state->pc += 2;
-            break;
-        }
-        default:
-        {
-            emulate8080(state);
-            if (time(NULL) - last_interrupt > 1.f / 120.f ) // 1/120 second has elapsed
+            SDL_Log("** Interrupt Called**\n");
+            if (scanline96 == 0 & scanline224 == 0)
             {
-                if (state->interrupt_enabled)
-                {
-                    printf("** Interrupt Called**\n");
-                    if (scanline96 == 0 & scanline224 == 0)
-                    {
-                        generate_interrupt(state, 1); // interrupt 1.
-                        scanline96 = 1;
-                    }
-                    else
-                    {
-                        generate_interrupt(state, 2); // interrupt 2. from emulators 101.
-                        scanline96 = 0;
-                        // draw screen here.
-                        SDL_Log("Draw_Screen");
-                        spinvaders_vram_matrix_to_surface(state, surface);
-                        SDL_UpdateWindowSurface(window);
-                    }
-                    last_interrupt = time(NULL); // save time.
-                }
+                generate_interrupt(state, 1); // interrupt 1.
+                scanline96 = 1;
             }
-            break;
+            else
+            {
+                generate_interrupt(state, 2); // interrupt 2. from emulators 101.
+                scanline96 = 0;
+                // draw screen here.
+                SDL_Log("Draw_Screen");
+                spinvaders_vram_matrix_to_surface(state, surface);
+                SDL_UpdateWindowSurface(window);
+            }
+            last_interrupt = time(NULL); // save time.
         }
+        break;
+    }
     }
 }
 
