@@ -15,7 +15,6 @@ uint8_t shift1, shift0; // hi byte and lo byte for shift register
 uint8_t shift_offset;   // always & with 0x7. only bits 0, 1, 2 matter as shift_offset can be 0-7.
 time_t last_interrupt = 0;
 int scanline96 = 0;
-int scanline224 = 0;
 int emulate_count = 0;
 float cycles_per_frame = 2000000 * 1.f / 60.f; // 2 million cycles/second * 1/60 seconds/cycle.
 
@@ -188,12 +187,12 @@ void handle_interrupts_and_emulate(State *state, SDL_Window *window, SDL_Surface
         if (state->interrupt_enabled)
         {
 //            SDL_Log("** Interrupt Called**\n");
-            if (scanline96 == 0 & scanline224 == 0 & cycles_elapsed > (cycles_per_frame/2.f))
+            if (scanline96 == 0 && cycles_elapsed > (cycles_per_frame/2.f))
             {
                 generate_interrupt(state, 1); // interrupt 1.
                 scanline96 = 1;
             }
-            if (scanline96 == 1 & scanline224 == 0 & cycles_elapsed > cycles_per_frame)
+            if (scanline96 == 1 && cycles_elapsed > cycles_per_frame)
             {
                 generate_interrupt(state, 2); // interrupt 2. from emulators 101.
                 scanline96 = 0;
