@@ -1979,6 +1979,7 @@ void wait_cycles(float clock_cycles)
     // ts.tv_sec = 0;
     // ts.tv_nsec = us * 1000; // remainder in nanoseconds
     // nanosleep(&ts, NULL);
+    cycles_elapsed += clock_cycles;
 }
 
 uint8_t get_sign_flag(uint8_t register_value)

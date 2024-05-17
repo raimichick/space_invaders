@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 // Code sections are taken from https://computerarcheology.com/Arcade/SpaceInvaders/Code.html
 

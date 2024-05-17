@@ -17,6 +17,7 @@ time_t last_interrupt = 0;
 int scanline96 = 0;
 int scanline224 = 0;
 int emulate_count = 0;
+float cycles_per_frame = 2000000 * 1.f / 60.f; // 2 million cycles/second * 1/60 seconds/cycle.
 
 void machine_in(State *state, uint8_t port)
 {
@@ -25,7 +26,7 @@ void machine_in(State *state, uint8_t port)
     {
     case 0:
     {
-        SDL_Log("ERR NEED TO HANDLE IN 0\n");
+//        SDL_Log("ERR NEED TO HANDLE IN 0\n");
         state->a = 0x70;
       // bit 0 DIP4 (Seems to be self-test-request read at power up)
       // bit 1 Always 1
@@ -39,7 +40,7 @@ void machine_in(State *state, uint8_t port)
     }
     case 1:
     {
-        SDL_Log("ERR NEED TO HANDLE IN 1\n");
+//        SDL_Log("ERR NEED TO HANDLE IN 1\n");
         state->a = 0x08;
         // BIT 0   coin (0 when active)
         // 1   P2 start button
@@ -53,7 +54,7 @@ void machine_in(State *state, uint8_t port)
     }
 
     case 2: {
-        SDL_Log("ERR NEED TO HANDLE IN 2\n");
+//        SDL_Log("ERR NEED TO HANDLE IN 2\n");
         state->a = 0x00;
         // BIT 0,1 dipswitch number of lives (0:3,1:4,2:5,3:6)
         // 2   tilt 'button'
@@ -65,7 +66,7 @@ void machine_in(State *state, uint8_t port)
         break;
     }
     case 3: {
-        SDL_Log("****IN 3 GOOD***");
+//        SDL_Log("****IN 3 GOOD***");
         uint16_t v = (shift1 << 8) | shift0;
         state->a = ((v >> (8 - shift_offset)) & 0xff);
         break;
@@ -85,13 +86,13 @@ void machine_out(State *state, uint8_t port)
     case 0: { SDL_Log("ERR NEED TO HANDLE OUT 0\n"); break; }
     case 1: { SDL_Log("ERR NEED TO HANDLE OUT 1\n"); break; }
     case 2:
-        SDL_Log("****OUT 2 GOOD***");
+//        SDL_Log("****OUT 2 GOOD***");
         shift_offset = state->a & 0x7;
         break;
 
     case 3:
     {
-        SDL_Log("ERR NEED TO HANDLE OUT 3 SOUND\n");
+//        SDL_Log("ERR NEED TO HANDLE OUT 3 SOUND\n");
         // bit 0=UFO (repeats)        SX0 0.raw
         // bit 1=Shot                 SX1 1.raw
         // bit 2=Flash (player die)   SX2 2.raw
@@ -111,7 +112,7 @@ void machine_out(State *state, uint8_t port)
         break;
     case 5:
     {
-        SDL_Log("ERR NEED TO HANDLE OUT 5 SOUND\n");
+//        SDL_Log("ERR NEED TO HANDLE OUT 5 SOUND\n");
         // bit 0=Fleet movement 1     SX6 4.raw
         // bit 1=Fleet movement 2     SX7 5.raw
         // bit 2=Fleet movement 3     SX8 6.raw
@@ -122,8 +123,8 @@ void machine_out(State *state, uint8_t port)
         // bit 7= NC (not wired)
         break;
     }
-    case 6: { SDL_Log("IGNORE: OUT 6 is debug port?. gets written to when writing text to screen\n"); break; }
-    case 7: { SDL_Log("ERR NEED TO HANDLE OUT 7\n"); break; }
+//    case 6: { SDL_Log("IGNORE: OUT 6 is debug port?. gets written to when writing text to screen\n"); break; }
+//    case 7: { SDL_Log("ERR NEED TO HANDLE OUT 7\n"); break; }
     default: break;
     }
 }
@@ -158,8 +159,8 @@ void handle_interrupts_and_emulate(State *state, SDL_Window *window, SDL_Surface
     char message[100];
     print_rom_section_desc(state->pc, message);
     emulate_count++;
-    if (strcmp(message, "") != 0)
-        SDL_Log("%d: %s\n", emulate_count, message);
+//    if (strcmp(message, "") != 0)
+//        SDL_Log("%d: %s\n", emulate_count, message);
     //state->memory[0x20c1] = 1; // turn demo on.
 
     uint8_t *opcode = &state->memory[state->pc];
@@ -184,20 +185,21 @@ void handle_interrupts_and_emulate(State *state, SDL_Window *window, SDL_Surface
     default:
     {
         emulate8080(state);
-        if (state->interrupt_enabled & time(NULL) - last_interrupt > 1.f / 120.f ) // 1/120 second has elapsed
+        if (state->interrupt_enabled)
         {
-            SDL_Log("** Interrupt Called**\n");
-            if (scanline96 == 0 & scanline224 == 0)
+//            SDL_Log("** Interrupt Called**\n");
+            if (scanline96 == 0 & scanline224 == 0 & cycles_elapsed > (cycles_per_frame/2.f))
             {
                 generate_interrupt(state, 1); // interrupt 1.
                 scanline96 = 1;
             }
-            else
+            if (scanline96 == 1 & scanline224 == 0 & cycles_elapsed > cycles_per_frame)
             {
                 generate_interrupt(state, 2); // interrupt 2. from emulators 101.
                 scanline96 = 0;
+                cycles_elapsed = 0;
                 // draw screen here.
-                SDL_Log("Draw_Screen");
+//                SDL_Log("Draw_Screen");
                 spinvaders_vram_matrix_to_surface(state, surface);
                 SDL_UpdateWindowSurface(window);
             }
@@ -225,6 +227,7 @@ int main(int argc, char *argv[])
     while (state->halt != 1 && state->pc < game_size)
     {
         handle_interrupts_and_emulate(state, window, surface);
+//        SDL_Log("%02x\n", state->memory[0x20c0]);
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {

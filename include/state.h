@@ -8,6 +8,8 @@
 
 #define MEM_SIZE 0x10000
 
+float cycles_elapsed;
+
 typedef struct Conditions
 {
     uint8_t sign : 1; // aka S
