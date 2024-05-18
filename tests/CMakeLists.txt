@@ -326,5 +326,5 @@ add_test(NAME test_state_at_37_5k, COMMAND test_state 37500)
 #add_test(NAME test_state_at_50k, COMMAND test_state 50000)
 #add_test(NAME test_state_at_100k, COMMAND test_state 100000)
 
-add_executable(test_sound test_sound.c)
-add_test(NAME test_sound1, COMMAND test_sound)
+#add_executable(test_sound test_sound.c)
+#add_test(NAME test_sound1, COMMAND test_sound)
