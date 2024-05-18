@@ -3,6 +3,7 @@
 #include "../include/shell.h"
 #include "../include/state.h"
 #include "../include/video.h"
+#include "../include/sound.h"
 #include "rom_sections.c"
 
 #include <SDL.h>
@@ -92,11 +93,12 @@ void machine_out(State *state, uint8_t port)
     case 3:
     {
 //        SDL_Log("ERR NEED TO HANDLE OUT 3 SOUND\n");
-        // bit 0=UFO (repeats)        SX0 0.raw
-        // bit 1=Shot                 SX1 1.raw
-        // bit 2=Flash (player die)   SX2 2.raw
-        // bit 3=Invader die          SX3 3.raw
-        // bit 4=Extended play        SX4
+        if ((state->a & 0b00000001) != 0) play_audio(0); // bit 0=UFO (repeats)
+        else stop_audio(0);
+        if ((state->a & 0b00000010) != 0) play_audio(1); // bit 1=Shot
+        if ((state->a & 0b00000100) != 0) play_audio(2); // bit 2=Flash (player die)
+        if ((state->a & 0b00001000) != 0) play_audio(3); // bit 3=Invader die
+        if ((state->a & 0b00010000) != 0) play_audio(9); // bit 4=Extended play
         // bit 5= AMP enable          SX5
         // bit 6= NC (not wired)
         // bit 7= NC (not wired)
@@ -112,11 +114,11 @@ void machine_out(State *state, uint8_t port)
     case 5:
     {
 //        SDL_Log("ERR NEED TO HANDLE OUT 5 SOUND\n");
-        // bit 0=Fleet movement 1     SX6 4.raw
-        // bit 1=Fleet movement 2     SX7 5.raw
-        // bit 2=Fleet movement 3     SX8 6.raw
-        // bit 3=Fleet movement 4     SX9 7.raw
-        // bit 4=UFO Hit              SX10 8.raw
+        if ((state->a & 0b00000001) != 0) play_audio(4); // bit 0=Fleet movement 1
+        if ((state->a & 0b00000010) != 0) play_audio(5); // bit 1=Fleet movement 2
+        if ((state->a & 0b00000100) != 0) play_audio(6); // bit 2=Fleet movement 3
+        if ((state->a & 0b00001000) != 0) play_audio(7); // bit 3=Fleet movement 4
+        if ((state->a & 0b00010000) != 0) play_audio(8); // bit 4=UFO Hit
         // bit 5= NC (Cocktail mode control ... to flip screen)
         // bit 6= NC (not wired)
         // bit 7= NC (not wired)

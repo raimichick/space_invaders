@@ -5,7 +5,8 @@
 
 static int initialize_sdl();
 static int initialize_audio();
-static void play_audio();
+static void play_audio(int i);
+static void stop_audio(int i);
 static void clean_up();
 static void audio_callback(void *, uint8_t *, int);
 
