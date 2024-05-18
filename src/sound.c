@@ -68,7 +68,6 @@ void play_audio(int i)
     SDL_PauseAudioDevice(_audioDeviceId, 1);
 }
 
-
 void clean_up()
 {
     SDL_CloseAudioDevice(_audioDeviceId);

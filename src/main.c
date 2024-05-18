@@ -1,9 +1,9 @@
 #include "../include/disassemble8080p.h"
 #include "../include/opcodes.h"
 #include "../include/shell.h"
+#include "../include/sound.h"
 #include "../include/state.h"
 #include "../include/video.h"
-#include "../include/sound.h"
 #include "rom_sections.c"
 
 #include <SDL.h>
