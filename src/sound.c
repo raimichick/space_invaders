@@ -39,16 +39,16 @@ int initialize_audio()
     _audioSpec.freq = 44100;
     _audioSpec.format = AUDIO_S16;
 
-    _samples[0] = load_sample("../assets/0_spaceship.wav", 171);
-    _samples[1] = load_sample("../assets/1_shoot.wav", 347);
-    _samples[2] = load_sample("../assets/2_base_hit.wav", 1327);
-    _samples[3] = load_sample("../assets/3_invader_hit.wav", 459);
-    _samples[4] = load_sample("../assets/4_walk1.wav", 73);
-    _samples[5] = load_sample("../assets/5_walk2.wav", 66);
-    _samples[6] = load_sample("../assets/6_walk3.wav", 69);
-    _samples[7] = load_sample("../assets/7_walk4.wav", 74);
-    _samples[8] = load_sample("../assets/8_spaceship_hit.wav", 2208);
-    _samples[9] = load_sample("../assets/9_extra_life.wav", 1896);
+    _samples[0] = load_sample(ROOT_DIR "/assets/0_spaceship.wav", 171);
+    _samples[1] = load_sample(ROOT_DIR "/assets/1_shoot.wav", 347);
+    _samples[2] = load_sample(ROOT_DIR "/assets/2_base_hit.wav", 1327);
+    _samples[3] = load_sample(ROOT_DIR "/assets/3_invader_hit.wav", 459);
+    _samples[4] = load_sample(ROOT_DIR "/assets/4_walk1.wav", 73);
+    _samples[5] = load_sample(ROOT_DIR "/assets/5_walk2.wav", 66);
+    _samples[6] = load_sample(ROOT_DIR "/assets/6_walk3.wav", 69);
+    _samples[7] = load_sample(ROOT_DIR "/assets/7_walk4.wav", 74);
+    _samples[8] = load_sample(ROOT_DIR "/assets/8_spaceship_hit.wav", 2208);
+    _samples[9] = load_sample(ROOT_DIR "/assets/9_extra_life.wav", 1896);
 
     _audioDeviceId = SDL_OpenAudioDevice(NULL, 0, &_audioSpec, NULL, 0);
     if (_audioDeviceId == 0)

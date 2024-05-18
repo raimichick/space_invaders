@@ -11,7 +11,7 @@ int emulate_count = 0;
 int main()
 {
     // FILE *game_file = fopen("../include/invaders_combined", "rb");
-    FILE *file = fopen("../../tests/diagnostics_asm", "rb");
+    FILE *file = fopen(ROOT_DIR "/tests/diagnostics_asm", "rb");
     if (file == NULL)
     {
         file = fopen("../diagnostics_asm", "rb");

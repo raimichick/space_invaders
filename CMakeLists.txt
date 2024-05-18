@@ -16,6 +16,8 @@ add_library(8080 src/shell.c src/state.c src/disassemble8080p.c)
 # Any executable after this will automatically link the 8080 library
 link_libraries(8080 ${SDL2_LIBRARY})
 
+add_compile_definitions(ROOT_DIR="${PROJECT_SOURCE_DIR}")
+
 add_executable(space_invaders_8080 src/main.c)
 
 # Build and add tests only in debug, not release
