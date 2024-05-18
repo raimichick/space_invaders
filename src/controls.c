@@ -1,69 +1,8 @@
-#include "../include/state.h"
-#include "../include/shell.h"
+#include "../include/controls.h"
 #include "SDL.h"
 #include <stdio.h>
-#include <stdint.h>
 
-// Define the State structure
-typedef struct {
-    uint8_t a;
-    uint16_t pc;
-    uint8_t memory[0x10000];
-    uint8_t input_state;
-    // Add other CPU state variables as needed
-} State;
-
-// Function prototypes
-void init_emulator(State *state);
-void emulate8080(State *state);
-void update_input_state(State *state, SDL_Event *e);
-
-int main(int argc, char *argv[]) {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
-        fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError());
-        return 1;
-    }
-
-    SDL_Window *win = SDL_CreateWindow("Space Invaders", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
-    if (win == NULL) {
-        fprintf(stderr, "SDL_CreateWindow Error: %s\n", SDL_GetError());
-        SDL_Quit();
-        return 1;
-    }
-
-    SDL_Event e;
-    int quit = 0;
-    State state;
-
-    // Initialize the emulator state
-    init_emulator(&state);
-
-    while (!quit) {
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) {
-                quit = 1;
-            } else {
-                // Update the input state based on the SDL event
-                update_input_state(&state, &e);
-            }
-        }
-
-        // Update game state
-        emulate8080(&state);
-
-        // Render game state
-
-        // Delay to limit frame rate
-        SDL_Delay(16);
-    }
-
-    SDL_DestroyWindow(win);
-    SDL_Quit();
-
-    return 0;
-}
-
-// Initialize the emulator state
+// Function definitions
 void init_emulator(State *state) {
     // Initialize all necessary parts of the state
     state->a = 0;
