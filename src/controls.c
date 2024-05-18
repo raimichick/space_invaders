@@ -1,6 +1,6 @@
-#include "SDL.h"
-#include "../include/shell.h"
 #include "../include/state.h"
+#include "../include/shell.h"
+#include "SDL.h"
 #include <stdio.h>
 #include <stdint.h>
 
@@ -14,17 +14,17 @@ typedef struct {
 } State;
 
 // Function prototypes
-void init_emulator(State* state);
-void emulate8080(State* state);
-void update_input_state(State* state, SDL_Event* e);
+void init_emulator(State *state);
+void emulate8080(State *state);
+void update_input_state(State *state, SDL_Event *e);
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
         fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError());
         return 1;
     }
 
-    SDL_Window* win = SDL_CreateWindow("Space Invaders", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
+    SDL_Window *win = SDL_CreateWindow("Space Invaders", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
     if (win == NULL) {
         fprintf(stderr, "SDL_CreateWindow Error: %s\n", SDL_GetError());
         SDL_Quit();
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
 }
 
 // Initialize the emulator state
-void init_emulator(State* state) {
+void init_emulator(State *state) {
     // Initialize all necessary parts of the state
     state->a = 0;
     state->pc = 0;
@@ -73,12 +73,12 @@ void init_emulator(State* state) {
 }
 
 // Emulate 8080 processor (stub function)
-void emulate8080(State* state) {
+void emulate8080(State *state) {
     // Implement the 8080 emulation logic here
 }
 
 // Update input state based on SDL events
-void update_input_state(State* state, SDL_Event* e) {
+void update_input_state(State *state, SDL_Event *e) {
     // Handle key press events
     if (e->type == SDL_KEYDOWN) {
         switch (e->key.keysym.sym) {
