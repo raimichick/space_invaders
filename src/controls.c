@@ -1,4 +1,4 @@
-#include <SDL.h>
+#include "SDL.h"
 #include "../include/shell.h"
 #include "../include/state.h"
 #include <stdio.h>
