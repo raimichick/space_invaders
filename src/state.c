@@ -7,6 +7,8 @@
 #define RED_TXT_COLOR "\033[0;31m"
 #define DEFAULT_TXT_COLOR "\033[0m"
 
+float cycles_elapsed = 0;
+
 State *Init8080(void)
 {
     // Reserve memory for the state struct
