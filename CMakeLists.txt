@@ -24,7 +24,7 @@ add_compile_definitions(ROOT_DIR="${PROJECT_SOURCE_DIR}")
 add_executable(space_invaders_8080 src/main.c)
 
 # Build and add tests only in debug, not release
-#if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-enable_testing()
-add_subdirectory(tests)
-#endif ()
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    enable_testing()
+    add_subdirectory(tests)
+endif ()

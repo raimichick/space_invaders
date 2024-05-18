@@ -132,7 +132,7 @@ int test_state_after_x_runs(State *state, State *expected_state, int run_count)
 
 State *init_game_state()
 {
-    FILE *game_file = fopen("../../include/invaders_combined", "rb");
+    FILE *game_file = fopen(ROOT_DIR "/include/invaders_combined", "rb");
     if (game_file == NULL)
     {
         perror("Error: Could not open invaders_combined");
