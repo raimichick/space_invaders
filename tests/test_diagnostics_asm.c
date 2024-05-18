@@ -11,7 +11,7 @@ int emulate_count = 0;
 int main()
 {
     // FILE *game_file = fopen("../include/invaders_combined", "rb");
-    FILE *file = fopen("../tests/diagnostics_asm", "rb");
+    FILE *file = fopen(ROOT_DIR "/tests/diagnostics_asm", "rb");
     if (file == NULL)
     {
         file = fopen("../diagnostics_asm", "rb");
@@ -67,9 +67,21 @@ int main()
     }
     printf("\n\n\n\n");
     int result = FAIL;
-    if (state->halt == 1) { printf("STOPPED DUE TO HALT"); result = FAIL; }
-    if (state->pc == CPUER) { printf("CPU ERRORED OUT!"); result = FAIL; }
-    if (state->pc == CPUOK) { printf("CPU IS OK!"); result = PASS; }
+    if (state->halt == 1)
+    {
+        printf("STOPPED DUE TO HALT");
+        result = FAIL;
+    }
+    if (state->pc == CPUER)
+    {
+        printf("CPU ERRORED OUT!");
+        result = FAIL;
+    }
+    if (state->pc == CPUOK)
+    {
+        printf("CPU IS OK!");
+        result = PASS;
+    }
 
     Free8080(state);
     return result;
