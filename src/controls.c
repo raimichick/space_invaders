@@ -1,5 +1,3 @@
-/**/
-
 #include <SDL2/SDL.h>
 #include <stdio.h>
 
@@ -21,7 +19,7 @@ int main(int argc, char* argv[]) {
 
     SDL_Event e;
     int quit = 0;
-    State state; 
+    State state;
 
     // Initialize the emulator state
     init_emulator(&state);
@@ -36,12 +34,12 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // Update game state 
+        // Update game state
         emulate8080(&state);
 
-        // Render game state 
+        // Render game state
 
-        // Delay to limit frame rate 
+        // Delay to limit frame rate
         SDL_Delay(16);
     }
 
