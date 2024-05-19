@@ -223,6 +223,9 @@ int main(int argc, char *argv[])
     SDL_Surface *surface = SDL_GetWindowSurface(window);
     SDL_UpdateWindowSurface(window);
 
+    // Initialize Audio
+    if (initialize_audio()) exit(1);
+
     // Run ROM
     int endgame = 0;
     while (state->halt != 1 && state->pc < game_size)

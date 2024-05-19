@@ -21,17 +21,6 @@ SoundSample load_sample(char path[], int length_ms)
     return sample;
 }
 
-int initialize_sdl()
-{
-    if (SDL_Init(SDL_INIT_AUDIO) != 0)
-    {
-        fprintf(stderr, "Error: Failed to initialize Audio System");
-        return 1;
-    }
-
-    return 0;
-}
-
 int initialize_audio()
 {
 
@@ -68,7 +57,7 @@ void play_audio(int i)
     SDL_PauseAudioDevice(_audioDeviceId, 1);
 }
 
-void clean_up()
+void clean_up_sound()
 {
     SDL_CloseAudioDevice(_audioDeviceId);
     for (int i = 0; i < 10; i++)
