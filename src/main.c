@@ -24,49 +24,10 @@ void machine_in(State *state, uint8_t port)
     // clang-format off
     switch (port)
     {
-    case 0:
-    {
-//        SDL_Log("ERR NEED TO HANDLE IN 0\n");
-        state->a = 0x70;
-      // bit 0 DIP4 (Seems to be self-test-request read at power up)
-      // bit 1 Always 1
-      // bit 2 Always 1
-      // bit 3 Always 1
-      // bit 4 Fire
-      // bit 5 Left
-      // bit 6 Right
-      // bit 7 ? tied to demux port 7 ?
-        break;
-    }
-    case 1:
-    {
-        SDL_Log("ERR NEED TO HANDLE IN 1\n");
-        state->a = state->ports[1];
-        // BIT 0   coin (0 when active)
-        // 1   P2 start button
-        // 2   P1 start button
-        // 3   ? (// always 1? per archeology).
-        // 4   P1 shoot button
-        // 5   P1 joystick left
-        // 6   P1 joystick right
-        // 7   ?
-        break;
-    }
-
-    case 2: {
-        SDL_Log("ERR NEED TO HANDLE IN 2\n");
-        state->a = state->ports[2];
-        // BIT 0,1 dipswitch number of lives (0:3,1:4,2:5,3:6)
-        // 2   tilt 'button'
-        // 3   dipswitch bonus life at 1:1000,0:1500
-        // 4   P2 shoot button
-        // 5   P2 joystick left
-        // 6   P2 joystick right
-        // 7   dipswitch coin info 1:off,0:on
-        break;
-    }
+    case 0: { state->a = 0x70; break; }
+    case 1: { state->a = state->ports[1]; break; }
+    case 2: { state->a = state->ports[2]; break; }
     case 3: {
-//        SDL_Log("****IN 3 GOOD***");
         uint16_t v = (shift1 << 8) | shift0;
         state->a = ((v >> (8 - shift_offset)) & 0xff);
         break;
@@ -85,11 +46,7 @@ void machine_out(State *state, uint8_t port)
     {
     case 0: { SDL_Log("ERR NEED TO HANDLE OUT 0\n"); break; }
     case 1: { SDL_Log("ERR NEED TO HANDLE OUT 1\n"); break; }
-    case 2:
-//        SDL_Log("****OUT 2 GOOD***");
-        shift_offset = state->a & 0x7;
-        break;
-
+    case 2: shift_offset = state->a & 0x7; break;
     case 3:
     {
 //        SDL_Log("ERR NEED TO HANDLE OUT 3 SOUND\n");
@@ -105,11 +62,7 @@ void machine_out(State *state, uint8_t port)
         // bit 0-7 shift data (LSB on 1st write, MSB on 2nd)
         break;
     }
-    case 4:
-        //SDL_Log("****OUT 4 GOOD***");
-        shift0 = shift1;
-        shift1 = state->a;
-        break;
+    case 4: { shift0 = shift1; shift1 = state->a; break; }
     case 5:
     {
 //        SDL_Log("ERR NEED TO HANDLE OUT 5 SOUND\n");
@@ -218,7 +171,7 @@ int main(int argc, char *argv[])
     SDL_Init(SDL_INIT_EVERYTHING);
     // Test window
     SDL_Window *window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_CENTERED,
-                                          SDL_WINDOWPOS_CENTERED, 256, 224, 0);
+                                          SDL_WINDOWPOS_CENTERED, 2*224, 2*256, 0);
     SDL_Surface *surface = SDL_GetWindowSurface(window);
     SDL_UpdateWindowSurface(window);
 

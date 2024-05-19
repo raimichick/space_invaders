@@ -48,7 +48,7 @@ void spinvaders_vram_matrix_to_surface(State *state, SDL_Surface *surface)
     // uint8_t vram = state->memory[0x2400];
     for (int r = 0; r < ROW_COUNT; r++)
     {
-        int col_pxl = 0;
+        int col_pxl = 255;
         for (int c = 0; c < COL_COUNT; c++)
         {
             uint16_t data_pos = (r * COL_COUNT) + c;
@@ -59,9 +59,23 @@ void spinvaders_vram_matrix_to_surface(State *state, SDL_Surface *surface)
                 pxl = (pxl == 0) ? 0 : 0xff;
                 // uint8_t pxl = data_bit * 255;
                 // uint8_t pxl = 255;
-                SDL_Rect rect = {col_pxl++, r, 1, 1};
+                int x = (2*r)-1;
+                int y = (2*col_pxl--) - 1;
+                SDL_Rect rect = {x, y, 1, 1};
+                int red_limit = 35;
+                int white_limit = 191;
                 // TODO Add conditions for red / green / white filters.
-                SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, pxl, pxl));
+                if (y < red_limit * 2) // red
+                    SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, 0, 0));
+                if (y > red_limit*2 && y < white_limit*2)// white
+                    SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, pxl, pxl));
+                if (y > white_limit * 2) // green
+                {
+                    if (y > 238*2 && (x < 15*2 || x > 100*2)) // white
+                        SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, pxl, pxl));
+                    else // green
+                        SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, 0, pxl, 0));
+                }
             }
             // printf("%02x", state->memory[0x2400 + data_pos]);
         }
