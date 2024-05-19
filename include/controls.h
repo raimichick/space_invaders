@@ -5,7 +5,8 @@
 #include <stdint.h>
 
 // Define the State structure
-typedef struct {
+typedef struct
+{
     uint8_t a;
     uint16_t pc;
     uint8_t memory[0x10000];

@@ -67,9 +67,21 @@ int main()
     }
     printf("\n\n\n\n");
     int result = FAIL;
-    if (state->halt == 1) { printf("STOPPED DUE TO HALT"); result = FAIL; }
-    if (state->pc == CPUER) { printf("CPU ERRORED OUT!"); result = FAIL; }
-    if (state->pc == CPUOK) { printf("CPU IS OK!"); result = PASS; }
+    if (state->halt == 1)
+    {
+        printf("STOPPED DUE TO HALT");
+        result = FAIL;
+    }
+    if (state->pc == CPUER)
+    {
+        printf("CPU ERRORED OUT!");
+        result = FAIL;
+    }
+    if (state->pc == CPUOK)
+    {
+        printf("CPU IS OK!");
+        result = PASS;
+    }
 
     Free8080(state);
     return result;
