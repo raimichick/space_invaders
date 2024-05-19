@@ -14,7 +14,8 @@ include_directories(${SDL2_INCLUDE_DIR})
 add_library(8080 src/shell.c src/state.c src/disassemble8080p.c
         src/video.c
         src/rom_sections.c
-        src/libattopng.c)
+        src/libattopng.c
+        src/controls.c)
 
 # Any executable after this will automatically link the 8080 library
 link_libraries(8080 ${SDL2_LIBRARY})

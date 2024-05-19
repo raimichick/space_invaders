@@ -1,62 +1,26 @@
 #include "../include/controls.h"
-#include "SDL.h"
-#include <stdio.h>
 
-// Function definitions
-void init_emulator(State *state)
-{
-    // Initialize all necessary parts of the state
-    state->a = 0;
-    state->pc = 0;
-    state->input_state = 0;
-    // Initialize other parts of the state as needed
-}
-
-// Emulate 8080 processor (stub function)
-void emulate8080(State *state)
-{
-    // Implement the 8080 emulation logic here
-}
-
-// Update input state based on SDL events
-void update_input_state(State *state, SDL_Event *e)
+void update_keyboard_input(State *state, SDL_Event *e)
 {
     // Handle key press events
     if (e->type == SDL_KEYDOWN)
     {
         switch (e->key.keysym.sym)
         {
-        case SDLK_LEFT:
-        {
-            state->input_state |= (1 << 5); // P1 joystick left
-            break;
-        }
-        case SDLK_RIGHT:
-        {
-            state->input_state |= (1 << 6); // P1 joystick right
-            break;
-        }
-        case SDLK_SPACE:
-        {
-            state->input_state |= (1 << 4); // P1 shoot button
-            break;
-        }
-        case SDLK_1:
-        {
-            state->input_state |= (1 << 2); // P1 start button
-            break;
-        }
-        case SDLK_2:
-        {
-            state->input_state |= (1 << 1); // P2 start button
-            break;
-        }
-        case SDLK_c:
-        {
-            state->input_state &= ~(1 << 0); // Coin insert (active low)
-            break;
-        }
+        case SDLK_c:     { state->ports[1] &= ~(1 << 0); break; } // Coin insert (active low)
+        case SDLK_2:     { state->ports[1] |=  (1 << 1); break; } // P2 start button
+        case SDLK_1:     { state->ports[1] |=  (1 << 2); break; } // P1 start button
+        case SDLK_SPACE: { state->ports[1] |=  (1 << 4); state->ports[2] = state->ports[1]; break; } // P1 & P2 shoot button
+        case SDLK_LEFT:  { state->ports[1] |=  (1 << 5); state->ports[2] = state->ports[1]; break; } // P1 & P2 joystick left
+        case SDLK_RIGHT: { state->ports[1] |=  (1 << 6); state->ports[2] = state->ports[1]; break; } // P1 & P2 joystick right
+
+
+        case SDLK_l:     { state->ports[2] |=  ((state->ports[2] + 1) % 2); break; } // tilt 'button'
+        case SDLK_t:     { state->ports[2] |=  (1 << 2); break; } // tilt 'button'
+        case SDLK_b:     { state->ports[2] |=  (1 << 3); break; } // dipswitch bonus life at 1:1000,0:1500
+        case SDLK_i:     { state->ports[2] |=  (1 << 7); break; } // dipswitch coin info 1:off,0:on
         default: break;
+            // BIT 0,1 dipswitch number of lives (0:3,1:4,2:5,3:6)
         }
     }
     // Handle key release events
@@ -64,36 +28,16 @@ void update_input_state(State *state, SDL_Event *e)
     {
         switch (e->key.keysym.sym)
         {
-        case SDLK_LEFT:
-        {
-            state->input_state &= ~(1 << 5); // P1 joystick left
-            break;
-        }
-        case SDLK_RIGHT:
-        {
-            state->input_state &= ~(1 << 6); // P1 joystick right
-            break;
-        }
-        case SDLK_SPACE:
-        {
-            state->input_state &= ~(1 << 4); // P1 shoot button
-            break;
-        }
-        case SDLK_1:
-        {
-            state->input_state &= ~(1 << 2); // P1 start button
-            break;
-        }
-        case SDLK_2:
-        {
-            state->input_state &= ~(1 << 1); // P2 start button
-            break;
-        }
-        case SDLK_c:
-        {
-            state->input_state |= (1 << 0); // Coin insert (inactive)
-            break;
-        }
+        case SDLK_c:     { state->ports[1] |=  (1 << 0); break; } // Coin insert (inactive)
+        case SDLK_2:     { state->ports[1] &= ~(1 << 1); break; } // P2 start button
+        case SDLK_1:     { state->ports[1] &= ~(1 << 2); break; } // P1 start button
+        case SDLK_SPACE: { state->ports[1] &= ~(1 << 4); state->ports[2] = state->ports[1]; break; } // P1 & P2 shoot button
+        case SDLK_LEFT:  { state->ports[1] &= ~(1 << 5); state->ports[2] = state->ports[1]; break; } // P1 & P2 joystick left
+        case SDLK_RIGHT: { state->ports[1] &= ~(1 << 6); state->ports[2] = state->ports[1]; break; } // P1 & P2 joystick right
+
+        case SDLK_t:     { state->ports[2] &=  (1 << 2); break; } // tilt 'button'
+        case SDLK_b:     { state->ports[2] &=  (1 << 3); break; } // dipswitch bonus life at 1:1000,0:1500
+        case SDLK_i:     { state->ports[2] &=  (1 << 7); break; } // dipswitch coin info 1:off,0:on
         default: break;
         }
     }

@@ -3,6 +3,7 @@
 #include "../include/shell.h"
 #include "../include/state.h"
 #include "../include/video.h"
+#include "../include/controls.h"
 #include "rom_sections.c"
 
 #include <SDL.h>
@@ -39,8 +40,8 @@ void machine_in(State *state, uint8_t port)
     }
     case 1:
     {
-//        SDL_Log("ERR NEED TO HANDLE IN 1\n");
-        state->a = 0x08;
+        SDL_Log("ERR NEED TO HANDLE IN 1\n");
+        state->a = state->ports[1];
         // BIT 0   coin (0 when active)
         // 1   P2 start button
         // 2   P1 start button
@@ -53,8 +54,8 @@ void machine_in(State *state, uint8_t port)
     }
 
     case 2: {
-//        SDL_Log("ERR NEED TO HANDLE IN 2\n");
-        state->a = 0x00;
+        SDL_Log("ERR NEED TO HANDLE IN 2\n");
+        state->a = state->ports[2];
         // BIT 0,1 dipswitch number of lives (0:3,1:4,2:5,3:6)
         // 2   tilt 'button'
         // 3   dipswitch bonus life at 1:1000,0:1500
@@ -231,6 +232,8 @@ int main(int argc, char *argv[])
         while (SDL_PollEvent(&event))
         {
             if (event.type == SDL_QUIT) endgame = 1;
+            update_keyboard_input(state, &event);
+
         }
         if (endgame == 1) break;
     }
