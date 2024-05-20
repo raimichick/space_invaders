@@ -1,7 +1,7 @@
 #include "../include/sound.h"
 #include "../include/state.h"
-#include "SDL.h"
 
+#include <SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -57,12 +57,13 @@ void play_audio(int i)
     SDL_PauseAudioDevice(_audioDeviceId, 1);
 }
 
-void clean_up_sound()
+void stop_audio(int i) {}
+
+void free_audio()
 {
     SDL_CloseAudioDevice(_audioDeviceId);
     for (int i = 0; i < 10; i++)
     {
         SDL_FreeWAV(_samples[i].buffer);
     }
-    SDL_Quit();
 }
