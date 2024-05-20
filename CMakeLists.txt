@@ -8,6 +8,7 @@ set(SDL2_PATH "SDL2-2.30.3\\x86_64-w64-mingw32")
 
 # Include SDL2
 find_package(SDL2 REQUIRED)
+find_package(SDL2_mixer REQUIRED)
 include_directories(${SDL2_INCLUDE_DIR})
 
 # Create a library with all of the 8080 source code
@@ -22,7 +23,7 @@ add_library(8080
         src/machine.c)
 
 # Any executable after this will automatically link the 8080 library
-link_libraries(8080 ${SDL2_LIBRARY})
+link_libraries(8080 ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
 
 add_compile_definitions(ROOT_DIR="${PROJECT_SOURCE_DIR}")
 

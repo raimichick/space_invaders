@@ -1,9 +1,9 @@
 #include "../include/machine.h"
-#include "../include/state.h"
+#include "../include/opcodes.h"
 #include "../include/shell.h"
 #include "../include/sound.h"
+#include "../include/state.h"
 #include "../include/video.h"
-#include "../include/opcodes.h"
 
 #include "rom_sections.c"
 
@@ -11,11 +11,13 @@
 #include <time.h>
 
 static uint8_t _shift1, _shift0; // hi byte and lo byte for shift register
-static uint8_t _shift_offset;   // always & with 0x7. only bits 0, 1, 2 matter as shift_offset can be 0-7.
-time_t last_interrupt = 0;
-int scanline96 = 0;
-int emulate_count = 0;
-float cycles_per_frame = 2000000 * 1.f / 60.f; // 2 million cycles/second * 1/60 seconds/cycle.
+static uint8_t
+    _shift_offset; // always & with 0x7. only bits 0, 1, 2 matter as shift_offset can be 0-7.
+static time_t _last_interrupt = 0;
+static int _scanline96 = 0;
+static int _emulate_count = 0;
+static float _cycles_per_frame =
+    2000000 * 1.f / 60.f; // 2 million cycles/second * 1/60 seconds/cycle.
 
 void machine_in(State *state, uint8_t port)
 {
@@ -158,7 +160,7 @@ void handle_interrupts_and_emulate(State *state, SDL_Window *window, SDL_Surface
 {
     char message[100];
     print_rom_section_desc(state->pc, message);
-    emulate_count++;
+    _emulate_count++;
 //    if (strcmp(message, "") != 0)
 //        SDL_Log("%d: %s\n", emulate_count, message);
     //state->memory[0x20c1] = 1; // turn demo on.
@@ -188,22 +190,22 @@ void handle_interrupts_and_emulate(State *state, SDL_Window *window, SDL_Surface
         if (state->interrupt_enabled)
         {
 //            SDL_Log("** Interrupt Called**\n");
-            if (scanline96 == 0 && cycles_elapsed > (cycles_per_frame/2.f))
+            if (_scanline96 == 0 && cycles_elapsed > (_cycles_per_frame/2.f))
             {
                 generate_interrupt(state, 1); // interrupt 1.
-                scanline96 = 1;
+                _scanline96 = 1;
             }
-            if (scanline96 == 1 && cycles_elapsed > cycles_per_frame)
+            if (_scanline96 == 1 && cycles_elapsed > _cycles_per_frame)
             {
                 generate_interrupt(state, 2); // interrupt 2. from emulators 101.
-                scanline96 = 0;
+                _scanline96 = 0;
                 cycles_elapsed = 0;
                 // draw screen here.
 //                SDL_Log("Draw_Screen");
                 spinvaders_vram_matrix_to_surface(state, surface);
                 SDL_UpdateWindowSurface(window);
             }
-            last_interrupt = time(NULL); // save time.
+            _last_interrupt = time(NULL); // save time.
         }
         break;
     }

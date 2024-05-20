@@ -1,49 +1,55 @@
 #include "../include/sound.h"
-#include "../include/state.h"
 
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 /* VARIABLES */
+#define NUM_WAVEFORMS 10
 static SDL_AudioDeviceID _audioDeviceId = 0;
 static SDL_AudioSpec _audioSpec;
-static SoundSample _samples[10];
+static Mix_Chunk *_sample[NUM_WAVEFORMS];
 
-SoundSample load_sample(char path[], int length_ms)
-{
-    SoundSample sample;
-    sample.length_ms = length_ms;
+static const char *_waveFilePaths[] = {
+    ROOT_DIR "/assets/0_spaceship.wav",     ROOT_DIR "/assets/1_shoot.wav",
+    ROOT_DIR "/assets/2_base_hit.wav",      ROOT_DIR "/assets/3_invader_hit.wav",
+    ROOT_DIR "/assets/4_walk1.wav",         ROOT_DIR "/assets/5_walk2.wav",
+    ROOT_DIR "/assets/6_walk3.wav",         ROOT_DIR "/assets/7_walk4.wav",
+    ROOT_DIR "/assets/8_spaceship_hit.wav", ROOT_DIR "/assets/9_extra_life.wav"};
 
-    SDL_LoadWAV(path, &_audioSpec, &sample.buffer, &sample.len_buffer);
+static const int _waveFileLengths[] = {};
 
-    return sample;
-}
+int load_samples() { return 0; }
 
 int initialize_audio()
 {
 
-    _audioSpec.channels = 1;
-    _audioSpec.freq = 44100;
-    _audioSpec.format = AUDIO_S16;
-
-    _samples[0] = load_sample(ROOT_DIR "/assets/0_spaceship.wav", 171);
-    _samples[1] = load_sample(ROOT_DIR "/assets/1_shoot.wav", 347);
-    _samples[2] = load_sample(ROOT_DIR "/assets/2_base_hit.wav", 1327);
-    _samples[3] = load_sample(ROOT_DIR "/assets/3_invader_hit.wav", 459);
-    _samples[4] = load_sample(ROOT_DIR "/assets/4_walk1.wav", 73);
-    _samples[5] = load_sample(ROOT_DIR "/assets/5_walk2.wav", 66);
-    _samples[6] = load_sample(ROOT_DIR "/assets/6_walk3.wav", 69);
-    _samples[7] = load_sample(ROOT_DIR "/assets/7_walk4.wav", 74);
-    _samples[8] = load_sample(ROOT_DIR "/assets/8_spaceship_hit.wav", 2208);
-    _samples[9] = load_sample(ROOT_DIR "/assets/9_extra_life.wav", 1896);
-
-    _audioDeviceId = SDL_OpenAudioDevice(NULL, 0, &_audioSpec, NULL, 0);
-    if (_audioDeviceId == 0)
+    // Set up the audio stream
+    int errCode = Mix_OpenAudio(44100, AUDIO_S16, 1, 512);
+    if (errCode < 0)
     {
-        fprintf(stderr, "Error: Failed to initialize Audio Device");
-        return 1; /* Could not open Device */
+        fprintf(stderr, "Unable to open audio: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    // Determine the number of mixing channels
+    errCode = Mix_AllocateChannels(10);
+    if (errCode < 0)
+    {
+        fprintf(stderr, "Unable to allocate mixing channels: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    // Load Samples
+    for (int i = 0; i < NUM_WAVEFORMS; i++)
+    {
+        _sample[i] = Mix_LoadWAV(_waveFilePaths[i]);
+        if (_sample[i] == NULL)
+        {
+            fprintf(stderr, "Unable to load wave file: %s\n", _waveFilePaths[i]);
+            return 1;
+        }
     }
 
     return 0;
@@ -51,19 +57,17 @@ int initialize_audio()
 
 void play_audio(int i)
 {
-    SDL_QueueAudio(_audioDeviceId, _samples[i].buffer, _samples[i].len_buffer);
-    SDL_PauseAudioDevice(_audioDeviceId, 0);
-    SDL_Delay(_samples[i].length_ms);
-    SDL_PauseAudioDevice(_audioDeviceId, 1);
+    Mix_PlayChannel(i, _sample[i], 0);
+    SDL_Delay(3000);
 }
 
 void stop_audio(int i) {}
 
 void free_audio()
 {
-    SDL_CloseAudioDevice(_audioDeviceId);
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < NUM_WAVEFORMS; i++)
     {
-        SDL_FreeWAV(_samples[i].buffer);
+        Mix_FreeChunk(_sample[i]);
     }
+    Mix_CloseAudio();
 }
