@@ -55,9 +55,19 @@ int initialize_audio()
     return 0;
 }
 
-void play_audio(int i) { Mix_PlayChannel(i, _sample[i], 0); }
+void play_audio(int i)
+{
+    if (i == 0)
+    {
+        Mix_PlayChannel(i, _sample[i], -1);
+    }
+    else
+    {
+        Mix_PlayChannel(i, _sample[i], 0);
+    }
+}
 
-void stop_audio(int i) {}
+void stop_audio(int i) { Mix_HaltChannel(i); }
 
 void free_audio()
 {
