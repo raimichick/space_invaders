@@ -42,10 +42,9 @@ void spinvaders_vram_matrix_to_png(State *state, int lbl_prefix)
 void spinvaders_vram_matrix_to_surface(State *state, SDL_Surface *surface)
 {
     // the grid is sideways in memory, need to rotate CC for screen to be upright.
-    const int ROW_COUNT = 224;     // screen width
-    const int COL_COUNT = 256 / 8; // screen height
+    const int ROW_COUNT = SCREEN_WIDTH;      // screen width
+    const int COL_COUNT = SCREEN_HEIGHT / 8; // screen height / 8 because each bit per byte is pxl
 
-    // uint8_t vram = state->memory[0x2400];
     for (int r = 0; r < ROW_COUNT; r++)
     {
         int col_pxl = 255;
@@ -57,21 +56,23 @@ void spinvaders_vram_matrix_to_surface(State *state, SDL_Surface *surface)
             {
                 uint8_t pxl = data & (0x01 << bit_num); // account for little endian
                 pxl = (pxl == 0) ? 0 : 0xff;
-                // uint8_t pxl = data_bit * 255;
-                // uint8_t pxl = 255;
-                int x = (2*r)-1;
-                int y = (2*col_pxl--) - 1;
+
+                // read by memory organization, placed in rect as rotated.
+                int x = (SCREEN_SIZE_MULT * r) - 1;
+                int y = (SCREEN_SIZE_MULT * col_pxl--) - 1;
                 SDL_Rect rect = {x, y, 1, 1};
+
+                // set colors
                 int red_limit = 35;
                 int white_limit = 191;
-                // TODO Add conditions for red / green / white filters.
-                if (y < red_limit * 2) // red
+                if (y < red_limit * SCREEN_SIZE_MULT) // red
                     SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, 0, 0));
-                if (y > red_limit*2 && y < white_limit*2)// white
+                if (y > red_limit * SCREEN_SIZE_MULT && y < white_limit * SCREEN_SIZE_MULT) // white
                     SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, pxl, pxl));
-                if (y > white_limit * 2) // green
+                if (y > white_limit * SCREEN_SIZE_MULT) // green
                 {
-                    if (y > 238*2 && (x < 15*2 || x > 100*2)) // white
+                    if (y > 238 * SCREEN_SIZE_MULT &&
+                        (x < 15 * SCREEN_SIZE_MULT || x > 100 * SCREEN_SIZE_MULT)) // white
                         SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, pxl, pxl));
                     else // green
                         SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, 0, pxl, 0));

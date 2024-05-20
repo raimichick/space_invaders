@@ -1,9 +1,9 @@
+#include "../include/controls.h"
 #include "../include/disassemble8080p.h"
 #include "../include/opcodes.h"
 #include "../include/shell.h"
 #include "../include/state.h"
 #include "../include/video.h"
-#include "../include/controls.h"
 #include "rom_sections.c"
 
 #include <SDL.h>
@@ -171,7 +171,10 @@ int main(int argc, char *argv[])
     SDL_Init(SDL_INIT_EVERYTHING);
     // Test window
     SDL_Window *window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_CENTERED,
-                                          SDL_WINDOWPOS_CENTERED, 2*224, 2*256, 0);
+                                          SDL_WINDOWPOS_CENTERED,
+                                          SCREEN_SIZE_MULT*SCREEN_WIDTH,
+                                           SCREEN_SIZE_MULT*SCREEN_HEIGHT,
+                                       0);
     SDL_Surface *surface = SDL_GetWindowSurface(window);
     SDL_UpdateWindowSurface(window);
 
