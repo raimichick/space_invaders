@@ -6,7 +6,7 @@
 #define VIDEO_MEMORY_END 0x3FFF // 0x2400 + 256*224/8 = 7168 (7K bytes)
 #define SCREEN_HEIGHT 256
 #define SCREEN_WIDTH 224
-#define SCREEN_SIZE_MULT 1
+#define SCREEN_SIZE_MULT 3
 
 void spinvaders_vram_matrix_to_png(State *state, int lbl_prefix);
 
