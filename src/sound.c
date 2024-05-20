@@ -18,7 +18,7 @@ static const char *_waveFilePaths[] = {
     ROOT_DIR "/assets/6_walk3.wav",         ROOT_DIR "/assets/7_walk4.wav",
     ROOT_DIR "/assets/8_spaceship_hit.wav", ROOT_DIR "/assets/9_extra_life.wav"};
 
-static const int _waveFileLengths[] = {};
+// static const int _sampleLength[] = {171, 374, 1327, 459, 73, 66, 69, 74, 2208, 1896};
 
 int load_samples() { return 0; }
 
@@ -55,11 +55,7 @@ int initialize_audio()
     return 0;
 }
 
-void play_audio(int i)
-{
-    Mix_PlayChannel(i, _sample[i], 0);
-    SDL_Delay(3000);
-}
+void play_audio(int i) { Mix_PlayChannel(i, _sample[i], 0); }
 
 void stop_audio(int i) {}
 
