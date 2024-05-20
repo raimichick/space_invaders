@@ -60,7 +60,7 @@ void spinvaders_vram_matrix_to_surface(State *state, SDL_Surface *surface)
                 // read by memory organization, placed in rect as rotated.
                 int x = (SCREEN_SIZE_MULT * r) - 1;
                 int y = (SCREEN_SIZE_MULT * col_pxl--) - 1;
-                SDL_Rect rect = {x, y, 1, 1};
+                SDL_Rect rect = {x, y, SCREEN_SIZE_MULT, SCREEN_SIZE_MULT};
 
                 // set colors
                 int red_limit = 35;
