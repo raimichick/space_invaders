@@ -1,5 +1,6 @@
 #include "../include/controls.h"
 
+// clang-format off
 void update_keyboard_input(State *state, SDL_Event *e)
 {
     // Handle key press events
