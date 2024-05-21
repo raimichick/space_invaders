@@ -9,7 +9,9 @@
 #if _WIN32
 #include "../include/timer_win.h"
 #elif __APPLE__
+#include "../include/timer_apple.h"
 #elif __linux__
+#include "../include/timer_linux.h"
 #endif
 
 #include <SDL.h>
