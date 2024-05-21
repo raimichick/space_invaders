@@ -23,8 +23,8 @@ void init_timer()
 
 void wait_for_frametime_elapsed(float frametime_usecs)
 {
-    uint64_t cur_tick_val = mach_absolute_time();
-    uint64_t elapsed_usecs = cur_tick_val - prev_tick_val;
+    cur_tick_val = mach_absolute_time();
+    elapsed_usecs = cur_tick_val - prev_tick_val;
 
     /* To prevent overflow */
     elapsed_usecs /= 1000;
@@ -35,8 +35,8 @@ void wait_for_frametime_elapsed(float frametime_usecs)
     // Keep checking until you pass the frametime.
     while (elapsed_usecs < frametime_usecs)
     {
-        uint64_t cur_tick_val = mach_absolute_time();
-        uint64_t elapsed_usecs = cur_tick_val - prev_tick_val;
+        cur_tick_val = mach_absolute_time();
+        elapsed_usecs = cur_tick_val - prev_tick_val;
 
         /* To prevent overflow */
         elapsed_usecs /= 1000;
