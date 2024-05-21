@@ -6,12 +6,18 @@
 #include "../include/video.h"
 #include "rom_sections.c"
 
+#if _WIN32
+#include "../include/timer_win.h"
+#elif __APPLE__
+#elif __linux__
+#endif
+
 #include <SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <synchapi.h>
-#include <sysinfoapi.h>
 #include <time.h>
+
+#define DEBUG 0
 
 int game_size = 0;
 uint8_t shift1, shift0; // hi byte and lo byte for shift register
@@ -19,34 +25,6 @@ uint8_t shift_offset;   // always & with 0x7. only bits 0, 1, 2 matter as shift_
 int scanline96 = 0;
 int emulate_count = 0;
 float cycles_per_frame = 2000000 * 1.f / 60.f; // 2 million cycles/second * 1/60 seconds/cycle.
-
-SYSTEMTIME cur_sys_time;
-SYSTEMTIME last_interrupt_sys_time;
-int check_frame_time_ms_elapsed(float frame_time_ms)
-{
-    GetSystemTime(&cur_sys_time);
-    // clang-format off
-    int cur_time_ms =
-        cur_sys_time.wMilliseconds +
-        cur_sys_time.wSecond * 1000 +
-        cur_sys_time.wMinute * 1000 * 60 +
-        cur_sys_time.wHour   * 1000 * 60 * 60 +
-        cur_sys_time.wDay    * 1000 * 60 * 60 * 24;
-    int last_interrupt_ms =
-        last_interrupt_sys_time.wMilliseconds +
-        last_interrupt_sys_time.wSecond * 1000 +
-        last_interrupt_sys_time.wMinute * 1000 * 60 +
-        last_interrupt_sys_time.wHour   * 1000 * 60 * 60 +
-        last_interrupt_sys_time.wDay    * 1000 * 60 * 60 * 24;
-    // clang-format on
-
-    if (cur_time_ms - last_interrupt_ms > frame_time_ms)
-    {
-        last_interrupt_sys_time = cur_sys_time;
-        return 1;
-    }
-    return 0;
-}
 
 void machine_in(State *state, uint8_t port)
 {
@@ -169,21 +147,20 @@ void handle_interrupts_and_emulate(State *state, SDL_Window *window, SDL_Surface
         emulate8080(state);
         if (state->interrupt_enabled)
         {
-//            SDL_Log("** Interrupt Called**\n");
+            if (DEBUG) SDL_Log("** Interrupt Called**\n");
             if (scanline96 == 1 && cycles_elapsed > cycles_per_frame)
             {
-                while (check_frame_time_ms_elapsed(1000.f/120.f) == 0) { Sleep(1); }
+                wait_for_frametime_elapsed(1000000.f/120.f); // given in microseconds;
                 generate_interrupt(state, 2); // interrupt 2. from emulators 101.
                 scanline96 = 0;
                 cycles_elapsed = 0;
-                // draw screen here.
-//                SDL_Log("Draw_Screen");
+                if (DEBUG) SDL_Log("Draw_Screen");
                 spinvaders_vram_matrix_to_surface(state, surface);
                 SDL_UpdateWindowSurface(window);
             }
             if (scanline96 == 0 && cycles_elapsed > (cycles_per_frame/2.f))
             {
-                while (check_frame_time_ms_elapsed(1000.f/120.f) == 0) { Sleep(1); }
+                wait_for_frametime_elapsed(1000000.f/120.f); // given in microseconds;
                 generate_interrupt(state, 1); // interrupt 1.
                 scanline96 = 1;
             }
@@ -198,8 +175,7 @@ int main(int argc, char *argv[])
     State *state = load_game_state("../include/invaders_combined");
 
     // init timers
-    GetSystemTime(&cur_sys_time);
-    GetSystemTime(&last_interrupt_sys_time);
+    init_timer();
 
     // Initialize SDL2
     SDL_Init(SDL_INIT_EVERYTHING);
@@ -217,11 +193,12 @@ int main(int argc, char *argv[])
     while (state->halt != 1 && state->pc < game_size)
     {
         handle_interrupts_and_emulate(state, window, surface);
-//        SDL_Log("%02x\n", state->memory[0x20c0]);
+        if (DEBUG) SDL_Log("%02x\n", state->memory[0x20c0]);
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
-            if (event.type == SDL_QUIT) endgame = 1;
+            if (event.type == SDL_QUIT)
+                endgame = 1;
             update_keyboard_input(state, &event);
 
         }
