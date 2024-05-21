@@ -13,19 +13,19 @@ void get_keyboard_input(State *state, SDL_Event *e)
         {
         case SDLK_LEFT:
         {
-            state->ports[1] |= 0b00100000; // P1 joystick left
+            state->ports[1] |= 0b00100000;     // P1 joystick left
             state->ports[2] = state->ports[1]; // for player two
             break;
         }
         case SDLK_RIGHT:
         {
-            state->ports[1] |= 0b01000000; // P1 joystick right
+            state->ports[1] |= 0b01000000;     // P1 joystick right
             state->ports[2] = state->ports[1]; // for player two
             break;
         }
         case SDLK_SPACE:
         {
-            state->ports[1] |= 0b00010000; // P1 shoot button
+            state->ports[1] |= 0b00010000;     // P1 shoot button
             state->ports[2] = state->ports[1]; // for player two
             break;
         }
@@ -54,19 +54,19 @@ void get_keyboard_input(State *state, SDL_Event *e)
         {
         case SDLK_LEFT:
         {
-            state->ports[1] &= ~0b00100000; // P1 joystick left
+            state->ports[1] &= ~0b00100000;    // P1 joystick left
             state->ports[2] = state->ports[1]; // for player two
             break;
         }
         case SDLK_RIGHT:
         {
-            state->ports[1] &= ~(1 << 6); // P1 joystick right
+            state->ports[1] &= ~(1 << 6);      // P1 joystick right
             state->ports[2] = state->ports[1]; // for player two
             break;
         }
         case SDLK_SPACE:
         {
-            state->ports[1] &= ~(1 << 4); // P1 shoot button
+            state->ports[1] &= ~(1 << 4);      // P1 shoot button
             state->ports[2] = state->ports[1]; // for player two
             break;
         }
