@@ -14,9 +14,10 @@ void init_timer()
 {
     prev_tick_val = mach_absolute_time();
     mach_timebase_info_data_t tb;
-    if (mach_timebase_info (&tb) == KERN_SUCCESS && tb.denom != 0) {
-        freq_numerator   = (uint64_t) tb.numer;
-        freq_denominator = (uint64_t) tb.denom;
+    if (mach_timebase_info(&tb) == KERN_SUCCESS && tb.denom != 0)
+    {
+        freq_numerator = (uint64_t)tb.numer;
+        freq_denominator = (uint64_t)tb.denom;
     }
 }
 
