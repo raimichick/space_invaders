@@ -3,14 +3,7 @@
 #include "../include/sound.h"
 #include "../include/state.h"
 
-#include <time.h>
-
-void waitFor(unsigned int secs)
-{
-    unsigned int retTime = time(0) + secs; // Get finishing time.
-    while (time(0) < retTime)
-        ; // Loop until it arrives.
-}
+#include <stdio.h>
 
 int main(int argc, char *argv[])
 {

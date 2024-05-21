@@ -30,8 +30,34 @@ add_compile_definitions(ROOT_DIR="${PROJECT_SOURCE_DIR}")
 
 add_executable(space_invaders_8080 src/main.c)
 
+# Copy the SDL2 dlls to the build folder
+add_custom_command(
+        TARGET space_invaders_8080 POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_SOURCE_DIR}/SDL2-2.30.3/x86_64-w64-mingw32/bin/SDL2.dll
+        ${CMAKE_CURRENT_BINARY_DIR}/SDL2.dll)
+
+add_custom_command(
+        TARGET space_invaders_8080 POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_SOURCE_DIR}/SDL2_mixer-2.8.0/x86_64-w64-mingw32/bin/SDL2_mixer.dll
+        ${CMAKE_CURRENT_BINARY_DIR}/SDL2_mixer.dll)
+
 # Build and add tests only in debug, not release
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     enable_testing()
     add_subdirectory(tests)
+
+    # Copy the SDL2 dlls to the test folder
+    add_custom_command(
+            TARGET space_invaders_8080 POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_SOURCE_DIR}/SDL2-2.30.3/x86_64-w64-mingw32/bin/SDL2.dll
+            ${CMAKE_CURRENT_BINARY_DIR}/tests/SDL2.dll)
+
+    add_custom_command(
+            TARGET space_invaders_8080 POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_SOURCE_DIR}/SDL2_mixer-2.8.0/x86_64-w64-mingw32/bin/SDL2_mixer.dll
+            ${CMAKE_CURRENT_BINARY_DIR}/tests/SDL2_mixer.dll)
 endif ()

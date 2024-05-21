@@ -7,8 +7,6 @@
 
 /* VARIABLES */
 #define NUM_WAVEFORMS 10
-static SDL_AudioDeviceID _audioDeviceId = 0;
-static SDL_AudioSpec _audioSpec;
 static Mix_Chunk *_sample[NUM_WAVEFORMS];
 
 static const char *_waveFilePaths[] = {
