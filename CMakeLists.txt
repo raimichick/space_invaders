@@ -10,6 +10,18 @@ set(SDL2_MIXER_PATH "SDL2_mixer-2.8.0\\x86_64-w64-mingw32")
 # Include SDL2
 find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
+
+# Opus support
+if (SDL_MIXER_ENABLE_OPUS)
+    find_path(OPUS_INCLUDE_DIR opus/opusfile.h)
+    find_package(ogg CONFIG REQUIRED)
+    find_package(Opus CONFIG REQUIRED)
+    find_library(OPUSFILE_LIBRARY opusfile)
+    list(APPEND SDL_MIXER_INCLUDES ${OPUS_INCLUDE_DIR})
+    list(APPEND SDL_MIXER_LIBRARIES ${OPUSFILE_LIBRARY} Ogg::ogg Opus::opus)
+    list(APPEND SDL_MIXER_DEFINES MUSIC_OPUS)
+endif ()
+
 include_directories(${SDL2_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR})
 
 # Create a library with all of the 8080 source code
