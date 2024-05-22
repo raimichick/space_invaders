@@ -24,7 +24,7 @@ add_library(8080
         src/machine.c)
 
 # Any executable after this will automatically link the 8080 library
-link_libraries(8080 ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
+link_libraries(8080 ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARIES})
 
 add_compile_definitions(ROOT_DIR="${PROJECT_SOURCE_DIR}")
 
