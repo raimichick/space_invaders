@@ -62,6 +62,7 @@ jobs:
           version: 2-latest
           version-sdl-mixer: 2-latest
           version-sdl-image: 2-latest
+          cmake-arguments: -DSDL2MIXER_VENDORED=ON
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
