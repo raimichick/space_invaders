@@ -18,8 +18,6 @@ static const char *_waveFilePaths[] = {
 
 // static const int _sampleLength[] = {171, 374, 1327, 459, 73, 66, 69, 74, 2208, 1896};
 
-int load_samples() { return 0; }
-
 int initialize_audio()
 {
 
@@ -55,13 +53,18 @@ int initialize_audio()
 
 void play_audio(int i)
 {
-    if (i == 0)
+    // Check if the sample is already playing
+    // prevents samples from triggering multiple times in quick succession
+    if (!Mix_Playing(i))
     {
-        Mix_PlayChannel(i, _sample[i], -1);
-    }
-    else
-    {
-        Mix_PlayChannel(i, _sample[i], 0);
+        if (i == 0)
+        {
+            Mix_PlayChannel(i, _sample[i], -1);
+        }
+        else
+        {
+            Mix_PlayChannel(i, _sample[i], 0);
+        }
     }
 }
 

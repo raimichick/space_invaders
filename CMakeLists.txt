@@ -33,7 +33,7 @@ include_directories(${SDL2_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR})
 add_library(8080 ${SOURCES})
 
 # Any executable after this will automatically link the 8080 library
-link_libraries(8080 ${SDL2_MIXER_LIBRARIES} ${SDL2_LIBRARY})
+link_libraries(8080 ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARIES})
 
 add_compile_definitions(ROOT_DIR="${PROJECT_SOURCE_DIR}")
 

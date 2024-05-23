@@ -62,6 +62,7 @@ void machine_out(State *state, uint8_t port)
         if ((state->a & 0b00000001) != 0) play_audio(0); // bit 0=UFO (repeats)
         else stop_audio(0);
         if ((state->a & 0b00000010) != 0) play_audio(1); // bit 1=Shot
+        else stop_audio(1);
         if ((state->a & 0b00000100) != 0) play_audio(2); // bit 2=Flash (player die)
         if ((state->a & 0b00001000) != 0) play_audio(3); // bit 3=Invader die
         if ((state->a & 0b00010000) != 0) play_audio(9); // bit 4=Extended play
