@@ -10,9 +10,11 @@ set(SOURCES src/shell.c
         src/state.c
         src/disassemble8080p.c
         src/video.c
+        src/sound.c
         src/rom_sections.c
         src/libattopng.c
-        src/controls.c)
+        src/controls.c
+        src/machine.c)
 
 if (WIN32)
     set(SOURCES ${SOURCES} src/timer_win.c)
