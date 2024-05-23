@@ -60,8 +60,8 @@ jobs:
         with:
           install-linux-dependencies: true
           version: 2-latest
-          version-sdl-mixer: 2-latest
           version-sdl-image: 2-latest
+          version-sdl-mixer: 2-latest
           cmake-arguments: -DSDL2MIXER_VENDORED=ON
 
       - name: Configure CMake
