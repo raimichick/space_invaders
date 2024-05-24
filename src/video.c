@@ -63,15 +63,18 @@ void spinvaders_vram_matrix_to_surface(State *state, SDL_Surface *surface)
                 SDL_Rect rect = {x, y, SCREEN_SIZE_MULT, SCREEN_SIZE_MULT};
 
                 // set colors
-                int red_limit = 35;
-                int white_limit = 191;
-                if (y < red_limit * SCREEN_SIZE_MULT) // red
+                int red_limit = 33 * SCREEN_SIZE_MULT;
+                int white_limit = 191 * SCREEN_SIZE_MULT;
+                int white_line_border = 238 * SCREEN_SIZE_MULT;
+                if (y < red_limit) // red
                     SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, 0, 0));
-                if (y > red_limit * SCREEN_SIZE_MULT && y < white_limit * SCREEN_SIZE_MULT) // white
+                else if (y < white_limit || (y >= white_line_border &&
+                                             y <= white_line_border + SCREEN_SIZE_MULT)) // white
                     SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, pxl, pxl));
-                if (y > white_limit * SCREEN_SIZE_MULT) // green
+                else
                 {
-                    if (y > 238 * SCREEN_SIZE_MULT &&
+                    // only inner portion green
+                    if (y > 239 * SCREEN_SIZE_MULT &&
                         (x < 15 * SCREEN_SIZE_MULT || x > 100 * SCREEN_SIZE_MULT)) // white
                         SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, pxl, pxl));
                     else // green
