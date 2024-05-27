@@ -16,6 +16,7 @@
 #endif
 
 #include <SDL.h>
+#include <SDL_image.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -33,11 +34,19 @@ int main(int argc, char *argv[])
 
     // Initialize SDL2
     SDL_Init(SDL_INIT_EVERYTHING);
+
     // Test window
-    SDL_Window *window =
-        SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                         SCREEN_SIZE_MULT * SCREEN_WIDTH, SCREEN_SIZE_MULT * SCREEN_HEIGHT, 0);
-    SDL_Surface *surface = SDL_GetWindowSurface(window);
+    SDL_Window *window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                     775, 572, 0);
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_Surface *planet_surface = IMG_Load("../include/planet.png");
+    SDL_Surface *game_surface = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, 0, 0, 0, 0);
+
+    // SDL_Texture *planet_texture = SDL_CreateTextureFromSurface(renderer, planet_surface);
+    // SDL_Texture *game_texture = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT );
+    SDL_FreeSurface(planet_surface);
+    // SDL_FreeSurface(game_surface);
+
     SDL_UpdateWindowSurface(window);
 
     // Initialize Audio
@@ -47,7 +56,8 @@ int main(int argc, char *argv[])
     int endgame = 0;
     while (state->halt != 1 && state->pc < game_size)
     {
-        handle_interrupts_and_emulate(state, window, surface);
+        handle_interrupts_and_emulate(state, window, game_surface);
+        SDL_Texture* game_texture = SDL_CreateTextureFromSurface(renderer, game_surface);
         if (DEBUG) SDL_Log("%02x\n", state->memory[0x20c0]);
         SDL_Event event;
         while (SDL_PollEvent(&event))
@@ -56,11 +66,17 @@ int main(int argc, char *argv[])
             update_keyboard_input(state, &event);
         }
         if (endgame == 1) break;
+
+        SDL_RenderClear(renderer);
+        // SDL_RenderCopy(renderer, planet_texture, NULL,NULL);
+        SDL_RenderCopy(renderer, game_texture, NULL,NULL);
+        SDL_RenderPresent(renderer);
     }
 
     Free8080(state);
     free_audio();
-    SDL_FreeSurface(surface);
+    SDL_FreeSurface(game_surface);
+    SDL_FreeSurface(planet_surface);
     SDL_DestroyWindow(window);
     SDL_Quit(); // Close SDL
     return 0;

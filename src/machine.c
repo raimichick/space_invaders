@@ -160,6 +160,7 @@ void handle_interrupts_and_emulate(State *state, SDL_Window *window, SDL_Surface
                 scanline96 = 0;
                 cycles_elapsed = 0;
                 if (DEBUG) SDL_Log("Draw_Screen");
+                //spinvaders_vram_matrix_to_texture(state, texture);
                 spinvaders_vram_matrix_to_surface(state, surface);
                 SDL_UpdateWindowSurface(window);
             }
