@@ -42,49 +42,14 @@
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
-find_package(SDL2 QUIET)
-if(NOT SDL2_FOUND)
-    set(SDL2_IMAGE_SDL2_NOT_FOUND "Could NOT find SDL2 (SDL2 is required by SDL2_image).")
-    if(SDL2_image_FIND_REQUIRED)
-        message(FATAL_ERROR ${SDL2_IMAGE_SDL2_NOT_FOUND})
-    else()
-        if(NOT SDL2_image_FIND_QUIETLY)
-            message(STATUS ${SDL2_IMAGE_SDL2_NOT_FOUND})
-        endif()
-        return()
-    endif()
-    unset(SDL2_IMAGE_SDL2_NOT_FOUND)
-endif()
-
-
-# Define options for searching SDL2_image Library in a custom path
-
-set(SDL2_IMAGE_PATH "" CACHE STRING "Custom SDL2_image Library path")
-
-set(_SDL2_IMAGE_NO_DEFAULT_PATH OFF)
-if(SDL2_IMAGE_PATH)
-    set(_SDL2_IMAGE_NO_DEFAULT_PATH ON)
-endif()
-
-set(SDL2_IMAGE_NO_DEFAULT_PATH ${_SDL2_IMAGE_NO_DEFAULT_PATH}
-        CACHE BOOL "Disable search SDL2_image Library in default path")
-unset(_SDL2_IMAGE_NO_DEFAULT_PATH)
-
-set(SDL2_IMAGE_NO_DEFAULT_PATH_CMD)
-if(SDL2_IMAGE_NO_DEFAULT_PATH)
-    set(SDL2_IMAGE_NO_DEFAULT_PATH_CMD NO_DEFAULT_PATH)
-endif()
-
 find_path(SDL2_IMAGE_INCLUDE_DIR SDL_image.h
         HINTS
         ENV SDL2IMAGEDIR
         ENV SDL2DIR
         PATH_SUFFIXES SDL2
-        ${SDL2_MIXER_NO_DEFAULT_PATH_CMD}
         # path suffixes to search inside ENV{SDLDIR}
         include/SDL2 include
         PATHS ${SDL2_IMAGE_PATH}
-        DOC "Where the SDL2_mixer headers can be found"
         )
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -98,10 +63,8 @@ find_library(SDL2_IMAGE_LIBRARY
         HINTS
         ENV SDL2IMAGEDIR
         ENV SDL2DIR
-        ${SDL2_MIXER_NO_DEFAULT_PATH_CMD}
         PATH_SUFFIXES lib ${VC_LIB_PATH_SUFFIX}
         PATHS ${SDL2_IMAGE_PATH}
-        DOC "Where the SDL2_mixer Library can be found"
         )
 
 if(SDL2_IMAGE_INCLUDE_DIR AND EXISTS "${SDL2_IMAGE_INCLUDE_DIR}/SDL_image.h")
