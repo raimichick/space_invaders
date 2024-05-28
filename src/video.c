@@ -1,4 +1,3 @@
-#pragma once
 #include "../include/video.h"
 #include "../include/disassemble8080p.h"
 #include "../include/libattopng.h"
