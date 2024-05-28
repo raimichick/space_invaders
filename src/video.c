@@ -63,6 +63,14 @@ void spinvaders_vram_matrix_to_surface(State *state, SDL_Surface *surface)
                 int y = (SCREEN_SIZE_MULT * col_pxl--) - 1;
                 SDL_Rect rect = {x, y, SCREEN_SIZE_MULT, SCREEN_SIZE_MULT};
 
+                if (pxl == 0)
+                {
+                    SDL_FillRect(surface, &rect, SDL_MapRGBA(surface->format, 0, 0, 0, 0));
+                    continue;
+                }
+
+
+
                 // set colors
                 int red_limit = 33 * SCREEN_SIZE_MULT;
                 int white_limit = 191 * SCREEN_SIZE_MULT;
