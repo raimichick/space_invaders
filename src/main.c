@@ -39,8 +39,8 @@ int main(int argc, char *argv[])
     SDL_Window *window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                      1192, 1179, 0);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_Surface *cab_surface = IMG_Load("../include/si_cab_large_trans.png");
-    SDL_Surface *planet_surface = IMG_Load("../include/planet.png");
+    SDL_Surface *cab_surface = IMG_Load("../assets/cabinet.png");
+    SDL_Surface *planet_surface = IMG_Load("../assets/planet.png");
     SDL_Surface *game_surface = SDL_CreateRGBSurface(0, SCREEN_WIDTH*SCREEN_SIZE_MULT, SCREEN_HEIGHT*SCREEN_SIZE_MULT, 32,
                                                     0xFF000000,
                                                     0x00FF0000,
