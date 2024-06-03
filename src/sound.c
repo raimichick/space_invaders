@@ -2,12 +2,14 @@
 
 #include <SDL.h>
 #include <SDL_mixer.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 /* VARIABLES */
 #define NUM_WAVEFORMS 10
 static Mix_Chunk *_sample[NUM_WAVEFORMS];
+static bool _shoot_sound_played;
 
 static const char *_waveFilePaths[] = {
     ROOT_DIR "/assets/0_spaceship.wav",     ROOT_DIR "/assets/1_shoot.wav",
@@ -61,6 +63,14 @@ void play_audio(int i)
         {
             Mix_PlayChannel(i, _sample[i], -1);
         }
+        else if (i == 1)
+        {
+            if (_shoot_sound_played == false)
+            {
+                _shoot_sound_played = true;
+                Mix_PlayChannel(i, _sample[i], 0);
+            }
+        }
         else
         {
             Mix_PlayChannel(i, _sample[i], 0);
@@ -68,7 +78,17 @@ void play_audio(int i)
     }
 }
 
-void stop_audio(int i) { Mix_HaltChannel(i); }
+void stop_audio(int i)
+{
+    if (i == 1)
+    {
+        _shoot_sound_played = false;
+    }
+    else
+    {
+        Mix_HaltChannel(i);
+    }
+}
 
 void free_audio()
 {
