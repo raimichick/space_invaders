@@ -12,11 +12,10 @@ static Mix_Chunk *_sample[NUM_WAVEFORMS];
 static bool _shoot_sound_played;
 
 static const char *_waveFilePaths[] = {
-    ROOT_DIR "/assets/0_spaceship.wav",     ROOT_DIR "/assets/1_shoot.wav",
-    ROOT_DIR "/assets/2_base_hit.wav",      ROOT_DIR "/assets/3_invader_hit.wav",
-    ROOT_DIR "/assets/4_walk1.wav",         ROOT_DIR "/assets/5_walk2.wav",
-    ROOT_DIR "/assets/6_walk3.wav",         ROOT_DIR "/assets/7_walk4.wav",
-    ROOT_DIR "/assets/8_spaceship_hit.wav", ROOT_DIR "/assets/9_extra_life.wav"};
+    "../assets/0_spaceship.wav",   "../assets/1_shoot.wav", "../assets/2_base_hit.wav",
+    "../assets/3_invader_hit.wav", "../assets/4_walk1.wav", "../assets/5_walk2.wav",
+    "../assets/6_walk3.wav",       "../assets/7_walk4.wav", "../assets/8_spaceship_hit.wav",
+    "../assets/9_extra_life.wav"};
 
 // static const int _sampleLength[] = {171, 374, 1327, 459, 73, 66, 69, 74, 2208, 1896};
 
