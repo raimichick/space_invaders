@@ -6,18 +6,18 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
 # Set CMAKE_PREFIX_PATH to include the Homebrew installation directory
-if(APPLE)
-    if(EXISTS "/opt/homebrew")
+if (APPLE)
+    if (EXISTS "/opt/homebrew")
         # Apple Silicon Homebrew location
         set(CMAKE_PREFIX_PATH "/opt/homebrew")
-    else()
+    else ()
         # Intel Homebrew location
         set(CMAKE_PREFIX_PATH "/usr/local")
-    endif()
-else()
+    endif ()
+elseif (WIN32)
     set(SDL2_PATH "SDL2-2.30.3\\x86_64-w64-mingw32")
     set(SDL2_MIXER_PATH "SDL2_mixer-2.8.0\\x86_64-w64-mingw32")
-endif()
+endif ()
 
 set(SOURCES src/shell.c
         src/state.c
@@ -46,7 +46,7 @@ include_directories(${SDL2_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR})
 add_library(8080 ${SOURCES})
 
 # Any executable after this will automatically link the 8080 library
-link_libraries(8080 ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARIES})
+link_libraries(8080 ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
 
 add_compile_definitions(ROOT_DIR="${PROJECT_SOURCE_DIR}")
 
