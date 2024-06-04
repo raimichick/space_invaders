@@ -119,7 +119,7 @@ State *load_game_state(const char *file, int *game_size)
     return state;
 }
 
-void handle_interrupts_and_emulate(State *state, SDL_Window *window, SDL_Renderer *renderer, SDL_Surface *game_surface, SDL_Texture *game_texture, SDL_Texture *planet_texture, SDL_Texture *cab_texture)
+void handle_interrupts_and_emulate(State *state)
 {
     char message[100];
     print_rom_section_desc(state->pc, message);
@@ -160,14 +160,7 @@ void handle_interrupts_and_emulate(State *state, SDL_Window *window, SDL_Rendere
                 scanline96 = 0;
                 cycles_elapsed = 0;
                 if (DEBUG) SDL_Log("Draw_Screen");
-                spinvaders_vram_matrix_to_surface(state, game_surface);
-                game_texture = SDL_CreateTextureFromSurface(renderer, game_surface);
-                SDL_RenderClear(renderer);
-                SDL_RenderCopy(renderer, planet_texture, NULL,NULL);
-                SDL_RenderCopy(renderer, cab_texture, NULL,NULL);
-                SDL_Rect rect = {(1192-(SCREEN_WIDTH*SCREEN_SIZE_MULT))/2, (1179-(SCREEN_HEIGHT*SCREEN_SIZE_MULT))/2, SCREEN_WIDTH*SCREEN_SIZE_MULT, SCREEN_HEIGHT*SCREEN_SIZE_MULT};
-                SDL_RenderCopy(renderer, game_texture, NULL, &rect);
-                SDL_RenderPresent(renderer);
+                draw_screen(state);
             }
             if (scanline96 == 0 && cycles_elapsed > (cycles_per_frame/2.f))
             {

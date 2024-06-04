@@ -35,23 +35,8 @@ int main(int argc, char *argv[])
     // Initialize SDL2
     SDL_Init(SDL_INIT_EVERYTHING);
 
-    // Test window
-    SDL_Window *window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                     1192, 1179, 0);
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_Surface *cab_surface = IMG_Load("../assets/cabinet.png");
-    SDL_Surface *planet_surface = IMG_Load("../assets/planet.png");
-    SDL_Surface *game_surface = SDL_CreateRGBSurface(0, SCREEN_WIDTH*SCREEN_SIZE_MULT, SCREEN_HEIGHT*SCREEN_SIZE_MULT, 32,
-                                                    0xFF000000,
-                                                    0x00FF0000,
-                                                    0x0000FF00,
-                                                    0x000000FF);
-    SDL_Texture *cab_texture = SDL_CreateTextureFromSurface(renderer, cab_surface);
-    SDL_Texture *planet_texture = SDL_CreateTextureFromSurface(renderer, planet_surface);
-    SDL_Texture *game_texture = SDL_CreateTextureFromSurface(renderer, game_surface);
-    SDL_FreeSurface(cab_surface);
-    SDL_FreeSurface(planet_surface);
-    // SDL_FreeSurface(game_surface);
+    // init video
+    if (initialize_video() != 0) exit(1);
 
     // Initialize Audio
     if (initialize_audio()) exit(1);
@@ -60,8 +45,7 @@ int main(int argc, char *argv[])
     int endgame = 0;
     while (state->halt != 1 && state->pc < game_size)
     {
-        handle_interrupts_and_emulate(state, window, renderer, game_surface, game_texture, planet_texture, cab_texture);
-        if (DEBUG) SDL_Log("%02x\n", state->memory[0x20c0]);
+        handle_interrupts_and_emulate(state);
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
@@ -73,9 +57,7 @@ int main(int argc, char *argv[])
 
     Free8080(state);
     free_audio();
-    SDL_FreeSurface(game_surface);
-    SDL_FreeSurface(planet_surface);
-    SDL_DestroyWindow(window);
-    SDL_Quit(); // Close SDL
+    free_video();
+    SDL_Quit();
     return 0;
 }
