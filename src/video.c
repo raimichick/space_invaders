@@ -1,12 +1,9 @@
 #include "../include/video.h"
-#include "../include/disassemble8080p.h"
 #include "../include/libattopng.h"
 #include "../include/shell.h"
-#include "../include/state.h"
 #include "../include/settings.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 
 static SDL_Window *window;
 static SDL_Renderer *renderer;
@@ -15,20 +12,33 @@ static SDL_Texture *cab_texture;
 static SDL_Texture *planet_texture;
 static SDL_Texture *game_texture;
 
+static int win_size_w;
+static int win_size_h;
+static int play_area_size_w;
+static int play_area_size_h;
+
 int initialize_video()
 {
+    /* sets up SDL window, renderer, surfaces, textures and updates window size variables. */
+
+    win_size_h = SCREEN_HEIGHT*SETTINGS_WINDOW_MULTIPLIER,
+    win_size_w = SCREEN_WIDTH*SETTINGS_WINDOW_MULTIPLIER,
+    play_area_size_w = win_size_w;
+    play_area_size_h = win_size_h;
+
     window = SDL_CreateWindow("SDL2 Window",
                               SDL_WINDOWPOS_CENTERED,
                               SDL_WINDOWPOS_CENTERED,
-                              1192, 1179, 0);
+                              win_size_w,
+                              win_size_h,
+                              0);
     if (!window) { SDL_Log( "Unable to create window. %s\n", SDL_GetError()); return 1; }
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer) { SDL_Log( "Unable to create renderer. %s\n", SDL_GetError()); return 1; }
-
     game_surface = SDL_CreateRGBSurface(0,
-                                        SCREEN_WIDTH*SETTINGS_WINDOW_MULTIPLIER,
-                                        SCREEN_HEIGHT*SETTINGS_WINDOW_MULTIPLIER,
+                                        win_size_w,
+                                        win_size_h,
                                         32,
                                         0xFF000000,
                                         0x00FF0000,
@@ -42,10 +52,11 @@ int initialize_video()
 
     if (SETTINGS_BACKGROUND)
     {
-        SDL_Surface *cab_surface = IMG_Load("../assets/cabinet.png");
+        // setup background textures
+        SDL_Surface *cab_surface = IMG_Load("../assets/cabinet1.png");
         if (!cab_surface) { SDL_Log( "Unable to create cabinet surface. %s\n", SDL_GetError()); return 1; }
 
-        SDL_Surface *planet_surface = IMG_Load("../assets/planet.png");
+        SDL_Surface *planet_surface = IMG_Load("../assets/planet_grad.png");
         if (!planet_surface) { SDL_Log( "Unable to create planet surface. %s\n", SDL_GetError()); return 1; }
 
         cab_texture = SDL_CreateTextureFromSurface(renderer, cab_surface);
@@ -53,6 +64,12 @@ int initialize_video()
 
         planet_texture = SDL_CreateTextureFromSurface(renderer, planet_surface);
         if (!planet_texture) { SDL_Log( "Unable to create planet texture. %s\n", SDL_GetError()); return 1; }
+
+        // resize window for background, center window
+        win_size_w = ((cab_surface->w*SETTINGS_WINDOW_MULTIPLIER) / 2);
+        win_size_h = ((cab_surface->h*SETTINGS_WINDOW_MULTIPLIER) / 2);
+        SDL_SetWindowSize(window, win_size_w, win_size_h);
+        SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
         SDL_FreeSurface(cab_surface);
         SDL_FreeSurface(planet_surface);
@@ -70,18 +87,30 @@ void free_video()
 
 void draw_screen(State *state)
 {
+    SDL_RenderClear(renderer);
+
     spinvaders_vram_matrix_to_surface(state, game_surface);
     game_texture = SDL_CreateTextureFromSurface(renderer, game_surface);
-    SDL_RenderClear(renderer);
+
+    int x_pos = (win_size_w-(play_area_size_w))/2;
+    int y_pos = (win_size_h-(play_area_size_h))/2;
+    int y_offset = 0;
     if (SETTINGS_BACKGROUND)
     {
+        y_offset = -6 * SETTINGS_WINDOW_MULTIPLIER;
+//        y_offset = -30 * SETTINGS_WINDOW_MULTIPLIER; // for cabinet2.png
         SDL_RenderCopy(renderer, planet_texture, NULL,NULL);
+        SDL_Rect rect = {x_pos, y_pos - y_offset, play_area_size_w, play_area_size_h};
+        SDL_RenderCopy(renderer, game_texture, NULL, &rect);
         SDL_RenderCopy(renderer, cab_texture, NULL,NULL);
+        SDL_RenderPresent(renderer);
     }
-    int m = SETTINGS_WINDOW_MULTIPLIER;
-    SDL_Rect rect = {(1192-(SCREEN_WIDTH*m))/2, (1179-(SCREEN_HEIGHT*m))/2, SCREEN_WIDTH*m, SCREEN_HEIGHT*m};
-    SDL_RenderCopy(renderer, game_texture, NULL, &rect);
-    SDL_RenderPresent(renderer);
+    else
+    {
+        SDL_Rect rect = {x_pos, y_pos - y_offset, play_area_size_w, play_area_size_h};
+        SDL_RenderCopy(renderer, game_texture, NULL, &rect);
+        SDL_RenderPresent(renderer);
+    }
 }
 
 void spinvaders_vram_matrix_to_png(State *state, int lbl_prefix)
