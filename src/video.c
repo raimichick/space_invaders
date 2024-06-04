@@ -26,12 +26,6 @@ int initialize_video()
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer) { SDL_Log( "Unable to create renderer. %s\n", SDL_GetError()); return 1; }
 
-    SDL_Surface *cab_surface = IMG_Load("../assets/cabinet.png");
-    if (!cab_surface) { SDL_Log( "Unable to create cabinet surface. %s\n", SDL_GetError()); return 1; }
-
-    SDL_Surface *planet_surface = IMG_Load("../assets/planet.png");
-    if (!planet_surface) { SDL_Log( "Unable to create planet surface. %s\n", SDL_GetError()); return 1; }
-
     game_surface = SDL_CreateRGBSurface(0,
                                         SCREEN_WIDTH*SETTINGS_WINDOW_MULTIPLIER,
                                         SCREEN_HEIGHT*SETTINGS_WINDOW_MULTIPLIER,
@@ -42,17 +36,27 @@ int initialize_video()
                                         0x000000FF);
     if (!game_surface) { SDL_Log( "Unable to create game surface. %s\n", SDL_GetError()); return 1; }
 
-    cab_texture = SDL_CreateTextureFromSurface(renderer, cab_surface);
-    if (!cab_texture) { SDL_Log( "Unable to create cabinet texture. %s\n", SDL_GetError()); return 1; }
-
-    planet_texture = SDL_CreateTextureFromSurface(renderer, planet_surface);
-    if (!planet_texture) { SDL_Log( "Unable to create planet texture. %s\n", SDL_GetError()); return 1; }
-
     game_texture = SDL_CreateTextureFromSurface(renderer, game_surface);
     if (!game_texture) { SDL_Log( "Unable to create game texture. %s\n", SDL_GetError()); return 1; }
 
-    SDL_FreeSurface(cab_surface);
-    SDL_FreeSurface(planet_surface);
+
+    if (SETTINGS_BACKGROUND)
+    {
+        SDL_Surface *cab_surface = IMG_Load("../assets/cabinet.png");
+        if (!cab_surface) { SDL_Log( "Unable to create cabinet surface. %s\n", SDL_GetError()); return 1; }
+
+        SDL_Surface *planet_surface = IMG_Load("../assets/planet.png");
+        if (!planet_surface) { SDL_Log( "Unable to create planet surface. %s\n", SDL_GetError()); return 1; }
+
+        cab_texture = SDL_CreateTextureFromSurface(renderer, cab_surface);
+        if (!cab_texture) { SDL_Log( "Unable to create cabinet texture. %s\n", SDL_GetError()); return 1; }
+
+        planet_texture = SDL_CreateTextureFromSurface(renderer, planet_surface);
+        if (!planet_texture) { SDL_Log( "Unable to create planet texture. %s\n", SDL_GetError()); return 1; }
+
+        SDL_FreeSurface(cab_surface);
+        SDL_FreeSurface(planet_surface);
+    }
 
     return 0;
 }
@@ -69,8 +73,11 @@ void draw_screen(State *state)
     spinvaders_vram_matrix_to_surface(state, game_surface);
     game_texture = SDL_CreateTextureFromSurface(renderer, game_surface);
     SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, planet_texture, NULL,NULL);
-    SDL_RenderCopy(renderer, cab_texture, NULL,NULL);
+    if (SETTINGS_BACKGROUND)
+    {
+        SDL_RenderCopy(renderer, planet_texture, NULL,NULL);
+        SDL_RenderCopy(renderer, cab_texture, NULL,NULL);
+    }
     int m = SETTINGS_WINDOW_MULTIPLIER;
     SDL_Rect rect = {(1192-(SCREEN_WIDTH*m))/2, (1179-(SCREEN_HEIGHT*m))/2, SCREEN_WIDTH*m, SCREEN_HEIGHT*m};
     SDL_RenderCopy(renderer, game_texture, NULL, &rect);

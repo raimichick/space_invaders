@@ -35,7 +35,8 @@ if (WIN32)
 elseif (APPLE)
     set(SOURCES ${SOURCES} src/timer_apple.c)
 else ()
-    set(SOURCES ${SOURCES} src/timer_linux.c)
+    set(SOURCES ${SOURCES} src/timer_linux.c
+            include/settings.h)
 endif ()
 
 # Include SDL2
