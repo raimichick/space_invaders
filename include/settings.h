@@ -1,0 +1,4 @@
+#pragma once
+
+#define SETTINGS_BACKGROUND 1
+#define SETTINGS_WINDOW_MULTIPLIER 2

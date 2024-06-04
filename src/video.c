@@ -3,6 +3,7 @@
 #include "../include/libattopng.h"
 #include "../include/shell.h"
 #include "../include/state.h"
+#include "../include/settings.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,7 +91,7 @@ void spinvaders_vram_matrix_to_png(State *state, int lbl_prefix)
         for (int c = 0; c < COL_COUNT; c++)
         {
             uint16_t data_pos = (r * COL_COUNT) + c;
-            uint8_t data = state->memory[0x2400 + data_pos];
+            uint8_t data = state->memory[VRAM_ADDRESS + data_pos];
             for (int bit_num = 0; bit_num < 8; bit_num++)
             {
                 uint8_t data_bit = data & (0x01 << bit_num); // account for little endian
@@ -111,131 +112,59 @@ void spinvaders_vram_matrix_to_png(State *state, int lbl_prefix)
 void spinvaders_vram_matrix_to_surface(State *state, SDL_Surface *surface)
 {
     // the grid is sideways in memory, need to rotate CC for screen to be upright.
-    const int ROW_COUNT = SCREEN_WIDTH;      // screen width
-    const int COL_COUNT = SCREEN_HEIGHT / 8; // screen height / 8 because each bit per byte is pxl
+    const int VRAM_ROW_COUNT = SCREEN_WIDTH;      // screen width
+    const int VRAM_COL_COUNT = SCREEN_HEIGHT / 8; // screen height / 8 because each bit per byte is pxl
+    const int VRAM_DATA_COUNT = VRAM_ROW_COUNT * VRAM_COL_COUNT;
 
-    for (int r = 0; r < ROW_COUNT; r++)
+    uint8_t col_pxl = 255; // will wrap around
+    for (int data_pos = 0; data_pos < VRAM_DATA_COUNT; data_pos++)
     {
-        int col_pxl = 255;
-        for (int c = 0; c < COL_COUNT; c++)
+        uint8_t data = state->memory[VRAM_ADDRESS + data_pos];
+        for (int bit_num = 0; bit_num < 8; bit_num++)
         {
-            uint16_t data_pos = (r * COL_COUNT) + c;
-            uint8_t data = state->memory[0x2400 + data_pos];
-            for (int bit_num = 0; bit_num < 8; bit_num++)
+            uint8_t pxl = data & (0x01 << bit_num); // account for little endian
+            pxl = (pxl == 0) ? 0 : 0xff;
+
+            // read by memory organization, placed in rect as rotated.
+            int x = (SETTINGS_WINDOW_MULTIPLIER * data_pos / VRAM_COL_COUNT) - 1;
+            int y = (SETTINGS_WINDOW_MULTIPLIER * col_pxl--) - 1;
+            SDL_Rect rect = {x, y, SETTINGS_WINDOW_MULTIPLIER, SETTINGS_WINDOW_MULTIPLIER};
+            if (pxl == 0)
             {
-                uint8_t pxl = data & (0x01 << bit_num); // account for little endian
-                pxl = (pxl == 0) ? 0 : 0xff;
-
-                // read by memory organization, placed in rect as rotated.
-                int x = (SCREEN_SIZE_MULT * r) - 1;
-                int y = (SCREEN_SIZE_MULT * col_pxl--) - 1;
-                SDL_Rect rect = {x, y, SCREEN_SIZE_MULT, SCREEN_SIZE_MULT};
-
-                if (pxl == 0)
-                {
-                    SDL_FillRect(surface, &rect, SDL_MapRGBA(surface->format, 0, 0, 0, 0));
-                    continue;
-                }
-
-
-
-                // set colors
-                int red_limit = 33 * SCREEN_SIZE_MULT;
-                int white_limit = 191 * SCREEN_SIZE_MULT;
-                int white_line_border = 238 * SCREEN_SIZE_MULT;
-                if (y < red_limit) // red
-                    SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, 0, 0));
-                else if (y < white_limit || (y >= white_line_border &&
-                                             y <= white_line_border + SCREEN_SIZE_MULT)) // white
-                    SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, pxl, pxl));
-                else
-                {
-                    // only inner portion green
-                    if (y > 239 * SCREEN_SIZE_MULT &&
-                        (x < 15 * SCREEN_SIZE_MULT || x > 100 * SCREEN_SIZE_MULT)) // white
-                        SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, pxl, pxl));
-                    else // green
-                        SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, 0, pxl, 0));
-                }
+                SDL_FillRect(surface, &rect, SDL_MapRGBA(surface->format, 0, 0, 0, 0));
             }
-            // printf("%02x", state->memory[0x2400 + data_pos]);
+            else
+            {
+                uint8_t rgb[3] = {pxl, pxl, pxl};
+                apply_color_filter(x, y, rgb);
+                SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, rgb[0], rgb[1], rgb[2]));
+            }
         }
     }
 }
 
-void spinvaders_vram_matrix_to_texture(State *state, SDL_Texture *texture)
+void apply_color_filter(int x, int y, uint8_t *rgb)
 {
-    // the grid is sideways in memory, need to rotate CC for screen to be upright.
-    const int ROW_COUNT = SCREEN_WIDTH;      // screen width
-    const int COL_COUNT = SCREEN_HEIGHT / 8; // screen height / 8 because each bit per byte is pxl
+    const int m = SETTINGS_WINDOW_MULTIPLIER;
+    const int red_y_limit = 33 * m;
+    const int white_y_limit = 191 * m;
+    const int line_below_shield = 238 * m;
 
-    void* pixels;
-    int pitch;
-    if (SDL_LockTexture(texture, NULL, &pixels, &pitch) < 0) {
-        printf("Unable to lock texture! SDL_Error: %s\n", SDL_GetError());
+    if (y < red_y_limit) // red
+    {
+        rgb[0] *= 1;
+        rgb[1] *= 0;
+        rgb[2] *= 0;
+    }
+    else if ( y < white_y_limit) // aliens
+    {
         return;
     }
-
-    // Access and modify the texture's pixel data
-    Uint32* pixels32 = (Uint32*)pixels;
-    // Draw a blue diagonal line on the texture
-    for (int y = 0; y < SCREEN_HEIGHT; y++) {
-        int x = y;
-        if (x < SCREEN_WIDTH) {
-            pixels32[y * (pitch / 4) + x] = SDL_MapRGBA(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), 0, 0, 255, 255); // Solid blue
-        }
-    }
-    // Unlock the texture
-    SDL_UnlockTexture(texture);
-    return;
-    for (int r = 0; r < ROW_COUNT; r++)
+    else if ( (y < line_below_shield || y > line_below_shield + m) &&
+             (y <= 239 * m || (x >= 15 * m && x <= 100 * m))) // shields, cannon, and lives
     {
-        int col_pxl = 255;
-        for (int c = 0; c < COL_COUNT; c++)
-        {
-            uint16_t data_pos = (r * COL_COUNT) + c;
-            uint8_t data = state->memory[0x2400 + data_pos];
-            for (int bit_num = 0; bit_num < 8; bit_num++)
-            {
-                uint8_t pxl = data & (0x01 << bit_num); // account for little endian
-                pxl = (pxl == 0) ? 0 : 0xff;
-
-                // read by memory organization, placed in rect as rotated.
-                int x = (1 * r) - 1;
-                int y = (1 * col_pxl--) - 1;
-                // if (pxl == 0)
-                // {
-                //     pixels32[y * (pitch / 4) + x] = SDL_MapRGBA(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), 0, 0, 0, 0); // transparent.
-                //     continue;
-                // }
-
-                // set colors
-                int red_limit = 33 * 1;
-                int white_limit = 191 * 1;
-                int white_line_border = 238 * 1;
-                if (y < red_limit) // red
-                    // SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, 0, 0));
-                    pixels32[y * (pitch / 4) + x] = SDL_MapRGBA(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), 255, 0, 0, 255); // transparent.
-                else if (y < white_limit || (y >= white_line_border &&
-                                             y <= white_line_border + 1)) // white
-                    // SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, pxl, pxl));
-                    pixels32[y * (pitch / 4) + x] = SDL_MapRGBA(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), 255, 255, 255, 255); // transparent.
-                else
-                {
-                    // only inner portion green
-                    if (y > 239 * 1 &&
-                        (x < 15 * 1 || x > 100 * 1)) // white
-                        // SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, pxl, pxl, pxl));
-                        pixels32[y * (pitch / 4) + x] = SDL_MapRGBA(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), 255, 255, 255, 255); // transparent.
-                    else // green
-                        // SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, 0, pxl, 0));
-                        pixels32[y * (pitch / 4) + x] = SDL_MapRGBA(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), 0, 255, 0, 255); // transparent.
-                }
-            }
-            // printf("%02x", state->memory[0x2400 + data_pos]);
-        }
+        rgb[0] *= 0;
+        rgb[1] *= 1;
+        rgb[2] *= 0;
     }
-
-    // Unlock the texture
-    SDL_UnlockTexture(texture);
 }
