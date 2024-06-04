@@ -20,13 +20,11 @@
 
 #define DEBUG 0
 
-static uint8_t shift1, shift0; // hi byte and lo byte for shift register
-static uint8_t
-    shift_offset; // always & with 0x7. only bits 0, 1, 2 matter as shift_offset can be 0-7.
-static int scanline96 = 0;
+static uint8_t shift1, shift0; // hi, lo byte for shift register
+static uint8_t shift_offset; // always & with 0x7. only bits 0, 1, 2 matter as value can be 0-7.
+static int midscreen_interrupt = 0;
 static int emulate_count = 0;
-static float cycles_per_frame =
-    2000000 * 1.f / 60.f; // 2 million cycles/second * 1/60 seconds/cycle.
+static float cycles_per_frame = 2000000 * 1.f / 60.f; // 2 MHz * 1/60 secs/cycle.
 
 void machine_in(State *state, uint8_t port)
 {
@@ -58,7 +56,6 @@ void machine_out(State *state, uint8_t port)
     case 2: shift_offset = state->a & 0x7; break;
     case 3:
     {
-        //        SDL_Log("ERR NEED TO HANDLE OUT 3 SOUND\n");
         if ((state->a & 0b00000001) != 0) play_audio(0); // bit 0=UFO (repeats)
         else stop_audio(0);
         if ((state->a & 0b00000010) != 0) play_audio(1); // bit 1=Shot
@@ -76,7 +73,6 @@ void machine_out(State *state, uint8_t port)
     case 4: { shift0 = shift1; shift1 = state->a; break; }
     case 5:
     {
-        //        SDL_Log("ERR NEED TO HANDLE OUT 5 SOUND\n");
         if ((state->a & 0b00000001) != 0) play_audio(4); // bit 0=Fleet movement 1
         if ((state->a & 0b00000010) != 0) play_audio(5); // bit 1=Fleet movement 2
         if ((state->a & 0b00000100) != 0) play_audio(6); // bit 2=Fleet movement 3
@@ -121,12 +117,14 @@ State *load_game_state(const char *file, int *game_size)
 
 void handle_interrupts_and_emulate(State *state)
 {
-    char message[100];
-    print_rom_section_desc(state->pc, message);
-    emulate_count++;
-//    if (strcmp(message, "") != 0)
-//        SDL_Log("%d: %s\n", emulate_count, message);
-    //state->memory[0x20c1] = 1; // turn demo on.
+    if (DEBUG)
+    {
+        char message[100];
+        print_rom_section_desc(state->pc, message);
+        emulate_count++;
+        if (strcmp(message, "") != 0)
+            SDL_Log("%d: %s\n", emulate_count, message);
+    }
 
     uint8_t *opcode = &state->memory[state->pc];
     switch (*opcode)
@@ -139,7 +137,7 @@ void handle_interrupts_and_emulate(State *state)
         wait_cycles(10);
         break;
     }
-    case OUT: // machine specific handling forOUT
+    case OUT: // machine specific handling for OUT
     {
         uint8_t port = opcode[1];
         machine_out(state, port);
@@ -152,21 +150,21 @@ void handle_interrupts_and_emulate(State *state)
         emulate8080(state);
         if (state->interrupt_enabled)
         {
-            // if (DEBUG) SDL_Log("** Interrupt Called**\n");
-            if (scanline96 == 1 && cycles_elapsed > cycles_per_frame)
+            if (DEBUG) SDL_Log("** Interrupt Called**\n");
+            if (midscreen_interrupt == 1 && cycles_elapsed > cycles_per_frame)
             {
                 wait_for_frametime_elapsed(1000000.f/120.f); // given in microseconds;
                 generate_interrupt(state, 2); // interrupt 2. from emulators 101.
-                scanline96 = 0;
+                midscreen_interrupt = 0;
                 cycles_elapsed = 0;
                 if (DEBUG) SDL_Log("Draw_Screen");
                 draw_screen(state);
             }
-            if (scanline96 == 0 && cycles_elapsed > (cycles_per_frame/2.f))
+            if (midscreen_interrupt == 0 && cycles_elapsed > (cycles_per_frame/2.f))
             {
                 wait_for_frametime_elapsed(1000000.f/120.f); // given in microseconds;
                 generate_interrupt(state, 1); // interrupt 1.
-                scanline96 = 1;
+                midscreen_interrupt = 1;
             }
         }
         break;
