@@ -1,10 +1,6 @@
 #include "../include/controls.h"
-#include "../include/disassemble8080p.h"
 #include "../include/machine.h"
-#include "../include/opcodes.h"
-#include "../include/shell.h"
 #include "../include/sound.h"
-#include "../include/state.h"
 #include "../include/video.h"
 
 #if _WIN32
@@ -16,10 +12,6 @@
 #endif
 
 #include <SDL.h>
-#include <SDL_image.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 
 #define DEBUG 0
 
@@ -39,7 +31,7 @@ int main(int argc, char *argv[])
     if (initialize_video() != 0) exit(1);
 
     // Initialize Audio
-    if (initialize_audio()) exit(1);
+    if (initialize_audio() != 0) exit(1);
 
     // Run ROM
     int endgame = 0;
