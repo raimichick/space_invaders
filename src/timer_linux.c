@@ -33,7 +33,7 @@ uint64_t cur_time_val = 0;
 uint64_t prev_time_val = 0;
 uint64_t elapsed_usecs = 0;
 
-void init_timer() { prev_time_val = get_time_usecs(); }
+void initialize_timer() { prev_time_val = get_time_usecs(); }
 
 void wait_for_frametime_elapsed(float frametime_us)
 {

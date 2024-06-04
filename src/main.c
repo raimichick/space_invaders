@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
 
     State *state = load_game_state("../include/invaders_combined", &game_size);
 
-    // init timers
-    init_timer();
+    // init timer
+    initialize_timer();
 
     // Initialize SDL2
     SDL_Init(SDL_INIT_EVERYTHING);
