@@ -4,7 +4,7 @@
 #include <profileapi.h>
 
 LARGE_INTEGER frequency, cur_tick_val, prev_tick_val, elapsed_usecs;
-void init_timer()
+void initialize_timer()
 {
     QueryPerformanceFrequency(&frequency);
     QueryPerformanceCounter(&prev_tick_val);

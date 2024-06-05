@@ -10,7 +10,7 @@ uint64_t cur_tick_val = 0;
 uint64_t prev_tick_val = 0;
 uint64_t elapsed_usecs = 0;
 
-void init_timer()
+void initialize_timer()
 {
     prev_tick_val = mach_absolute_time();
     mach_timebase_info_data_t tb;
