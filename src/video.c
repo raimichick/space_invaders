@@ -26,7 +26,7 @@ int initialize_video()
     play_area_size_w = win_size_w;
     play_area_size_h = win_size_h;
 
-    window = SDL_CreateWindow("SDL2 Window",
+    window = SDL_CreateWindow("Space Invaders 8080",
                               SDL_WINDOWPOS_CENTERED,
                               SDL_WINDOWPOS_CENTERED,
                               win_size_w,
