@@ -54,6 +54,9 @@ int initialize_video()
     {
         // setup background textures
         SDL_Surface *cab_surface = IMG_Load("../assets/cabinet1.png");
+        if (SETTINGS_BACKGROUND == 2)
+             cab_surface = IMG_Load("../assets/cabinet2.png");
+
         if (!cab_surface) { SDL_Log( "Unable to create cabinet surface. %s\n", SDL_GetError()); return 1; }
 
         SDL_Surface *planet_surface = IMG_Load("../assets/planet_grad.png");
@@ -98,7 +101,8 @@ void draw_screen(State *state)
     if (SETTINGS_BACKGROUND)
     {
         y_offset = -6 * SETTINGS_WINDOW_MULTIPLIER;
-//        y_offset = -30 * SETTINGS_WINDOW_MULTIPLIER; // for cabinet2.png
+        if (SETTINGS_BACKGROUND == 2)
+            y_offset = -30 * SETTINGS_WINDOW_MULTIPLIER; // for cabinet2.png
         SDL_RenderCopy(renderer, planet_texture, NULL,NULL);
         SDL_Rect rect = {x_pos, y_pos - y_offset, play_area_size_w, play_area_size_h};
         SDL_RenderCopy(renderer, game_texture, NULL, &rect);
