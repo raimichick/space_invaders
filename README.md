@@ -11,9 +11,15 @@ space invaders with this program, a ROM of the original game is required. This i
 be obtained through other sources. Once you have a Space Invaders ROM, ensure that the file is named "invaders_combined"
 and place it in the "include" directory.
 
+### Windows
+
+Navigate to the executable directory and run space_invaders_8080.exe
+
+### Apple
+
 ### Linux
 
-To run Space Invaders on a Linux machine, the SDL2 and SDL2_mixer library dependencies need to be installed. These can
+To run Space Invaders on a Linux machine, the SDL2, SDL2-image, and SDL2_mixer library dependencies need to be installed. These can
 be installed through the package manager for your distribution. Consult the package manager for the exact package names,
 as these can differ between distributions. Before installing any new packages on a linux machine, it is recommended to
 update the system. Consult your distribution’s documentation for how to do this, as this can differ between
@@ -25,7 +31,7 @@ system updates.
 Once the system is up-to-date, the dependencies can be installed. The following command will install the necessary
 packages on most debian based distributions
 
-`sudo apt install libsdl2-2.0-0 libsdl2-mixer-2.0-0`
+`sudo apt install libsdl2-2.0-0 libsdl2-mixer-2.0-0 libsdl2-image-2.0-0`
 
 Once the necessary dependencies are installed the game can be launched. Navigate to the executable folder and run
 space_invaders_8080. If this does not run by clicking on the program file, check that the permissions allow executing
