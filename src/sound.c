@@ -1,60 +1,52 @@
 #include "../include/sound.h"
-#include "../include/state.h"
-#include "SDL.h"
 
+#include <SDL.h>
+#include <SDL_mixer.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 /* VARIABLES */
-static SDL_AudioDeviceID _audioDeviceId = 0;
-static SDL_AudioSpec _audioSpec;
-static SoundSample _samples[10];
+#define NUM_WAVEFORMS 10
+static Mix_Chunk *_sample[NUM_WAVEFORMS];
+static bool _shoot_sound_played;
 
-SoundSample load_sample(char path[], int length_ms)
-{
-    SoundSample sample;
-    sample.length_ms = length_ms;
+static const char *_waveFilePaths[] = {
+    "../assets/0_spaceship.wav",   "../assets/1_shoot.wav", "../assets/2_base_hit.wav",
+    "../assets/3_invader_hit.wav", "../assets/4_walk1.wav", "../assets/5_walk2.wav",
+    "../assets/6_walk3.wav",       "../assets/7_walk4.wav", "../assets/8_spaceship_hit.wav",
+    "../assets/9_extra_life.wav"};
 
-    SDL_LoadWAV(path, &_audioSpec, &sample.buffer, &sample.len_buffer);
-
-    return sample;
-}
-
-int initialize_sdl()
-{
-    if (SDL_Init(SDL_INIT_AUDIO) != 0)
-    {
-        fprintf(stderr, "Error: Failed to initialize Audio System");
-        return 1;
-    }
-
-    return 0;
-}
+// static const int _sampleLength[] = {171, 374, 1327, 459, 73, 66, 69, 74, 2208, 1896};
 
 int initialize_audio()
 {
 
-    _audioSpec.channels = 1;
-    _audioSpec.freq = 44100;
-    _audioSpec.format = AUDIO_S16;
-
-    _samples[0] = load_sample(ROOT_DIR "/assets/0_spaceship.wav", 171);
-    _samples[1] = load_sample(ROOT_DIR "/assets/1_shoot.wav", 347);
-    _samples[2] = load_sample(ROOT_DIR "/assets/2_base_hit.wav", 1327);
-    _samples[3] = load_sample(ROOT_DIR "/assets/3_invader_hit.wav", 459);
-    _samples[4] = load_sample(ROOT_DIR "/assets/4_walk1.wav", 73);
-    _samples[5] = load_sample(ROOT_DIR "/assets/5_walk2.wav", 66);
-    _samples[6] = load_sample(ROOT_DIR "/assets/6_walk3.wav", 69);
-    _samples[7] = load_sample(ROOT_DIR "/assets/7_walk4.wav", 74);
-    _samples[8] = load_sample(ROOT_DIR "/assets/8_spaceship_hit.wav", 2208);
-    _samples[9] = load_sample(ROOT_DIR "/assets/9_extra_life.wav", 1896);
-
-    _audioDeviceId = SDL_OpenAudioDevice(NULL, 0, &_audioSpec, NULL, 0);
-    if (_audioDeviceId == 0)
+    // Set up the audio stream
+    int errCode = Mix_OpenAudio(44100, AUDIO_S16, 1, 512);
+    if (errCode < 0)
     {
-        fprintf(stderr, "Error: Failed to initialize Audio Device");
-        return 1; /* Could not open Device */
+        fprintf(stderr, "Unable to open audio: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    // Determine the number of mixing channels
+    errCode = Mix_AllocateChannels(10);
+    if (errCode < 0)
+    {
+        fprintf(stderr, "Unable to allocate mixing channels: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    // Load Samples
+    for (int i = 0; i < NUM_WAVEFORMS; i++)
+    {
+        _sample[i] = Mix_LoadWAV(_waveFilePaths[i]);
+        if (_sample[i] == NULL)
+        {
+            fprintf(stderr, "Unable to load wave file: %s\n", _waveFilePaths[i]);
+            return 1;
+        }
     }
 
     return 0;
@@ -62,91 +54,46 @@ int initialize_audio()
 
 void play_audio(int i)
 {
-    SDL_QueueAudio(_audioDeviceId, _samples[i].buffer, _samples[i].len_buffer);
-    SDL_PauseAudioDevice(_audioDeviceId, 0);
-    SDL_Delay(_samples[i].length_ms);
-    SDL_PauseAudioDevice(_audioDeviceId, 1);
-}
-
-void emulateSound(State *state)
-{
-    // Sound 0 - Spaceship
-    if ((state->ports[3] & 0b00000001) != 0)
+    // Check if the sample is already playing
+    // prevents samples from triggering multiple times in quick succession
+    if (!Mix_Playing(i))
     {
-        state->ports[3] = state->ports[3] & 0b11111110;
-        play_audio(0);
-    }
-
-    // Sound 1 - Shoot
-    if ((state->ports[3] & 0b00000010) != 0)
-    {
-        state->ports[3] = state->ports[3] & 0b11111101;
-        play_audio(1);
-    }
-
-    // Sound 2 - Base Hit
-    if ((state->ports[3] & 0b00000100) != 0)
-    {
-        state->ports[3] = state->ports[3] & 0b11111011;
-        play_audio(2);
-    }
-
-    // Sound 3 - Invader Hit
-    if ((state->ports[3] & 0b00001000) != 0)
-    {
-        state->ports[3] = state->ports[3] & 0b11110111;
-        play_audio(3);
-    }
-
-    // Sound 4 - Walk 1
-    if ((state->ports[5] & 0b00000001) != 0)
-    {
-        state->ports[5] = state->ports[5] & 0b11111110;
-        play_audio(4);
-    }
-
-    // Sound 5 - Walk 2
-    if ((state->ports[5] & 0b00000010) != 0)
-    {
-        state->ports[5] = state->ports[5] & 0b11111101;
-        play_audio(5);
-    }
-
-    // Sound 6 - Walk 3
-    if ((state->ports[5] & 0b00000100) != 0)
-    {
-        state->ports[5] = state->ports[5] & 0b11111011;
-        play_audio(6);
-    }
-
-    // Sound 7 - Walk 4
-    if ((state->ports[5] & 0b00001000) != 0)
-    {
-        state->ports[5] = state->ports[3] & 0b11110111;
-        play_audio(7);
-    }
-
-    // Sound 8 - Spaceship Hit
-    if ((state->ports[5] & 0b00010000) != 0)
-    {
-        state->ports[5] = state->ports[5] & 0b11101111;
-        play_audio(8);
-    }
-
-    // Sound 9 - Extra Life
-    if ((state->ports[3] & 0b00010000) != 0)
-    {
-        state->ports[3] = state->ports[3] & 0b11101111;
-        play_audio(9);
+        if (i == 0)
+        {
+            Mix_PlayChannel(i, _sample[i], -1);
+        }
+        else if (i == 1)
+        {
+            if (_shoot_sound_played == false)
+            {
+                _shoot_sound_played = true;
+                Mix_PlayChannel(i, _sample[i], 0);
+            }
+        }
+        else
+        {
+            Mix_PlayChannel(i, _sample[i], 0);
+        }
     }
 }
 
-void clean_up()
+void stop_audio(int i)
 {
-    SDL_CloseAudioDevice(_audioDeviceId);
-    for (int i = 0; i < 10; i++)
+    if (i == 1)
     {
-        SDL_FreeWAV(_samples[i].buffer);
+        _shoot_sound_played = false;
     }
-    SDL_Quit();
+    else
+    {
+        Mix_HaltChannel(i);
+    }
+}
+
+void free_audio()
+{
+    for (int i = 0; i < NUM_WAVEFORMS; i++)
+    {
+        Mix_FreeChunk(_sample[i]);
+    }
+    Mix_CloseAudio();
 }

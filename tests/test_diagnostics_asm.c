@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 const int DEBUG = 0;
-int emulate_count = 0;
+int _emulate_count = 0;
 
 int main()
 {
@@ -55,7 +55,7 @@ int main()
         // print next 10 operations for debugging
         if (DEBUG)
         {
-            printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n%d\n", emulate_count);
+            printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n%d\n", _emulate_count);
             // // TODO print registers to match javascript site
             int opbytes = 0;
             for (int _ = 0; _ < 10; _++)
@@ -63,7 +63,7 @@ int main()
         }
 
         emulate8080(state);
-        emulate_count += 1;
+        _emulate_count += 1;
     }
     printf("\n\n\n\n");
     int result = FAIL;
