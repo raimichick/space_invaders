@@ -13,9 +13,29 @@ and place it in the "include" directory.
 
 ### Windows
 
-Navigate to the executable directory and run space_invaders_8080.exe
+From Release: Navigate to the executable directory and run space_invaders_8080.exe
+
+Build from source: 
+1. Clone or download a zip of the Github repo.
+2. Ensure the ‘main’ branch is checked out.
+3. Copy the game ROM into the ./include folder. Label it “invaders_combined”.
+4. Load the CMakeLists.txt file in the root directory.
+5. Run.
 
 ### Apple
+
+From Release: Navigate to the executable directory and run space_invaders_8080
+
+Build from source:
+1. Clone or download a zip of the Github repo.
+2. Ensure the ‘main’ branch is checked out.
+3. Copy the game ROM into the ./include folder. Label it “invaders_combined”.
+4. Install the following through the package manager:
+   - SDL2: sudo apt install libsdl2-2.0-0 
+   - SDL2-mixer: sudo apt install libsdl2-mixer-2.0-0
+   - SDL2-image: sudo apt install libsdl2-image-2.0-0
+5. Load the CMakeLists.txt file in the root directory.
+6. Run.
 
 ### Linux
 
