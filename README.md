@@ -30,10 +30,10 @@ Build from source:
 1. Clone or download a zip of the Github repo.
 2. Ensure the ‘main’ branch is checked out.
 3. Copy the game ROM into the ./include folder. Label it “invaders_combined”.
-4. Install the following through the package manager:
-   - SDL2: sudo apt install libsdl2-2.0-0 
-   - SDL2-mixer: sudo apt install libsdl2-mixer-2.0-0
-   - SDL2-image: sudo apt install libsdl2-image-2.0-0
+4. Install the following through homebrew:
+   - SDL2: `brew install sdl2`
+   - SDL2_mixer: `brew install sdl2_mixer`
+   - SDL2_image: `brew install sdl2_image`
 5. Load the CMakeLists.txt file in the root directory.
 6. Run.
 
