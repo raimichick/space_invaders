@@ -6,19 +6,19 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
 # Set CMAKE_PREFIX_PATH to include the Homebrew installation directory
-if(APPLE)
-    if(EXISTS "/opt/homebrew")
+if (APPLE)
+    if (EXISTS "/opt/homebrew")
         # Apple Silicon Homebrew location
         set(CMAKE_PREFIX_PATH "/opt/homebrew")
-    else()
+    else ()
         # Intel Homebrew location
         set(CMAKE_PREFIX_PATH "/usr/local")
-    endif()
-else()
+    endif ()
+elseif (WIN32)
     set(SDL2_PATH "SDL2-2.30.3\\x86_64-w64-mingw32")
     set(SDL2_MIXER_PATH "SDL2_mixer-2.8.0\\x86_64-w64-mingw32")
     set(SDL2_IMAGE_PATH "SDL2_image-2.8.2\\x86_64-w64-mingw32")
-endif()
+endif ()
 
 set(SOURCES src/shell.c
         src/state.c
