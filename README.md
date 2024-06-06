@@ -78,3 +78,7 @@ Shoot the aliens, avoid getting shot, don’t let the aliens reach the bottom of
 | ‘I’                         | Coin info       | Toggles coin information.                        |
 | ‘Q’                         | Quit            | Exits the game.                                  |
 *Note that the first time you hit ‘C’ it doesn’t register.
+
+## Settings
+
+See the setting.h file to adjust window size and background options. 
