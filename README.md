@@ -81,4 +81,4 @@ Shoot the aliens, avoid getting shot, don’t let the aliens reach the bottom of
 
 ## Settings
 
-See the setting.h file to adjust window size and background options. 
+See the settings.h file to adjust window size and background options. 
