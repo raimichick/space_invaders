@@ -8,8 +8,8 @@ CS467 final project
 
 Navigate to the releases page and download the .zip archive for your platform and extract to a folder. To be able to run
 space invaders with this program, a ROM of the original game is required. This is not provided by the project and must
-be obtained through other sources. Once you have a Space Invaders ROM, ensure that the file is named "invaders_combined"
-and place it in the "include" directory.
+be obtained through other sources. The ROM can be found online as invaders.e, .f, .g, and .h. These should be cat'd 
+together, labeled "invaders_combined" and put in the "include" directory. 
 
 ### Windows
 
@@ -59,3 +59,22 @@ the file as a program. If this is still not working, try launching the program b
 and running
 
 `./space_invaders_8080`
+
+
+## Controls
+Shoot the aliens, avoid getting shot, don’t let the aliens reach the bottom of the screen.
+
+| Key                         | Action          | Description                                      |
+|-----------------------------|-----------------| ------------------------------------------------ |
+| ‘C’\*                       | Insert coin\*   | Inserts a coin to start the game.\*              |
+| ‘1’                         | Player 1 start  | Starts the game for player 1.                    |
+| ‘2’                         | Player 2 start  | Starts the game for 2 players. Player 1 begins.  |
+| ‘Space’, 'Up Arrow', or 'F' | Shoot           | Fires the player’s weapon.                       |
+| ‘Left Arrow’ or 'W'         | Move left       | Moves the player’s ship to the left.             |
+| ‘Right Arrow’ or 'D'        | Move right      | Moves the player’s ship to the right.            |
+| ‘L’                         | Number of lives | Increment the bonus life (base 3, up to 6).      |
+| ‘T’                         | Tilt            | Activates the tilt button.                       |
+| ‘B’                         | Bonus life      | Toggle bonus life point target between 1000/1500 |
+| ‘I’                         | Coin info       | Toggles coin information.                        |
+| ‘Q’                         | Quit            | Exits the game.                                  |
+*Note that the first time you hit ‘C’ it doesn’t register.
